@@ -92,9 +92,9 @@ final class GeneratedStoryArtSmokeUITests: XCTestCase {
             return
         }
 
-        try login(identifier: "__iostest_1782407190@budgetbuddy.local", password: "***SCRUBBED***")
+        try login(identifier: "__iostest_1782407190@budgetbuddy.local", password: ProcessInfo.processInfo.environment["BB_TEST_PASSWORD"] ?? "")
         if !mainVisible(timeout: 12) {
-            try login(identifier: "review@budgetbuddy.cn", password: "***SCRUBBED***")
+            try login(identifier: "review@budgetbuddy.cn", password: ProcessInfo.processInfo.environment["BB_REVIEW_PASSWORD"] ?? "")
         }
         XCTAssertTrue(mainVisible(timeout: 25), "Login did not reach the main app")
         switchToChineseIfNeeded()

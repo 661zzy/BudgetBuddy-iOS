@@ -6,7 +6,7 @@ import XCTest
 final class GuestModeUITests: XCTestCase {
     private var app: XCUIApplication!
     private let account = "review@budgetbuddy.cn"
-    private let password = "***SCRUBBED***"
+    private let password = ProcessInfo.processInfo.environment["BB_REVIEW_PASSWORD"] ?? ""
 
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -69,6 +69,7 @@ final class GuestModeUITests: XCTestCase {
 
     // 我的 shows the optional login entry; login works from the sheet; logout stays in-app.
     func testD_OptionalLoginFromProfile() throws {
+        try XCTSkipIf(password.isEmpty, "Set BB_REVIEW_PASSWORD (TEST_RUNNER_BB_REVIEW_PASSWORD via xcodebuild) to run the login round-trip")
         ensureInApp()
         tapTab("我的")
         // Self-heal: a previous run may have left a logged-in session.

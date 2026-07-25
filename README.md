@@ -50,10 +50,19 @@ xcodebuild -project BudgetBuddy.xcodeproj -scheme BudgetBuddy \
 
 会通关故事的套件（如 StabilityFlow）通过启动参数 `-bb.review.prompted.v1 YES` 预置"已提示过评分"，避免系统评分弹窗干扰自动化。
 
-## ⚠️ 安全说明（转公开仓库前必读）
+需要账号的测试（登录/云同步/记账总结）从环境变量读取演示账号凭据，仓库内不含任何密码：
 
-- `UITests/` 内硬编码了 **App Review 演示账号**（review@budgetbuddy.cn）的密码，`SERVER-DEPLOY-HANDOFF.md` 等文档含服务器信息。**本仓库应保持私有**；若要公开，先轮换演示账号密码并清理部署文档。
-- AI/数据库等真实密钥只存在于服务器端（`ai.local.php` / `db.local.php`），从不入库。
+```bash
+export TEST_RUNNER_BB_REVIEW_PASSWORD=***   # 演示账号密码（维护者持有）
+export TEST_RUNNER_BB_TEST_PASSWORD=***     # 本地测试账号（可选）
+```
+
+未设置时相关用例自动跳过（XCTSkip）或不参与登录，游客路径测试不受影响。
+
+## 安全说明
+
+- 仓库不含任何密钥或密码：AI/数据库密钥只存在于服务器端（`ai.local.php` / `db.local.php`），演示账号密码经环境变量注入且会定期轮换（历史提交中出现过的旧密码已作废）。
+- 后端源码不在本仓库。
 
 ## License
 

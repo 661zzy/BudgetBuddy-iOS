@@ -4,7 +4,7 @@ final class StabilityFlowUITests: XCTestCase {
     private var app: XCUIApplication!
     // Build 14: registration requires a real emailed/SMS code, so the soak run
     // signs in with the review account via the optional profile sheet instead.
-    private let password = ProcessInfo.processInfo.environment["STABILITY_PASSWORD"] ?? "***SCRUBBED***"
+    private let password = ProcessInfo.processInfo.environment["BB_REVIEW_PASSWORD"] ?? ""
     private let nickname = "测试"
 
     private var account: String {

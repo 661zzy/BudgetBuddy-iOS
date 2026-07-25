@@ -6,7 +6,7 @@ import XCTest
 final class ManualScreenshotsUITests: XCTestCase {
     private var app: XCUIApplication!
     private let account = "review@budgetbuddy.cn"
-    private let password = "***SCRUBBED***"
+    private let password = ProcessInfo.processInfo.environment["BB_REVIEW_PASSWORD"] ?? ""
 
     override func setUpWithError() throws {
         continueAfterFailure = false

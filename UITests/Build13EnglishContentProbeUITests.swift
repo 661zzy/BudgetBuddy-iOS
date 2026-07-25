@@ -74,7 +74,7 @@ final class Build13EnglishContentProbeUITests: XCTestCase {
             : (app.secureTextFields["密码"].exists ? app.secureTextFields["密码"] : app.secureTextFields.element(boundBy: 0))
         XCTAssertTrue(passwordField.waitForExistence(timeout: 5), "Missing password field")
         passwordField.tap()
-        passwordField.typeText("***SCRUBBED***")
+        passwordField.typeText(ProcessInfo.processInfo.environment["BB_REVIEW_PASSWORD"] ?? "")
 
         tapButton(containing: "Log in")
         dismissSavePasswordPromptIfNeeded()

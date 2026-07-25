@@ -71,7 +71,7 @@ final class SceneArtUITests: XCTestCase {
 
         if app.staticTexts["欢迎回来"].waitForExistence(timeout: 3) || app.buttons["登录"].exists {
             let identifier = "__iostest_1782407190@budgetbuddy.local"
-            let password = "***SCRUBBED***"
+            let password = ProcessInfo.processInfo.environment["BB_TEST_PASSWORD"] ?? ""
 
             let idField = app.textFields["手机号或邮箱"].exists ? app.textFields["手机号或邮箱"] : app.textFields.element(boundBy: 0)
             XCTAssertTrue(idField.waitForExistence(timeout: 5), "Missing identifier field")
