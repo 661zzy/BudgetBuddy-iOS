@@ -1,0 +1,160 @@
+/* ============================================================
+   省钱搭子 BudgetBuddy — Color & Type Foundations
+   WARM STUDENT direction (v3.5 design refinement):
+   a warm off-white base, soft low-saturation colors drawn from
+   everyday student life, used by MEANING (story = cream/orange,
+   safe/growth = muted green, warning = soft red, reflection/AI =
+   soft blue, knowledge = green/beige). Friendlier Chinese type,
+   softer corners, one whisper-soft shadow. Clean and trustworthy,
+   but human — not cold black-and-white, not a colorful template.
+
+   The original blue / green / orange / red variable NAMES are kept
+   (the whole app references them) and their VALUES are tuned to the
+   warm system, so the entire UI warms up with almost no code churn.
+   Color is section identity + accent, never random decoration.
+   ============================================================ */
+
+/* No web-font @import: fonts.googleapis.com is blocked/slow in mainland China and
+   would render-block the whole page. We rely on the device's own CJK fonts
+   (PingFang SC / system-ui / Microsoft YaHei), which look great and load instantly. */
+
+:root {
+  /* ---------- Core neutral palette (warm) ---------- */
+  --bg:        #FAF7F0;   /* app background — warm off-white            */
+  --surface:   #FFFFFF;   /* cards / sheets — mostly white              */
+  --card:      #FFFFFF;
+  --surface-2: #F4EEE1;   /* warm cream inset surface                   */
+  --ink-900:   #1F1F1F;   /* primary text                               */
+  --ink-700:   #6F6A60;   /* secondary text — warm gray                 */
+  --ink-500:   #9A9384;   /* muted text                                 */
+  --ink-300:   #C7BEAD;   /* placeholder / disabled / faint             */
+  --line:      #E8E0D2;   /* warm hairline border / divider             */
+  --line-strong:#DCD2BF;  /* stronger warm border (inputs, etc.)        */
+
+  /* ---------- Green = safe / growth / PRIMARY accent ---------- */
+  --green-50:  #DDEBDD;   /* soft green tint (safe choice / growth)     */
+  --green-100: #CFE3D0;
+  --green-200: #B9D5BC;
+  --green-500: #3E5F4D;   /* deep muted green — primary accent          */
+  --green-600: #345140;   /* pressed                                    */
+  --green-700: #2C4536;   /* deep green ink (text on green tint)        */
+  --accent:      var(--green-500);
+  --accent-press:var(--green-600);
+  --accent-soft: var(--green-50);
+  --accent-ink:  var(--green-700);
+
+  /* ---------- Blue = reflection / AI review ---------- */
+  --blue-50:  #E5EEF7;    /* soft blue tint (reflection / AI panels)    */
+  --blue-100: #D6E3F1;
+  --blue-200: #BFD2E8;
+  --blue-300: #A6C0DC;
+  --blue-400: #5C7C9E;
+  --blue-500: #3E5573;    /* deep slate-blue — reflection ink / icons   */
+  --blue-600: #334863;
+  --blue-700: #2B3D54;
+
+  /* ---------- Orange / cream = story / daily life ---------- */
+  --orange-50:  #FFF4DF;  /* warm cream (story / daily-life surface)    */
+  --orange-100: #FBE8C8;
+  --orange-200: #F7D9B0;  /* soft orange                                */
+  --orange-500: #8A5A2B;  /* warm brown — deep accent / story ink       */
+  --orange-600: #74491F;
+  --orange-700: #5E3A18;
+
+  /* ---------- Red = warning / consumer trap ---------- */
+  --red-50:  #F7E5E0;     /* soft red tint (warning surface)            */
+  --red-100: #EDCBC2;
+  --red-200: #E0A99C;
+  --red-500: #B5503A;     /* danger text — readable warm red            */
+  --red-600: #99402C;
+  --warn-soft:#D98272;    /* soft warning accent (borders / strips)     */
+  --danger:  var(--red-500);
+  --safe:    var(--green-500);
+
+  /* ---------- Scene / section tints (identity by meaning) ----- */
+  --warm-card:   #FFF4DF; /* hero / story scene block                   */
+  --tint-cream:  #FFF4DF;
+  --tint-orange: #F7D9B0;
+  --tint-green:  #DDEBDD;
+  --tint-blue:   #E5EEF7;
+  --tint-red:    #F4DDD6;
+  --tint-beige:  #F4EEE1;
+  --on-cream:  #7A4A1C;   /* readable ink on the tints                  */
+  --on-orange: #6E4319;
+  --on-green:  #2C4536;
+  --on-blue:   #2F4A66;
+  --on-red:    #8F3A28;
+  --accent-brown: #8A5A2B;
+  --input-bg:  #FFFDF8;   /* warm off-white input field                 */
+
+  /* ---------- Semantic aliases ------------------------------- */
+  --fg1: var(--ink-900);
+  --fg2: var(--ink-700);
+  --fg3: var(--ink-500);
+  --primary: var(--accent);
+  --primary-press: var(--accent-press);
+  --positive: var(--accent);
+  --reminder: var(--orange-500);
+  --warning: var(--red-500);
+  --danger-fg: var(--red-500);
+  --safe-fg: var(--safe);
+  --on-color: #FFFFFF;
+
+  /* ---------- Radii — soft, not square, not pill-everything --- */
+  --r-xs: 6px;
+  --r-sm: 10px;   /* inputs              */
+  --r-md: 12px;   /* default card        */
+  --r-lg: 14px;   /* hero / sheet body / scene block */
+  --r-xl: 18px;
+  --r-pill: 999px;/* chips / tags        */
+  --r-btn: 12px;  /* buttons             */
+
+  /* ---------- Spacing (4px base) ----------------------------- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10: 40px;
+
+  /* ---------- Shadows — one whisper-soft warm shadow --------- */
+  --shadow-sm:   0 1px 2px rgba(60,45,25,.04);
+  --shadow-card: 0 2px 8px rgba(60,45,25,.04);
+  --shadow-float:0 8px 24px rgba(60,45,25,.12);
+  --shadow-press:none;
+
+  /* ---------- Type families ---------------------------------- */
+  /* LXGW WenKai (warm, gently humanist) used if installed locally; otherwise the
+     stack falls back to the device's native CJK fonts. No fonts are downloaded. */
+  --font-sans: "LXGW WenKai", "Noto Sans SC", "PingFang SC",
+               "Microsoft YaHei", "Source Han Sans SC", system-ui, sans-serif;
+  --font-num:  "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+
+  /* ---------- Motion ----------------------------------------- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1); /* @kind other */
+  --ease-bounce: cubic-bezier(0.22, 0.61, 0.36, 1); /* @kind other */
+  --dur: 200ms; /* @kind other */
+}
+
+/* ============================================================
+   Semantic type scale — friendlier and a touch warmer. Medium
+   weights (not heavy), generous line-height; story text reads like
+   a short diary / visual-novel scene.
+   ============================================================ */
+:root {
+  --t-display: 600 30px/1.2 var(--font-num);   /* hero figure    */
+  --t-h1: 600 21px/1.4 var(--font-sans);       /* page title     */
+  --t-h2: 600 16px/1.5 var(--font-sans);       /* section header */
+  --t-h3: 500 15px/1.6 var(--font-sans);       /* card title     */
+  --t-body: 400 15px/1.7 var(--font-sans);     /* default body   */
+  --t-body-sm: 400 13px/1.65 var(--font-sans); /* secondary      */
+  --t-caption: 400 12px/1.55 var(--font-sans); /* meta / labels  */
+  --t-num: 600 16px/1.4 var(--font-num);       /* inline amounts */
+  --t-story: 400 16px/1.95 var(--font-sans);   /* story scene prose */
+}
+
+.t-display { font: var(--t-display); letter-spacing: -0.01em; font-feature-settings: "tnum"; }
+.t-h1 { font: var(--t-h1); color: var(--fg1); letter-spacing: .005em; }
+.t-h2 { font: var(--t-h2); color: var(--fg1); }
+.t-h3 { font: var(--t-h3); color: var(--fg1); }
+.t-body { font: var(--t-body); color: var(--fg1); }
+.t-body-sm { font: var(--t-body-sm); color: var(--fg2); }
+.t-caption { font: var(--t-caption); color: var(--fg3); }
+.t-num { font: var(--t-num); font-feature-settings: "tnum"; }
+.t-story { font: var(--t-story); color: var(--ink-900); }

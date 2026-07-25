@@ -1,0 +1,62 @@
+name: BudgetBuddy
+options:
+  bundleIdPrefix: cn.budgetbuddy
+  settingPresets: project
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+targets:
+  BudgetBuddy:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+      - path: Resources
+      - path: Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cn.budgetbuddy.BudgetBuddy
+        SDKROOT: iphoneos
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "9"
+        GENERATE_INFOPLIST_FILE: "YES"
+        DEVELOPMENT_TEAM: JUJB5U4698
+        CODE_SIGN_STYLE: Automatic
+        INFOPLIST_KEY_CFBundleDisplayName: "省钱搭子"
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: "NO"
+        INFOPLIST_KEY_UILaunchScreen_Generation: "YES"
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: "YES"
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.0"
+  BudgetBuddyUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: BudgetBuddy
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cn.budgetbuddy.BudgetBuddyUITests
+        SDKROOT: iphoneos
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+          - "@loader_path/Frameworks"
+        TEST_TARGET_NAME: BudgetBuddy
+        GENERATE_INFOPLIST_FILE: "YES"
+        SWIFT_VERSION: "5.0"
+schemes:
+  BudgetBuddy:
+    build:
+      targets:
+        BudgetBuddy: all
+        BudgetBuddyUITests: [test]
+    test:
+      targets:
+        - BudgetBuddyUITests

@@ -1,0 +1,5 @@
+2026-06-30 13:11:46.903 xcodebuild[23035:3421470] [MT] IDEDistribution: -[IDEDistributionLogging _createLoggingBundleAtPath:]: Created bundle at path "/var/folders/74/yrnx1tmn4dsdwgzvvwt5c90m0000gn/T/BudgetBuddy_2026-06-30_13-11-46.903.xcdistributionlogs".
+error: exportArchive Error Downloading App Information
+
+** EXPORT FAILED **
+

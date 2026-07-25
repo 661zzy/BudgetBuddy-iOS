@@ -1,0 +1,41 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project BudgetBuddy.xcodeproj -scheme BudgetBuddy -configuration Release -destination generic/platform=iOS -archivePath build/BudgetBuddy.xcarchive -allowProvisioningUpdates archive
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'BudgetBuddy' in project 'BudgetBuddy' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/chenmingming/Documents/Claude code/BudgetBuddy-iOS/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 4ac63a96b1a9021bb0e3693f897ac1f3
+Build description path: /Users/chenmingming/Library/Developer/Xcode/DerivedData/BudgetBuddy-bycmlhiypedqufezncybkiqtptcz/Build/Intermediates.noindex/ArchiveIntermediates/BudgetBuddy/IntermediateBuildFilesPath/XCBuildData/4ac63a96b1a9021bb0e3693f897ac1f3.xcbuilddata
+/Users/chenmingming/Documents/Claude code/BudgetBuddy-iOS/BudgetBuddy.xcodeproj: error: BudgetBuddy has conflicting provisioning settings. BudgetBuddy is automatically signed for development, but a conflicting code signing identity Apple Distribution has been manually specified. Set the code signing identity value to "Apple Development" in the build settings editor, or switch to manual signing in the Signing & Capabilities editor. (in target 'BudgetBuddy' from project 'BudgetBuddy')
+** ARCHIVE FAILED **
+
+
+The following build commands failed:
+	Archiving project BudgetBuddy with scheme BudgetBuddy
+(1 failure)

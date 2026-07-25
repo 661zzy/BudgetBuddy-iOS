@@ -1,0 +1,21 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 省钱搭子 BudgetBuddy app icon: a coin that sprouts (saving + growth), ¥ drawn as
+       vector strokes (font-independent). Full-bleed 1024x1024, no transparency, no rounded
+       corners (iOS masks them). Doubles as the ICP 备案 APP图标. Rasterize to PNG before use. -->
+  <rect x="0" y="0" width="1024" height="1024" fill="#3E5F4D"/>
+  <circle cx="512" cy="610" r="300" fill="#F4EFE3"/>
+  <circle cx="512" cy="610" r="300" fill="none" stroke="#E2D7C1" stroke-width="6"/>
+  <circle cx="512" cy="610" r="266" fill="none" stroke="#E2D7C1" stroke-width="4"/>
+  <g stroke="#3E5F4D" stroke-width="30" stroke-linecap="round" fill="none">
+    <line x1="512" y1="612" x2="436" y2="496"/>
+    <line x1="512" y1="612" x2="588" y2="496"/>
+    <line x1="512" y1="606" x2="512" y2="726"/>
+  </g>
+  <g stroke="#3E5F4D" stroke-width="26" stroke-linecap="round">
+    <line x1="446" y1="640" x2="578" y2="640"/>
+    <line x1="446" y1="688" x2="578" y2="688"/>
+  </g>
+  <path d="M512 322 L512 236" stroke="#8FB89B" stroke-width="26" stroke-linecap="round" fill="none"/>
+  <path d="M512 250 Q404 232 388 120 Q500 158 512 250 Z" fill="#A7CDB0"/>
+  <path d="M512 250 Q620 232 636 120 Q524 158 512 250 Z" fill="#A7CDB0"/>
+</svg>

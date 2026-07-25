@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>省钱搭子 BudgetBuddy — App UI Kit</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="app.css">
+<style>
+  html, body { height:100%; }
+  body { margin:0; min-height:100dvh; background:#ECE6DA; -webkit-text-size-adjust:100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Libraries are SELF-HOSTED under vendor/ (served from this domain) so the app
+     loads reliably in mainland China with no dependency on unpkg/jsDelivr, and
+     uses React production builds. To update, replace the files in vendor/. -->
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<script src="vendor/babel.min.js"></script>
+<script src="vendor/lucide.min.js"></script>
+
+<!-- PHP backend API base + client (plain script, runs before the Babel app).
+     No keys here — auth is a session cookie handled by the browser.
+     Auto-detect: on a real domain the API is same-origin via api.php?r= (a plain
+     PHP file — works with NO nginx rewrite); local dev uses localhost:8000. -->
+<script>
+  window.__BB_API_BASE__ =
+    (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+      ? "http://localhost:8000/api"   // local dev (frontend + `php -S` on :8000)
+      : "/api.php?r=";                 // production: same domain, no rewrite needed
+  // Real registered users start with a BLANK account (no demo transactions).
+  // Set to false for local development if you want the demo seed data instead.
+  window.BB_BLANK_NEW_USERS = true;
+</script>
+<script src="apiClient.js"></script>
+
+<script type="text/babel" src="ui.jsx"></script>
+<script type="text/babel" src="learning_data.jsx"></script>
+<script type="text/babel" src="codex_data.jsx"></script>
+<script type="text/babel" src="store.jsx"></script>
+<script type="text/babel" src="screens_auth.jsx"></script>
+<script type="text/babel" src="screens_home.jsx"></script>
+<script type="text/babel" src="screens_detail.jsx"></script>
+<script type="text/babel" src="screens_ai.jsx"></script>
+<script type="text/babel" src="screens_learning.jsx"></script>
+<script type="text/babel" src="screens_challenges.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
