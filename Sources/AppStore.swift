@@ -28,12 +28,26 @@ final class AppStore: ObservableObject {
     func boot() async {
         user = try? await api.me()
         if user != nil {
-            state = (try? await api.loadState()) ?? AppState()
+            let server = await fetchServerState()
+            serverStateLoaded = server != nil
+            state = server ?? AppState()
         } else {
             state = Self.loadGuestState()
         }
         phase = onboarded ? .app : .auth
         await checkUpdate()
+    }
+
+    // Set only after a SUCCESSFUL server-state fetch. While false, save() must
+    // never blind-push local state — a failed fetch is UNKNOWN, not blank, and
+    // pushing over it could wipe the account's cloud data.
+    private var serverStateLoaded = false
+
+    /// loadState with one retry; nil = server state unknown (≠ blank).
+    private func fetchServerState() async -> AppState? {
+        if let s = try? await api.loadState() { return s }
+        try? await Task.sleep(nanoseconds: 800_000_000)
+        return try? await api.loadState()
     }
 
     // MARK: Guest-mode local persistence
@@ -55,10 +69,16 @@ final class AppStore: ObservableObject {
 
     /// After login/register: keep the richer of (server state, local guest work).
     /// If the account is blank and the guest did real things locally, adopt the
-    /// guest data into the account so nothing the user made is lost.
+    /// guest data into the account so nothing the user made is lost. A FAILED
+    /// fetch adopts nothing — the guest copy is kept and nothing is pushed
+    /// (treating failure as "blank" risks wiping the account's cloud data).
     private func adoptServerState() async {
         let guest = state
-        let server = (try? await api.loadState()) ?? AppState()
+        guard let server = await fetchServerState() else {
+            serverStateLoaded = false
+            return   // stay on guest data; guest copy NOT consumed
+        }
+        serverStateLoaded = true
         if server.bbIsEmptyContent && !guest.bbIsEmptyContent {
             state = guest
             try? await api.saveState(state)
@@ -265,13 +285,33 @@ final class AppStore: ObservableObject {
     }
 
     // Logged-in: best-effort persist to the backend. Guest: persist on-device
-    // so everything survives relaunches without an account.
+    // so everything survives relaunches without an account. If the server copy
+    // was never successfully loaded this session, load-and-merge first — NEVER
+    // blind-push a possibly-partial local state over the account's cloud data.
     private func save() async {
         if user == nil {
             persistGuestState()
-        } else {
-            try? await api.saveState(state)
+            return
         }
+        if !serverStateLoaded {
+            guard let server = await fetchServerState() else { return }   // still unknown → keep local only
+            serverStateLoaded = true
+            let local = state
+            var mergedTx = local.transactions
+            let localIds = Set(mergedTx.map(\.id))
+            mergedTx.append(contentsOf: server.transactions.filter { !localIds.contains($0.id) })
+            var mergedCh = local.challenges
+            let chIds = Set(mergedCh.map(\.id))
+            mergedCh.append(contentsOf: server.challenges.filter { !chIds.contains($0.id) })
+            state = AppState(
+                transactions: mergedTx,
+                gameProgress: Array(Set(local.gameProgress).union(server.gameProgress)),
+                lessonProgress: Array(Set(local.lessonProgress).union(server.lessonProgress)),
+                challenges: mergedCh,
+                extras: local.extras.isEmpty ? server.extras : local.extras
+            )
+        }
+        try? await api.saveState(state)
     }
 
     // Derived numbers
