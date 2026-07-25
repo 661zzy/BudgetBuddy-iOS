@@ -212,6 +212,34 @@ func isThisWeek(_ ts: String) -> Bool {
     Calendar.current.isDate(parseTS(ts), equalTo: Date(), toGranularity: .weekOfYear)
 }
 
+/// Stable day key for grouping ("2026-07-25"); sorts newest-first with string compare.
+func bbDayKey(_ ts: String) -> String {
+    let f = DateFormatter()
+    f.dateFormat = "yyyy-MM-dd"
+    return f.string(from: parseTS(ts))
+}
+
+/// "今天" / "昨天" / "7月23日" ("Jul 23"), with the year only when it differs.
+func bbDayLabel(_ ts: String) -> String {
+    let d = parseTS(ts)
+    let cal = Calendar.current
+    if cal.isDateInToday(d) { return "今天".tr }
+    if cal.isDateInYesterday(d) { return "昨天".tr }
+    let f = DateFormatter()
+    f.locale = Locale(identifier: BBLang.isEN ? "en_US" : "zh_CN")
+    let sameYear = cal.component(.year, from: d) == cal.component(.year, from: Date())
+    f.dateFormat = BBLang.isEN ? (sameYear ? "MMM d" : "MMM d, yyyy")
+                               : (sameYear ? "M月d日" : "yyyy年M月d日")
+    return f.string(from: d)
+}
+
+/// "14:05" — every transaction records its time automatically (ts at creation).
+func bbTimeLabel(_ ts: String) -> String {
+    let f = DateFormatter()
+    f.dateFormat = "HH:mm"
+    return f.string(from: parseTS(ts))
+}
+
 // The AI returns lightweight markdown (**bold**, lists). Render it instead of showing raw asterisks.
 func markdownText(_ s: String) -> AttributedString {
     (try? AttributedString(markdown: s,

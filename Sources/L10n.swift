@@ -149,6 +149,10 @@ enum L10n {
         // ---- tracker ----
         "本月结余": "Net this month", "总结与建议": "Summary & advice",
         "本月支出": "Spent", "本月收入": "Income", "共": "·", "笔": "entries",
+        // ---- weekly/monthly summary (v1.3) ----
+        "昨天": "Yesterday", "本周": "Week", "本月": "Month",
+        "本周结余": "Net this week", "本周支出": "Spent", "本周收入": "Income",
+        "本周笔数": "Entries", "周记账天数": "Days logged",
         "还没有记录": "Nothing logged yet", "从今天开始，记录一次真实的消费选择。": "Start today — log one real spending choice.",
         "发生了什么？（选填）": "What happened? (optional)", "记一笔": "Add entry",
         "花完之后，停三秒回顾一下——想记就记，跳过也没关系。": "Take three seconds to reflect — log it if you like, skipping is fine too.",

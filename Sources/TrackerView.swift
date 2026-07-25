@@ -33,17 +33,29 @@ struct TrackerView: View {
                                 .padding(.vertical, 4)
                             }
                             .listRowBackground(Color.bbSurface)
-                        }
-                        Section {
-                            ForEach(store.state.transactions) { t in
-                                row(t)
-                            }
-                            .onDelete { offsets in
-                                let ids = offsets.map { store.state.transactions[$0].id }
-                                Task { for id in ids { await store.deleteTransaction(id) } }
-                            }
-                        } header: {
+                        } footer: {
                             Text("本月支出".tr + " ¥\(Int(store.monthOut)) · \(store.state.transactions.count) " + "笔".tr)
+                                .font(.caption).foregroundColor(.bbInk2)
+                        }
+                        // Grouped by day — every entry auto-records its time (ts),
+                        // shown per row; day headers carry the day's spend total.
+                        ForEach(dayGroups, id: \.key) { grp in
+                            Section {
+                                ForEach(grp.items) { t in
+                                    row(t)
+                                }
+                                .onDelete { offsets in
+                                    let ids = offsets.map { grp.items[$0].id }
+                                    Task { for id in ids { await store.deleteTransaction(id) } }
+                                }
+                            } header: {
+                                HStack {
+                                    Text(grp.label)
+                                    Spacer()
+                                    if grp.out > 0 { Text("支出".tr + " ¥\(Int(grp.out))") }
+                                }
+                                .font(.caption).foregroundColor(.bbInk2)
+                            }
                         }
                     }
                     .listStyle(.plain)
@@ -110,6 +122,16 @@ struct TrackerView: View {
         .padding()
     }
 
+    // Newest day first; within a day newest entry first.
+    private var dayGroups: [(key: String, label: String, out: Double, items: [Transaction])] {
+        let grouped = Dictionary(grouping: store.state.transactions) { bbDayKey($0.ts) }
+        return grouped.keys.sorted(by: >).map { k in
+            let items = (grouped[k] ?? []).sorted { $0.ts > $1.ts }
+            let out = items.filter { $0.kind == "out" }.reduce(0) { $0 + $1.amount }
+            return (k, bbDayLabel(items.first?.ts ?? ""), out, items)
+        }
+    }
+
     private func row(_ t: Transaction) -> some View {
         HStack(spacing: 12) {
             Image(systemName: CATS[t.cat]?.icon ?? "circle.fill")
@@ -117,6 +139,7 @@ struct TrackerView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(t.note.isEmpty ? (CATS[t.cat]?.zh.tr ?? t.cat) : t.note).foregroundColor(.bbInk)
                 HStack(spacing: 6) {
+                    Text(bbTimeLabel(t.ts)).font(.caption2).foregroundColor(.bbInk2.opacity(0.8))
                     Text(CATS[t.cat]?.zh.tr ?? t.cat).font(.caption).foregroundColor(.bbInk2)
                     if let need = t.reflect?.need {
                         Text(need.tr).font(.caption2)
@@ -344,34 +367,48 @@ struct ReflectSheet: View {
 
 struct TrackerSummaryView: View {
     @EnvironmentObject var store: AppStore
-    @State private var advice = ""
+
+    // 周/月 double-cycle summary (v1.3): each scope keeps its own auto-loaded
+    // AI advice; switching scopes re-analyzes that window automatically.
+    enum Scope: String, CaseIterable { case week = "本周", month = "本月" }
+    @State private var scope: Scope = .month
+    @State private var advice: [Scope: String] = [:]
     @State private var loadingAdvice = true
 
-    private var catTotals: [(cat: String, amount: Double)] {
-        let now = Date()
-        var m: [String: Double] = [:]
-        for t in store.state.transactions where t.kind == "out" && isSameMonth(t.ts, now) {
-            m[t.cat, default: 0] += t.amount
-        }
-        return m.sorted { $0.value > $1.value }.map { (cat: $0.key, amount: $0.value) }
+    private func inScope(_ ts: String) -> Bool {
+        scope == .week ? isThisWeek(ts) : isSameMonth(ts, Date())
     }
-    private var monthCount: Int {
-        let now = Date()
-        return store.state.transactions.filter { isSameMonth($0.ts, now) }.count
+    private var scoped: [Transaction] { store.state.transactions.filter { inScope($0.ts) } }
+    private var scopeOut: Double { scoped.filter { $0.kind == "out" }.reduce(0) { $0 + $1.amount } }
+    private var scopeIn: Double { scoped.filter { $0.kind == "in" }.reduce(0) { $0 + $1.amount } }
+    private var scopeNet: Double { scopeIn - scopeOut }
+    private var scopeDays: Int { Set(scoped.map { bbDayKey($0.ts) }).count }
+
+    private var catTotals: [(cat: String, amount: Double)] {
+        var m: [String: Double] = [:]
+        for t in scoped where t.kind == "out" { m[t.cat, default: 0] += t.amount }
+        return m.sorted { $0.value > $1.value }.map { (cat: $0.key, amount: $0.value) }
     }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                Picker("", selection: $scope) {
+                    ForEach(Scope.allCases, id: \.self) { Text($0.rawValue.tr) }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("summary.scope")
+
                 VStack(spacing: 6) {
-                    Text("本月结余".tr).font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
-                    Text("\(store.monthNet >= 0 ? "" : "−")¥\(abs(Int(store.monthNet)))")
+                    Text((scope == .week ? "本周结余" : "本月结余").tr)
+                        .font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
+                    Text("\(scopeNet >= 0 ? "" : "−")¥\(abs(Int(scopeNet)))")
                         .font(.system(size: 46, weight: .heavy, design: .rounded))
-                        .foregroundColor(store.monthNet >= 0 ? .bbGreen : .bbRed)
+                        .foregroundColor(scopeNet >= 0 ? .bbGreen : .bbRed)
                     HStack(spacing: 26) {
-                        stat("本月支出".tr, store.monthOut, .bbInk)
+                        stat((scope == .week ? "本周支出" : "本月支出").tr, scopeOut, .bbInk)
                         Rectangle().fill(Color.bbLine).frame(width: 1, height: 30)
-                        stat("本月收入".tr, store.monthIn, .bbGreen)
+                        stat((scope == .week ? "本周收入" : "本月收入").tr, scopeIn, .bbGreen)
                     }
                     .padding(.top, 8)
                 }
@@ -392,8 +429,8 @@ struct TrackerSummaryView: View {
                 }
 
                 HStack(spacing: 10) {
-                    miniStat("\(monthCount)", "本月笔数".tr)
-                    miniStat("\(store.recordDays)", "记账天数".tr)
+                    miniStat("\(scoped.count)", (scope == .week ? "本周笔数" : "本月笔数").tr)
+                    miniStat("\(scopeDays)", "记账天数".tr)
                     miniStat("¥\(Int(store.totalNet))", "累计结余".tr)
                 }
 
@@ -410,10 +447,10 @@ struct TrackerSummaryView: View {
                         }
                         .padding(.vertical, 4)
                     } else {
-                        Text(markdownText(advice)).font(.system(.body, design: .rounded)).foregroundColor(.bbInk)
+                        Text(markdownText(advice[scope] ?? "")).font(.system(.body, design: .rounded)).foregroundColor(.bbInk)
                             .fixedSize(horizontal: false, vertical: true).lineSpacing(4)
                     }
-                    Button { loadAdvice() } label: {
+                    Button { loadAdvice(force: true) } label: {
                         Label("再分析一次".tr, systemImage: "arrow.clockwise")
                             .font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbGreen)
                     }
@@ -429,7 +466,8 @@ struct TrackerSummaryView: View {
         .background(Color.bbBg)
         .navigationTitle("记账总结".tr)
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { if advice.isEmpty { loadAdvice() } }
+        .onAppear { loadAdvice() }
+        .onChange(of: scope) { _ in loadAdvice() }
     }
 
     private func stat(_ label: String, _ v: Double, _ color: Color) -> some View {
@@ -467,15 +505,24 @@ struct TrackerSummaryView: View {
         }
     }
 
-    private func loadAdvice() {
+    // Advice is cached per scope; opening the page or flipping 周/月 analyzes
+    // that window automatically, 再分析一次 forces a refresh.
+    private func loadAdvice(force: Bool = false) {
+        let target = scope
+        if !force, let cached = advice[target], !cached.isEmpty { loadingAdvice = false; return }
         loadingAdvice = true
         Task {
+            let window = target == .week ? "本周" : "本月"
+            let prompt = BBLang.isEN
+                ? "Please review my spending records for THIS \(target == .week ? "WEEK" : "MONTH") and reply IN ENGLISH with 2-3 friendly, specific, doable money-saving tips based on where the money went in that window. Encouraging tone, no lecturing."
+                : "请根据我的记账数据，重点分析我【\(window)】的花销结构和变化，用轻松鼓励的语气给我 2-3 条具体、可执行的省钱小建议，不要说教。"
             do {
-                advice = try await APIClient.shared.aiChat(BBLang.isEN ? "Please look at my spending records and reply IN ENGLISH with 2-3 friendly, specific, doable money-saving tips. Encouraging tone, no lecturing." : "请根据我的记账数据，分析一下我最近的花销情况，用轻松鼓励的语气给我 2-3 条具体、可执行的省钱小建议，不要说教。")
+                let reply = try await APIClient.shared.aiChat(prompt)
+                advice[target] = reply
             } catch {
-                advice = "哎呀，刚才没连上 AI 😅 点下方「再分析一次」我再帮你看看。".tr
+                advice[target] = "哎呀，刚才没连上 AI 😅 点下方「再分析一次」我再帮你看看。".tr
             }
-            loadingAdvice = false
+            if target == scope { loadingAdvice = false }
         }
     }
 }
