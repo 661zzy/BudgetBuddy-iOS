@@ -20,7 +20,10 @@ final class StabilityFlowUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["--stability-flow"]
+        // -bb.review.prompted.v1 YES presets the "already asked for a rating"
+        // flag via NSArgumentDomain, so the one-time post-story system rating
+        // sheet can't overlap taps mid-soak (bit us once on build 17 testing).
+        app.launchArguments = ["--stability-flow", "-bb.review.prompted.v1", "YES"]
     }
 
     func testColdStartFullFlowThreeRounds() throws {
@@ -627,7 +630,7 @@ final class StabilityFlowUITests: XCTestCase {
         if let data = text.data(using: .utf8) {
             if FileManager.default.fileExists(atPath: url.path),
                let handle = try? FileHandle(forWritingTo: url) {
-                try? handle.seekToEnd()
+                _ = try? handle.seekToEnd()
                 try? handle.write(contentsOf: data)
                 try? handle.close()
             } else {

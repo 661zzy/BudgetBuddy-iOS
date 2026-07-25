@@ -345,6 +345,11 @@ struct ProfileView: View {
                         Button { BBRating.openWriteReview() } label: { rowLabel("star", "去 App Store 评分".tr) }
                             .buttonStyle(.plain)
                             .accessibilityIdentifier("profile.rate.app")
+                        ShareLink(item: BBRating.listingURL,
+                                  message: Text("我在用省钱搭子练财商，故事挺好玩的，推荐你试试！".tr)) {
+                            rowLabel("gift", "推荐给朋友".tr)
+                        }
+                        .accessibilityIdentifier("profile.share.app")
                         Menu {
                             Button("中文") { BBLang.set("zh") }
                             Button("English") { BBLang.set("en") }

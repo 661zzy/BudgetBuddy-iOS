@@ -70,6 +70,9 @@ final class V11SmokeUITests: XCTestCase {
         tapTab("我的")
         let row = rateRow()
         XCTAssertTrue(row != nil, "去 App Store 评分 row missing from 我的")
+        XCTAssertTrue(app.otherElements["profile.share.app"].firstMatch.exists
+            || app.buttons["profile.share.app"].firstMatch.exists,
+            "推荐给朋友 share row missing from 我的")
         save("08-profile-rate-row")
     }
 

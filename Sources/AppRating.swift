@@ -7,6 +7,9 @@ import UIKit
 enum BBRating {
     static let appID = "6785993334"
 
+    /// Public listing page — what "推荐给朋友" shares (v1.2 feature).
+    static var listingURL: URL { URL(string: "https://apps.apple.com/cn/app/id\(appID)")! }
+
     /// Open the App Store review composer. https apps.apple.com is a universal
     /// link owned by the App Store app, so real devices open the native review
     /// sheet (Safari is never involved). /cn/ because the listing exists only in

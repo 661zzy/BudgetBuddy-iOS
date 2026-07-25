@@ -16,7 +16,9 @@ final class Build13RetestUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["--build13-retest"]
+        // Preset the one-time rating-prompt flag — this suite finishes stories,
+        // and the system rating sheet must not overlap automated taps.
+        app.launchArguments = ["--build13-retest", "-bb.review.prompted.v1", "YES"]
         try FileManager.default.createDirectory(at: screenshotDirectory, withIntermediateDirectories: true)
         app.launch()
     }
