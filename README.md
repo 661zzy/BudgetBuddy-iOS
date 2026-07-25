@@ -57,4 +57,4 @@ xcodebuild -project BudgetBuddy.xcodeproj -scheme BudgetBuddy \
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE). Copyright 2026 Mingming Chen.
+Apache License 2.0 — see [LICENSE](LICENSE). Copyright 2026 Samuel Zhang.
