@@ -14,34 +14,35 @@ struct ChallengesView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 0) {
-                    summaryCol("\(store.activeChallenges.count)", "进行中")
+                    summaryCol("\(store.activeChallenges.count)", "进行中".tr)
                     Rectangle().fill(Color.bbLine).frame(width: 1, height: 36)
-                    summaryCol("\(store.completedChallenges.count)", "已完成")
+                    summaryCol("\(store.completedChallenges.count)", "已完成".tr)
                     Rectangle().fill(Color.bbLine).frame(width: 1, height: 36)
-                    summaryCol("¥\(savedEst)", "累计省下")
+                    summaryCol("¥\(savedEst)", "累计省下".tr)
                 }
                 .padding(.vertical, 16)
                 .background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
-                sectionTitle("进行中")
+                sectionTitle("进行中".tr)
                 if store.activeChallenges.isEmpty {
-                    emptyCard("flag", "还没有进行中的挑战，下面挑一个开始吧")
+                    emptyCard("flag", "还没有进行中的挑战，下面挑一个开始吧".tr)
                 } else {
                     ForEach(store.activeChallenges) { inst in instanceCard(inst) }
                 }
 
                 if !store.recommendedDefs.isEmpty {
-                    sectionTitle("推荐挑战")
+                    sectionTitle("推荐挑战".tr)
                     ForEach(store.recommendedDefs) { def in recommendCard(def) }
                 }
 
-                sectionTitle("已完成")
+                sectionTitle("已完成".tr)
                 if store.completedChallenges.isEmpty {
-                    emptyCard("trophy", "还没有完成的挑战，坚持打卡就能拿到第一个")
+                    emptyCard("trophy", "还没有完成的挑战，坚持打卡就能拿到第一个".tr)
                 } else {
                     ForEach(store.completedChallenges) { inst in instanceCard(inst) }
                 }
             }
             .padding(16)
+            .bbPageWidth()
         }
         .background(Color.bbBg)
         .overlay(alignment: .top) {
@@ -53,7 +54,7 @@ struct ChallengesView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: checkInMessage)
-        .navigationTitle("我的挑战")
+        .navigationTitle("我的挑战".tr)
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -100,7 +101,7 @@ struct ChallengesView: View {
         let checkedToday = store.challengeCheckedToday(inst)
         return VStack(alignment: .leading, spacing: 12) {
             if checkedToday || done {
-                Text(done ? "挑战完成" : "今天已打卡")
+                Text(done ? "挑战完成".tr : "今天已打卡".tr)
                     .font(.caption2.weight(.semibold))
                     .foregroundColor(done ? .bbGreen : .bbInk2)
                     .accessibilityIdentifier("challenge.checkin.state.\(inst.id)")
@@ -112,17 +113,17 @@ struct ChallengesView: View {
                         .foregroundColor(done ? .bbGreen : Color(hex: 0x8A5A2B)))
                 VStack(alignment: .leading, spacing: 3) {
                     HStack {
-                        Text(def?.title ?? "挑战").font(.headline).foregroundColor(.bbInk)
+                        Text((def?.title ?? "挑战").tr).font(.headline).foregroundColor(.bbInk)
                         Spacer(minLength: 0)
                         statusBadge(done)
                     }
-                    if let d = def?.desc { Text(d).font(.caption).foregroundColor(.bbInk2) }
+                    if let d = def?.desc { Text(d.tr).font(.caption).foregroundColor(.bbInk2) }
                 }
             }
             metaRow(def)
             VStack(spacing: 7) {
                 HStack {
-                    Text("已坚持 \(progress) / \(total) 天").font(.caption).foregroundColor(.bbInk2)
+                    Text((BBLang.isEN ? "Day \(progress) of \(total)" : "已坚持 \(progress) / \(total) 天")).font(.caption).foregroundColor(.bbInk2)
                     Spacer()
                     Text("\(pct)%").font(.caption.weight(.semibold)).foregroundColor(done ? .bbGreen : Color(hex: 0xC9772B))
                 }
@@ -138,17 +139,17 @@ struct ChallengesView: View {
             if !done, let tip = def?.tip {
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "lightbulb").font(.caption).foregroundColor(Color(hex: 0xC9772B))
-                    Text(tip).font(.caption).foregroundColor(Color(hex: 0x8A5A2B)).fixedSize(horizontal: false, vertical: true)
+                    Text(tip.tr).font(.caption).foregroundColor(Color(hex: 0x8A5A2B)).fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(10).frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color(hex: 0xFFF4DF)).cornerRadius(10)
             }
             if done {
-                Label("已坚持 \(total) 天，太棒了", systemImage: "checkmark")
+                Label((BBLang.isEN ? "You made it \(total) days — amazing!" : "已坚持 \(total) 天，太棒了"), systemImage: "checkmark")
                     .font(.caption).foregroundColor(.bbGreen)
                     .accessibilityIdentifier("challenge.completed.\(inst.id)")
             } else if checkedToday {
-                Label("今天已打卡", systemImage: "checkmark")
+                Label("今天已打卡".tr, systemImage: "checkmark")
                     .font(.subheadline).foregroundColor(.bbInk2)
                     .frame(maxWidth: .infinity).padding(.vertical, 12)
                     .background(Color.bbBg).cornerRadius(12)
@@ -156,9 +157,9 @@ struct ChallengesView: View {
             } else {
                 Button {
                     store.checkInChallenge(inst.id)
-                    checkInMessage = "今天已打卡"
+                    checkInMessage = "今天已打卡".tr
                 } label: {
-                    Label("今日打卡", systemImage: "checkmark.circle")
+                    Label("今日打卡".tr, systemImage: "checkmark.circle")
                         .font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.white)
                         .frame(maxWidth: .infinity).padding(.vertical, 14)
                         .duoPrimary()
@@ -177,12 +178,12 @@ struct ChallengesView: View {
                     .frame(width: 46, height: 46)
                     .overlay(Image(systemName: challengeSymbol(def.icon)).foregroundColor(.bbInk))
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(def.title).font(.headline).foregroundColor(.bbInk)
-                    if let d = def.desc { Text(d).font(.caption).foregroundColor(.bbInk2).fixedSize(horizontal: false, vertical: true) }
+                    Text(def.title.tr).font(.headline).foregroundColor(.bbInk)
+                    if let d = def.desc { Text(d.tr).font(.caption).foregroundColor(.bbInk2).fixedSize(horizontal: false, vertical: true) }
                 }
                 Spacer(minLength: 0)
                 Button { store.startChallenge(def.id) } label: {
-                    Text("开始").font(.system(.subheadline, design: .rounded).weight(.bold)).foregroundColor(.white)
+                    Text("开始".tr).font(.system(.subheadline, design: .rounded).weight(.bold)).foregroundColor(.white)
                         .padding(.horizontal, 18).padding(.vertical, 10).duoPrimary(12)
                 }
                 .accessibilityIdentifier("challenge.start.button.\(def.id)")
@@ -195,18 +196,18 @@ struct ChallengesView: View {
 
     private func metaRow(_ def: ChallengeDef?) -> some View {
         HStack(spacing: 8) {
-            if let lv = def?.level { levelBadge(lv) }
+            if let lv = def?.level { levelBadge(lv.tr) }
             if let days = def?.days {
-                HStack(spacing: 3) { Image(systemName: "calendar"); Text("\(days) 天") }.font(.caption2).foregroundColor(.bbInk2)
+                HStack(spacing: 3) { Image(systemName: "calendar"); Text(("\(days) " + "天".tr)) }.font(.caption2).foregroundColor(.bbInk2)
             }
             if let est = def?.est, est > 0 {
-                HStack(spacing: 3) { Image(systemName: "yensign.circle"); Text("约省 ¥\(est)") }.font(.caption2).foregroundColor(.bbGreen)
+                HStack(spacing: 3) { Image(systemName: "yensign.circle"); Text((BBLang.isEN ? "Save ~¥\(est)" : "约省 ¥\(est)")) }.font(.caption2).foregroundColor(.bbGreen)
             }
         }
     }
 
     private func statusBadge(_ done: Bool) -> some View {
-        Text(done ? "挑战完成" : "进行中").font(.caption2)
+        Text(done ? "挑战完成".tr : "进行中".tr).font(.caption2)
             .padding(.horizontal, 8).padding(.vertical, 3)
             .background(Capsule().fill((done ? Color.bbGreen : Color(hex: 0xC9772B)).opacity(0.14)))
             .foregroundColor(done ? .bbGreen : Color(hex: 0xC9772B))

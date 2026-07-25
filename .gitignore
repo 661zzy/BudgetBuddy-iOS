@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Build products & test results (huge; archives/IPAs live outside git)
+build/
+DerivedData/
+*.xcresult
+*.ipa
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+
+# XcodeGen output — regenerate with `xcodegen generate` (project.yml is the source of truth)
+BudgetBuddy.xcodeproj/
+BudgetBuddy 2.xcodeproj/

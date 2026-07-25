@@ -154,6 +154,13 @@ struct AIResponse: Codable { let reply: String; let source: String }
 struct SendCodeResult: Codable { let ok: Bool?; let channel: String?; let devCode: String?; let note: String? }
 struct OkResponse: Codable { let ok: Bool? }
 
+/// Password policy shared with the backend: ≥8 chars, both upper- and lower-case letters.
+func bbPasswordOK(_ p: String) -> Bool {
+    p.count >= 8
+        && p.range(of: "[a-z]", options: .regularExpression) != nil
+        && p.range(of: "[A-Z]", options: .regularExpression) != nil
+}
+
 /// Client-side mirror of the backend identifier rule: returns "email" | "phone" | nil.
 func bbIdentifierType(_ s: String) -> String? {
     let t = s.trimmingCharacters(in: .whitespaces)

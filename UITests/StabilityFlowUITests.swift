@@ -2,12 +2,13 @@ import XCTest
 
 final class StabilityFlowUITests: XCTestCase {
     private var app: XCUIApplication!
-    private let password = "***SCRUBBED***"
+    // Build 14: registration requires a real emailed/SMS code, so the soak run
+    // signs in with the review account via the optional profile sheet instead.
+    private let password = ProcessInfo.processInfo.environment["STABILITY_PASSWORD"] ?? "***SCRUBBED***"
     private let nickname = "测试"
 
     private var account: String {
-        ProcessInfo.processInfo.environment["STABILITY_ACCOUNT"]
-            ?? "__iostability_\(Int(Date().timeIntervalSince1970))@budgetbuddy.local"
+        ProcessInfo.processInfo.environment["STABILITY_ACCOUNT"] ?? "review@budgetbuddy.cn"
     }
 
     private var outputDirectory: URL {
@@ -52,38 +53,53 @@ final class StabilityFlowUITests: XCTestCase {
     }
 
     private func registerFreshAccountIfNeeded() {
-        if skipOnboardingIfNeeded() {
-            XCTAssertTrue(loginScreenVisible(timeout: 12), "Onboarding skipped but auth screen did not appear")
+        // Build 14 guest mode: language picker → onboarding → straight into the app.
+        if app.staticTexts["选择语言"].waitForExistence(timeout: 5) {
+            app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "中文")).firstMatch.tap()
+            Thread.sleep(forTimeInterval: 0.8)
         }
+        skipOnboardingIfNeeded()
+        XCTAssertTrue(mainAppVisible(timeout: 20), "App did not land in the (guest) main UI after onboarding")
 
-        if mainAppVisible(timeout: 8) {
+        tapTab("我的")
+        if !waitForText("未登录", timeout: 4) {
             appendSummary("initial_state=already_logged_in")
+            tapTab("首页")
             return
         }
 
-        XCTAssertTrue(loginScreenVisible(timeout: 15), "Auth screen did not appear")
-
-        tapSegmentOrButton(containing: "注册")
+        // Login is OPTIONAL in build 14 — sign in from the profile sheet.
+        tapButton(containing: "登录 / 注册")
+        XCTAssertTrue(loginScreenVisible(timeout: 8), "Auth sheet did not open")
 
         let idField = app.textFields["手机号或邮箱"].exists ? app.textFields["手机号或邮箱"] : app.textFields.element(boundBy: 0)
         XCTAssertTrue(idField.waitForExistence(timeout: 8), "Missing identifier field")
         idField.tap()
         idField.typeText(account)
 
-        let passwordField = app.secureTextFields["密码（至少 6 位）"].exists ? app.secureTextFields["密码（至少 6 位）"] : app.secureTextFields.element(boundBy: 0)
+        let passwordField = app.secureTextFields.element(boundBy: 0)
         XCTAssertTrue(passwordField.waitForExistence(timeout: 8), "Missing password field")
         passwordField.tap()
         passwordField.typeText(password)
 
-        let nickField = app.textFields["昵称"].exists ? app.textFields["昵称"] : app.textFields.element(boundBy: 1)
-        XCTAssertTrue(nickField.waitForExistence(timeout: 8), "Missing nickname field")
-        nickField.tap()
-        nickField.typeText(nickname)
-
-        tapButton(containing: "注册并登录")
+        tapButton(containing: "登录")
+        // Signed-in = the guest identity row is gone ("已记账" alone shows for guests too).
+        let deadline = Date().addingTimeInterval(30)
+        var signedIn = false
+        while Date() < deadline {
+            if !app.staticTexts["未登录"].exists { signedIn = true; break }
+            Thread.sleep(forTimeInterval: 1.0)
+        }
+        XCTAssertTrue(signedIn, "Sheet login did not complete")
         dismissSavePasswordPromptIfNeeded()
-        XCTAssertTrue(mainAppVisible(timeout: 35), "Register/login did not reach main app")
-        appendSummary("registered=\(account)")
+        // Taps issued right after the auth sheet dismisses get eaten by its
+        // lingering presentation layer — relaunch onto a pristine logged-in UI
+        // (the session cookie persists), which is also this soak's natural shape.
+        app.terminate()
+        Thread.sleep(forTimeInterval: 1.0)
+        app.launch()
+        XCTAssertTrue(mainAppVisible(timeout: 30), "Relaunch after sheet login did not reach home")
+        appendSummary("logged_in=\(account)")
     }
 
     @discardableResult
@@ -301,7 +317,19 @@ final class StabilityFlowUITests: XCTestCase {
             || waitForText("进入故事", timeout: 0.3)
     }
 
+    // Element-based first: raw bottom-edge coordinates miss the tab buttons under
+    // the iOS 26 SDK (buttons end ~34pt above the screen bottom), and iPadOS 18+
+    // puts the tab bar on TOP.
     private func tapTab(_ label: String) {
+        app.activate()
+        let tabButton = app.tabBars.buttons[label].firstMatch
+        if tabButton.waitForExistence(timeout: 2), tabButton.isHittable {
+            tabButton.tap(); Thread.sleep(forTimeInterval: 0.8); return
+        }
+        let anyButton = app.buttons[label].firstMatch
+        if anyButton.waitForExistence(timeout: 2), anyButton.isHittable {
+            anyButton.tap(); Thread.sleep(forTimeInterval: 0.8); return
+        }
         let x: CGFloat
         switch label {
         case "首页": x = 0.10
@@ -311,7 +339,6 @@ final class StabilityFlowUITests: XCTestCase {
         case "我的": x = 0.90
         default: x = 0.50
         }
-        app.activate()
         app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: 0.965)).tap()
         Thread.sleep(forTimeInterval: 0.8)
     }
@@ -441,11 +468,19 @@ final class StabilityFlowUITests: XCTestCase {
     }
 
     private func dismissSavePasswordPromptIfNeeded() {
+        // The dialog can pop several seconds AFTER the login response — wait
+        // generously for the primary label, then sweep the localized variants.
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-        for label in ["Not Now", "以后", "不存储", "Not Now"] {
+        if springboard.buttons["Not Now"].waitForExistence(timeout: 8) {
+            springboard.buttons["Not Now"].tap()
+            Thread.sleep(forTimeInterval: 1.0)
+            return
+        }
+        for label in ["以后", "不存储", "稍后再说"] {
             let button = springboard.buttons[label]
-            if button.waitForExistence(timeout: 2) {
+            if button.waitForExistence(timeout: 1) {
                 button.tap()
+                Thread.sleep(forTimeInterval: 1.0)
                 return
             }
         }
@@ -496,6 +531,10 @@ final class StabilityFlowUITests: XCTestCase {
         XCTAssertTrue(field.waitForExistence(timeout: 8), "Missing AI input")
         field.tap()
         field.typeText(text)
+        // Keyboard "完成/Done" accessory (under app.buttons, not app.keyboards)
+        // overlaps the send arrow — dismiss it first so the send tap lands right.
+        let done = app.buttons["完成"].exists ? app.buttons["完成"] : app.buttons["Done"]
+        if done.waitForExistence(timeout: 2), done.isHittable { done.tap() }
         let sendPredicate = NSPredicate(format: "label CONTAINS %@ OR identifier CONTAINS %@", "Arrow Up", "arrow.up")
         let send = app.buttons.matching(sendPredicate).firstMatch
         if send.waitForExistence(timeout: 3), send.isHittable {

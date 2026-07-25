@@ -14,25 +14,58 @@ final class AppStore: ObservableObject {
 
     private let api = APIClient.shared
 
+    /// True when nobody is logged in — the app still works, data stays on-device.
+    var isGuest: Bool { user == nil }
+
     func finishOnboarding() {
         onboarded = true
         UserDefaults.standard.set(true, forKey: "onboarded")
+        phase = .app   // straight into the app — login is optional (guest mode)
     }
 
-    // Verify the session cookie on launch.
+    // Verify the session cookie on launch. No login wall: without a session the
+    // app boots into guest mode with locally persisted data (5.1.1(v)).
     func boot() async {
-        do {
-            if let u = try await api.me() {
-                user = u
-                state = (try? await api.loadState()) ?? AppState()
-                phase = .app
-            } else {
-                phase = .auth
-            }
-        } catch {
-            phase = .auth
+        user = try? await api.me()
+        if user != nil {
+            state = (try? await api.loadState()) ?? AppState()
+        } else {
+            state = Self.loadGuestState()
         }
+        phase = onboarded ? .app : .auth
         await checkUpdate()
+    }
+
+    // MARK: Guest-mode local persistence
+    private static let guestStateKey = "guest.state.v1"
+
+    private static func loadGuestState() -> AppState {
+        guard let data = UserDefaults.standard.data(forKey: guestStateKey),
+              let s = try? JSONDecoder().decode(AppState.self, from: data) else { return AppState() }
+        return s
+    }
+    private func persistGuestState() {
+        if let data = try? JSONEncoder().encode(state) {
+            UserDefaults.standard.set(data, forKey: Self.guestStateKey)
+        }
+    }
+    private func clearGuestState() {
+        UserDefaults.standard.removeObject(forKey: Self.guestStateKey)
+    }
+
+    /// After login/register: keep the richer of (server state, local guest work).
+    /// If the account is blank and the guest did real things locally, adopt the
+    /// guest data into the account so nothing the user made is lost.
+    private func adoptServerState() async {
+        let guest = state
+        let server = (try? await api.loadState()) ?? AppState()
+        if server.bbIsEmptyContent && !guest.bbIsEmptyContent {
+            state = guest
+            try? await api.saveState(state)
+        } else {
+            state = server
+        }
+        clearGuestState()
     }
 
     // Auto-check for a newer build (silent no-op if version.json is unreachable).
@@ -41,20 +74,20 @@ final class AppStore: ObservableObject {
         let current = Int(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0") ?? 0
         let url = info.url ?? "https://budgetbuddy.cn"
         if current < (info.minBuild ?? 0) {
-            update = UpdatePrompt(note: info.note ?? "请更新到最新版本后继续使用。", url: url, force: true)
+            update = UpdatePrompt(note: info.note ?? "请更新到最新版本后继续使用。".tr, url: url, force: true)
         } else if current < (info.latestBuild ?? 0) {
-            update = UpdatePrompt(note: info.note ?? "发现新版本，建议更新以获得更好体验。", url: url, force: false)
+            update = UpdatePrompt(note: info.note ?? "发现新版本，建议更新以获得更好体验。".tr, url: url, force: false)
         }
     }
 
     func register(identifier: String, password: String, nickname: String, code: String) async -> Bool {
         do {
             user = try await api.register(identifier: identifier, password: password, nickname: nickname, ageGroup: "", code: code)
-            state = (try? await api.loadState()) ?? AppState()
+            await adoptServerState()
             phase = .app
             return true
         } catch {
-            errorMessage = (error as? APIError)?.message ?? "注册失败，请重试"
+            errorMessage = bbAPIMessage(error) ?? "注册失败，请重试".tr
             return false
         }
     }
@@ -62,17 +95,17 @@ final class AppStore: ObservableObject {
     // Request a verification code (returns devCode when email/SMS isn't configured yet).
     func sendCode(identifier: String, purpose: String) async -> SendCodeResult? {
         do { return try await api.sendCode(identifier: identifier, purpose: purpose) }
-        catch { errorMessage = (error as? APIError)?.message ?? "验证码发送失败"; return nil }
+        catch { errorMessage = bbAPIMessage(error) ?? "验证码发送失败".tr; return nil }
     }
 
     func resetPassword(identifier: String, code: String, password: String) async -> Bool {
         do {
             user = try await api.resetPassword(identifier: identifier, code: code, password: password)
-            state = (try? await api.loadState()) ?? AppState()
+            await adoptServerState()
             phase = .app
             return true
         } catch {
-            errorMessage = (error as? APIError)?.message ?? "重置失败，请重试"
+            errorMessage = bbAPIMessage(error) ?? "重置失败，请重试".tr
             return false
         }
     }
@@ -80,31 +113,34 @@ final class AppStore: ObservableObject {
     func login(identifier: String, password: String) async -> Bool {
         do {
             user = try await api.login(identifier: identifier, password: password)
-            state = (try? await api.loadState()) ?? AppState()
+            await adoptServerState()
             phase = .app
             return true
         } catch {
-            errorMessage = (error as? APIError)?.message ?? "登录失败，请重试"
+            errorMessage = bbAPIMessage(error) ?? "登录失败，请重试".tr
             return false
         }
     }
 
+    // Logging out keeps the user IN the app, just back in guest mode.
+    // Switch the UI to guest immediately; the server-side session teardown is
+    // best-effort in the background so a slow network can't stall the button.
     func logout() async {
-        try? await api.logout()
         user = nil
-        state = AppState()
-        phase = .auth
+        state = Self.loadGuestState()
+        phase = .app
+        Task { try? await api.logout() }
     }
 
     func deleteAccount(password: String) async -> Bool {
         do {
             try await api.deleteAccount(password: password)
             user = nil
-            state = AppState()
-            phase = .auth
+            state = Self.loadGuestState()
+            phase = .app
             return true
         } catch {
-            errorMessage = (error as? APIError)?.message ?? "删除失败，请重试"
+            errorMessage = bbAPIMessage(error) ?? "删除失败，请重试".tr
             return false
         }
     }
@@ -228,9 +264,14 @@ final class AppStore: ObservableObject {
         Set(state.transactions.map { Int(parseTS($0.ts).timeIntervalSince1970 / 86400) }).count
     }
 
-    // Best-effort persist to the backend (keeps local copy if offline).
+    // Logged-in: best-effort persist to the backend. Guest: persist on-device
+    // so everything survives relaunches without an account.
     private func save() async {
-        try? await api.saveState(state)
+        if user == nil {
+            persistGuestState()
+        } else {
+            try? await api.saveState(state)
+        }
     }
 
     // Derived numbers
@@ -254,5 +295,13 @@ final class AppStore: ObservableObject {
     var monthNet: Double { monthIn - monthOut }
     var totalNet: Double {
         state.transactions.reduce(0) { $0 + ($1.kind == "in" ? $1.amount : -$1.amount) }
+    }
+}
+
+extension AppState {
+    /// Nothing the user actually made — used to decide whether guest data
+    /// should be adopted into a freshly logged-in account.
+    var bbIsEmptyContent: Bool {
+        transactions.isEmpty && gameProgress.isEmpty && lessonProgress.isEmpty && challenges.isEmpty
     }
 }

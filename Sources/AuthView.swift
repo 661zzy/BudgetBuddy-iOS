@@ -1,7 +1,10 @@
 import SwiftUI
 
+// Presented as an OPTIONAL sheet (from 我的 / anywhere) — never a launch gate.
+// Guests can close it and keep using the app (App Store Guideline 5.1.1(v)).
 struct AuthView: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
     @State private var mode = 0            // 0 = 登录, 1 = 注册
     @State private var identifier = ""
     @State private var password = ""
@@ -25,22 +28,22 @@ struct AuthView: View {
                         .fill(Color.bbGreen)
                         .frame(width: 64, height: 64)
                         .overlay(Text("省").font(.system(size: 30, weight: .bold)).foregroundColor(.white))
-                    Text(mode == 0 ? "欢迎回来" : "创建账号")
+                    Text(mode == 0 ? "欢迎回来".tr : "创建账号".tr)
                         .font(.title.bold()).foregroundColor(.bbInk)
-                    Text("记好每一笔，存下每一分")
+                    Text("记好每一笔，存下每一分".tr)
                         .font(.subheadline).foregroundColor(.bbInk2)
 
                     Picker("", selection: $mode) {
-                        Text("登录").tag(0); Text("注册").tag(1)
+                        Text("登录".tr).tag(0); Text("注册".tr).tag(1)
                     }
                     .pickerStyle(.segmented)
                     .padding(.vertical, 4)
                     .onChange(of: mode) { _ in err = ""; hint = "" }
 
-                    field(icon: "envelope", placeholder: "手机号或邮箱", text: $identifier, secure: false)
-                    field(icon: "lock", placeholder: "密码（至少 6 位）", text: $password, secure: true)
+                    field(icon: "envelope", placeholder: "手机号或邮箱".tr, text: $identifier, secure: false)
+                    field(icon: "lock", placeholder: (mode == 0 ? "密码".tr : "密码（≥8位，含大小写字母）".tr), text: $password, secure: true)
                     if mode == 1 {
-                        field(icon: "face.smiling", placeholder: "昵称", text: $nickname, secure: false)
+                        field(icon: "face.smiling", placeholder: "昵称".tr, text: $nickname, secure: false)
                         codeRow(purpose: "register")
                     }
 
@@ -58,7 +61,7 @@ struct AuthView: View {
                     }
 
                     Button(action: submit) {
-                        Text(busy ? "请稍候…" : (mode == 0 ? "登录" : "注册并登录"))
+                        Text(busy ? "请稍候…".tr : (mode == 0 ? "登录".tr : "注册并登录".tr))
                             .font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.white)
                             .frame(maxWidth: .infinity).padding(.vertical, 15)
                             .duoPrimary()
@@ -68,19 +71,36 @@ struct AuthView: View {
                     .padding(.top, 4)
 
                     if mode == 0 {
-                        Button("忘记密码？") { showForgot = true }
+                        Button("忘记密码？".tr) { showForgot = true }
                             .font(.footnote).foregroundColor(.bbGreen)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
 
-                    Text("登录即代表同意《用户协议》和《隐私政策》")
+                    Text("登录即代表同意《用户协议》和《隐私政策》".tr)
                         .font(.caption2).foregroundColor(.bbInk2)
+
+                    Button("暂不登录，先逛逛".tr) { dismiss() }
+                        .font(.footnote).foregroundColor(.bbInk2)
+                        .padding(.top, 2)
                     Spacer()
                 }
                 .padding(.horizontal, 28)
+                .bbPageWidth()
             }
         }
+        .overlay(alignment: .topTrailing) {
+            Button { dismiss() } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 26))
+                    .foregroundColor(.bbInk2.opacity(0.55))
+                    .padding(14)
+            }
+            .accessibilityLabel("关闭")
+        }
         .onReceive(tick) { _ in if cooldown > 0 { cooldown -= 1 } }
+        .onChange(of: store.user?.id) { _ in
+            if store.user != nil { dismiss() }   // logged in — close the sheet
+        }
         .sheet(isPresented: $showForgot) { ForgotPasswordView().environmentObject(store) }
     }
 
@@ -89,7 +109,7 @@ struct AuthView: View {
         HStack(spacing: 10) {
             HStack(spacing: 10) {
                 Image(systemName: "checkmark.shield").foregroundColor(.bbInk2).frame(width: 20)
-                TextField("验证码", text: $code).keyboardType(.numberPad)
+                TextField("验证码".tr, text: $code).keyboardType(.numberPad)
             }
             .padding(14)
             .background(Color.bbSurface)
@@ -97,7 +117,7 @@ struct AuthView: View {
             .cornerRadius(10)
 
             Button { sendCode(purpose: purpose) } label: {
-                Text(cooldown > 0 ? "\(cooldown)s" : (sending ? "发送中" : "发送验证码"))
+                Text(cooldown > 0 ? "\(cooldown)s" : (sending ? "发送中".tr : "发送验证码".tr))
                     .font(.system(.subheadline, design: .rounded).weight(.semibold))
                     .foregroundColor(cooldown > 0 ? .bbInk2 : .white)
                     .padding(.horizontal, 12).frame(height: 50)
@@ -128,20 +148,22 @@ struct AuthView: View {
 
     private func sendCode(purpose: String) {
         let id = identifier.trimmingCharacters(in: .whitespaces)
-        guard bbIdentifierType(id) != nil else { err = "请输入有效的手机号或邮箱"; return }
+        guard bbIdentifierType(id) != nil else { err = "请输入有效的手机号或邮箱".tr; return }
+        // Check the password BEFORE spending a code (codes are rate-limited 1/min, 10/day).
+        guard bbPasswordOK(password) else { err = "密码至少 8 位，且需同时包含大写和小写字母".tr; return }
         guard !sending, cooldown == 0 else { return }
         sending = true; err = ""; hint = ""
         Task {
             if let res = await store.sendCode(identifier: id, purpose: purpose) {
                 if let dev = res.devCode, !dev.isEmpty {
                     code = dev
-                    hint = "测试模式：验证码已自动填入（\(dev)）"
+                    hint = "测试模式：验证码已自动填入".tr + "（\(dev)）"
                 } else {
-                    hint = res.channel == "phone" ? "验证码短信已发送，请查收" : "验证码邮件已发送，请查收"
+                    hint = res.channel == "phone" ? "验证码短信已发送，请查收".tr : "验证码邮件已发送，请查收".tr
                 }
                 cooldown = 60
             } else {
-                err = store.errorMessage ?? "验证码发送失败"
+                err = store.errorMessage ?? "验证码发送失败".tr
             }
             sending = false
         }
@@ -151,16 +173,17 @@ struct AuthView: View {
         guard !busy else { return }
         let id = identifier.trimmingCharacters(in: .whitespaces)
         if mode == 1 {
-            guard bbIdentifierType(id) != nil else { err = "请输入有效的手机号或邮箱"; return }
-            guard nickname.trimmingCharacters(in: .whitespaces).count > 0 else { err = "请填写昵称"; return }
-            guard !code.isEmpty else { err = "请先获取并填写验证码"; return }
+            guard bbIdentifierType(id) != nil else { err = "请输入有效的手机号或邮箱".tr; return }
+            guard bbPasswordOK(password) else { err = "密码至少 8 位，且需同时包含大写和小写字母".tr; return }
+            guard nickname.trimmingCharacters(in: .whitespaces).count > 0 else { err = "请填写昵称".tr; return }
+            guard !code.isEmpty else { err = "请先获取并填写验证码".tr; return }
         }
         busy = true; err = ""
         Task {
             let ok = (mode == 0)
                 ? await store.login(identifier: id, password: password)
                 : await store.register(identifier: id, password: password, nickname: nickname, code: code)
-            if !ok { err = store.errorMessage ?? "出错了，请重试" }
+            if !ok { err = store.errorMessage ?? "出错了，请重试".tr }
             busy = false
         }
     }

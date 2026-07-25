@@ -28,7 +28,7 @@ struct UpdateSheet: View {
         VStack(spacing: 18) {
             Spacer()
             Image(systemName: "arrow.down.circle.fill").font(.system(size: 58)).foregroundColor(.bbGreen)
-            Text(prompt.force ? "需要更新" : "有新版本")
+            Text(prompt.force ? "需要更新".tr : "有新版本".tr)
                 .font(.system(.title2, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
             Text(prompt.note)
                 .font(.system(.body, design: .rounded)).foregroundColor(.bbInk2)
@@ -37,12 +37,12 @@ struct UpdateSheet: View {
             Button {
                 if let u = URL(string: prompt.url) { UIApplication.shared.open(u) }
             } label: {
-                Text("去更新").font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.white)
+                Text("去更新".tr).font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.white)
                     .frame(maxWidth: .infinity).padding(.vertical, 16).duoPrimary()
             }
             if !prompt.force {
                 Button { dismiss() } label: {
-                    Text("稍后再说").font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
+                    Text("稍后再说".tr).font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
                 }
             }
         }

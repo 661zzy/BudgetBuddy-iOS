@@ -32,6 +32,7 @@ struct LegalView: View {
             }
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .bbPageWidth()
         }
         .background(Color.bbBg)
         .navigationTitle(title)

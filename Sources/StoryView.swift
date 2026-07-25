@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 import UIKit
 
 // MARK: - 故事 (Learning) — two modes: 互动故事 (games + 图鉴 + 沙盘) / 理财课程 (lessons)
@@ -12,15 +13,16 @@ struct StoryView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     HStack(spacing: 10) {
-                        modeCard("互动故事", "情景里做决定", "book", "game")
-                        modeCard("理财课程", "跟着课程学", "play.circle", "video")
+                        modeCard("互动故事".tr, "情景里做决定".tr, "book", "game")
+                        modeCard("理财课程".tr, "跟着课程学".tr, "play.circle", "video")
                     }
                     if mode == "game" { gameMode } else { videoMode }
                 }
                 .padding(16)
+                .bbPageWidth()
             }
             .background(Color.bbBg)
-            .navigationTitle("故事")
+            .navigationTitle("故事".tr)
         }
     }
 
@@ -45,18 +47,18 @@ struct StoryView: View {
 
     private var gameMode: some View {
         VStack(alignment: .leading, spacing: 14) {
-            sectionLine("互 动 故 事", trailing: "已通关 \(store.storiesCompleted) / \(StoryStore.all.count)")
+            sectionLine("互 动 故 事".tr, trailing: "已通关".tr + " \(store.storiesCompleted) / \(StoryStore.all.count)")
             storyPath
-            sectionLine("更 多", trailing: nil)
+            sectionLine("更 多".tr, trailing: nil)
             NavigationLink { CodexView() } label: {
-                moreRow("rectangle.stack", "认知图鉴", "识破常见财务套路 · 共 \(CodexStore.all.count) 张")
+                moreRow("rectangle.stack", "认知图鉴".tr, BBLang.isEN ? "Spot common money traps · \(CodexStore.all.count) cards" : "识破常见财务套路 · 共 \(CodexStore.all.count) 张")
             }.buttonStyle(.plain)
             if let wn = StoryStore.find("want-need") {
                 NavigationLink { GameDetailView(story: wn) } label: {
-                    moreRow("dumbbell", "练习沙盘", "反复练「想要还是需要」的冷静一秒")
+                    moreRow("dumbbell", "练习沙盘".tr, "反复练「想要还是需要」的冷静一秒".tr)
                 }.buttonStyle(.plain)
             }
-            Text("故事里的钱都是模拟的，放心大胆做选择，做错了也只是长经验。")
+            Text("故事里的钱都是模拟的，放心大胆做选择，做错了也只是长经验。".tr)
                 .font(.caption).foregroundColor(.bbInk2).padding(.top, 4)
         }
     }
@@ -70,7 +72,7 @@ struct StoryView: View {
                         HStack(spacing: 8) {
                             Image(systemName: cat.icon).font(.caption).foregroundColor(cat.fg)
                                 .frame(width: 28, height: 28).background(cat.tint).cornerRadius(8)
-                            Text(cat.zh).font(.subheadline.weight(.semibold)).foregroundColor(.bbInk)
+                            Text(cat.zh.tr).font(.subheadline.weight(.semibold)).foregroundColor(.bbInk)
                         }
                         ForEach(items) { lesson in
                             NavigationLink { LessonDetailView(lesson: lesson) } label: { LessonCard(lesson: lesson) }.buttonStyle(.plain)
@@ -136,8 +138,14 @@ struct StoryView: View {
         return NavigationLink { GameDetailView(story: story) } label: {
             ZStack {
                 Circle().fill(Color.bbSurface).frame(width: 92, height: 92)
-                Image(img).resizable().aspectRatio(contentMode: .fill)
-                    .frame(width: 84, height: 84).clipShape(Circle())
+                if UIImage(named: img) != nil {
+                    Image(img).resizable().aspectRatio(contentMode: .fill)
+                        .frame(width: 84, height: 84).clipShape(Circle())
+                } else {
+                    // Stories without scene art yet fall back to the first scene's emoji.
+                    Circle().fill(Color(hex: 0xEFF3EE)).frame(width: 84, height: 84)
+                    Text(story.scenes[story.start]?.emoji ?? "📖").font(.system(size: 38))
+                }
                 Circle().stroke(done ? Color.bbGreen : Color.bbLine, lineWidth: 4).frame(width: 92, height: 92)
             }
             .overlay(alignment: .bottomTrailing) {
@@ -149,10 +157,12 @@ struct StoryView: View {
             .shadow(color: .black.opacity(0.06), radius: 4, y: 2)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("story-node-\(story.id)")
+        .accessibilityLabel(story.title.tr)
     }
 
     private func storyLabel(_ story: Story) -> some View {
-        Text(story.title).font(.caption.weight(.semibold)).foregroundColor(.bbInk).lineLimit(1)
+        Text(story.title.tr).font(.caption.weight(.semibold)).foregroundColor(.bbInk).lineLimit(1)
             .padding(.horizontal, 10).padding(.vertical, 4)
             .background(Capsule().fill(Color.bbBg))
     }
@@ -168,14 +178,14 @@ private struct StoryCard: View {
                 .frame(width: 52, height: 52)
                 .overlay(Image(systemName: storySymbol(story.icon)).font(.system(size: 24)).foregroundColor(Color(hex: 0x3A5A78)))
             VStack(alignment: .leading, spacing: 5) {
-                Text(story.title).font(.headline).foregroundColor(.bbInk)
+                Text(story.title.tr).font(.headline).foregroundColor(.bbInk)
                 if let d = story.desc {
-                    Text(d).font(.caption).foregroundColor(.bbInk2).lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                    Text(d.tr).font(.caption).foregroundColor(.bbInk2).lineLimit(2).fixedSize(horizontal: false, vertical: true)
                 }
                 HStack(spacing: 6) {
-                    if let lv = story.level { levelBadge(lv) }
-                    if let c = story.cat { miniTag(c) }
-                    if let t = story.time { miniTag(t) }
+                    if let lv = story.level { levelBadge(lv.tr) }
+                    if let c = story.cat { miniTag(c.tr) }
+                    if let t = story.time { miniTag(t.tr) }
                 }
             }
             Spacer(minLength: 0)
@@ -195,14 +205,14 @@ private struct LessonCard: View {
     var body: some View {
         HStack(spacing: 13) {
             VStack(alignment: .leading, spacing: 5) {
-                Text(lesson.title).font(.subheadline.weight(.semibold)).foregroundColor(.bbInk)
+                Text(lesson.title.tr).font(.subheadline.weight(.semibold)).foregroundColor(.bbInk)
                 if let d = lesson.desc {
-                    Text(d).font(.caption).foregroundColor(.bbInk2).lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                    Text(d.tr).font(.caption).foregroundColor(.bbInk2).lineLimit(2).fixedSize(horizontal: false, vertical: true)
                 }
                 HStack(spacing: 8) {
-                    if let lv = lesson.level { levelBadge(lv) }
-                    if let t = lesson.time { HStack(spacing: 3) { Image(systemName: "clock"); Text(t) }.font(.caption2).foregroundColor(.bbInk2) }
-                    if lesson.video != nil { HStack(spacing: 3) { Image(systemName: "play.circle"); Text("配套视频") }.font(.caption2).foregroundColor(Color(hex: 0x3A5A78)) }
+                    if let lv = lesson.level { levelBadge(lv.tr) }
+                    if let t = lesson.time { HStack(spacing: 3) { Image(systemName: "clock"); Text(t.tr) }.font(.caption2).foregroundColor(.bbInk2) }
+                    if lesson.video != nil { HStack(spacing: 3) { Image(systemName: "play.circle"); Text("配套视频".tr) }.font(.caption2).foregroundColor(Color(hex: 0x3A5A78)) }
                 }
             }
             Spacer(minLength: 0)
@@ -232,15 +242,15 @@ struct CodexView: View {
                 if unlocked.isEmpty {
                     VStack(spacing: 10) {
                         Image(systemName: "rectangle.stack").font(.system(size: 34)).foregroundColor(.bbInk2)
-                        Text("还没有解锁图鉴").font(.headline).foregroundColor(.bbInk)
-                        Text("去玩一个互动故事，通关后就能解锁对应的认知图鉴。")
+                        Text("还没有解锁图鉴".tr).font(.headline).foregroundColor(.bbInk)
+                        Text("去玩一个互动故事，通关后就能解锁对应的认知图鉴。".tr)
                             .font(.subheadline).foregroundColor(.bbInk2).multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 40)
                 }
                 ForEach(unlocked) { c in CodexCard(c: c) }
                 if !locked.isEmpty {
-                    Text("未 解 锁").font(.caption).tracking(2).foregroundColor(.bbInk2)
+                    Text("未 解 锁".tr).font(.caption).tracking(2).foregroundColor(.bbInk2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 12).padding(.bottom, 6)
                         .overlay(Rectangle().fill(Color.bbLine).frame(height: 1), alignment: .bottom)
@@ -248,8 +258,8 @@ struct CodexView: View {
                         HStack(spacing: 13) {
                             Image(systemName: "lock").foregroundColor(.bbInk2).frame(width: 22)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(c.title).font(.subheadline.weight(.semibold)).foregroundColor(.bbInk2)
-                                if let st = c.storyTitle { Text("通关「\(st)」解锁").font(.caption).foregroundColor(.bbInk2) }
+                                Text(c.title.tr).font(.subheadline.weight(.semibold)).foregroundColor(.bbInk2)
+                                if let st = c.storyTitle { Text("通关".tr + "「\(st.tr)」" + "解锁".tr).font(.caption).foregroundColor(.bbInk2) }
                             }
                             Spacer(minLength: 0)
                         }
@@ -259,9 +269,10 @@ struct CodexView: View {
                 }
             }
             .padding(16)
+            .bbPageWidth()
         }
         .background(Color.bbBg)
-        .navigationTitle("认知图鉴")
+        .navigationTitle("认知图鉴".tr)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -271,18 +282,18 @@ private struct CodexCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text(c.category).font(.caption2).padding(.horizontal, 8).padding(.vertical, 3)
+                Text(c.category.tr).font(.caption2).padding(.horizontal, 8).padding(.vertical, 3)
                     .background(Capsule().fill(Color.bbBg)).overlay(Capsule().stroke(Color.bbLine)).foregroundColor(.bbInk2)
                 Spacer()
-                HStack(spacing: 3) { Image(systemName: "checkmark"); Text("已解锁") }.font(.caption2).foregroundColor(.bbGreen)
+                HStack(spacing: 3) { Image(systemName: "checkmark"); Text("已解锁".tr) }.font(.caption2).foregroundColor(.bbGreen)
             }
-            Text(c.title).font(.title3.bold()).foregroundColor(.bbInk).padding(.top, 12)
-            list("识别信号", c.signs, "exclamationmark.triangle.fill", .bbRed)
-            list("应对动作", c.defense, "checkmark.shield.fill", .bbGreen)
+            Text(c.title.tr).font(.title3.bold()).foregroundColor(.bbInk).padding(.top, 12)
+            list("识别信号".tr, c.signs, "exclamationmark.triangle.fill", .bbRed)
+            list("应对动作".tr, c.defense, "checkmark.shield.fill", .bbGreen)
             if let st = c.storyTitle {
                 Divider().background(Color.bbLine).padding(.top, 14)
                 HStack(spacing: 7) {
-                    Image(systemName: "book"); Text("相关故事 · \(st)").font(.caption); Spacer(minLength: 0)
+                    Image(systemName: "book"); Text("相关故事".tr + " · \(st.tr)").font(.caption); Spacer(minLength: 0)
                 }
                 .foregroundColor(.bbInk2).padding(.top, 12)
             }
@@ -295,7 +306,7 @@ private struct CodexCard: View {
             ForEach(Array(items.enumerated()), id: \.offset) { _, s in
                 HStack(alignment: .top, spacing: 9) {
                     Image(systemName: icon).font(.caption).foregroundColor(color)
-                    Text(s).font(.subheadline).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true)
+                    Text(s.tr).font(.subheadline).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
                 }
             }
@@ -314,22 +325,22 @@ struct LessonDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 10) {
-                    if let lv = lesson.level { levelBadge(lv) }
-                    if let t = lesson.time { HStack(spacing: 3) { Image(systemName: "clock"); Text(t) }.font(.caption).foregroundColor(.bbInk2) }
-                    if done { HStack(spacing: 3) { Image(systemName: "checkmark"); Text("已完成") }.font(.caption).foregroundColor(.bbGreen) }
+                    if let lv = lesson.level { levelBadge(lv.tr) }
+                    if let t = lesson.time { HStack(spacing: 3) { Image(systemName: "clock"); Text(t.tr) }.font(.caption).foregroundColor(.bbInk2) }
+                    if done { HStack(spacing: 3) { Image(systemName: "checkmark"); Text("已完成".tr) }.font(.caption).foregroundColor(.bbGreen) }
                 }
-                Text(lesson.title).font(.title2.bold()).foregroundColor(.bbInk)
+                Text(lesson.title.tr).font(.title2.bold()).foregroundColor(.bbInk)
 
-                if let ex = lesson.explanation { card(ex) }
+                if let ex = lesson.explanation { card(ex.tr) }
 
                 if let pts = lesson.points, !pts.isEmpty {
-                    sectionTitle("重点")
+                    sectionTitle("重点".tr)
                     VStack(alignment: .leading, spacing: 12) {
                         ForEach(Array(pts.enumerated()), id: \.offset) { i, p in
                             HStack(alignment: .top, spacing: 10) {
                                 Text("\(i + 1)").font(.caption.weight(.semibold)).foregroundColor(.bbInk)
                                     .frame(width: 22, height: 22).overlay(RoundedRectangle(cornerRadius: 7).stroke(Color.bbLine))
-                                Text(p).font(.body).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true)
+                                Text(p.tr).font(.body).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true)
                                 Spacer(minLength: 0)
                             }
                         }
@@ -339,20 +350,20 @@ struct LessonDetailView: View {
                 }
 
                 if let ex = lesson.example {
-                    sectionTitle("学生例子")
+                    sectionTitle("学生例子".tr)
                     HStack(alignment: .top, spacing: 9) {
                         Image(systemName: "quote.opening").foregroundColor(Color(hex: 0x3A5A78))
-                        Text(ex).font(.subheadline).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true)
+                        Text(ex.tr).font(.subheadline).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true)
                         Spacer(minLength: 0)
                     }
                     .padding(14).frame(maxWidth: .infinity, alignment: .leading).background(Color.bbBlue).cornerRadius(12)
                 }
 
                 if let task = lesson.task {
-                    sectionTitle("今天的小任务")
+                    sectionTitle("今天的小任务".tr)
                     HStack(spacing: 12) {
                         Image(systemName: "checkmark.circle.fill").font(.title3).foregroundColor(.bbGreen)
-                        Text(task).font(.body.weight(.medium)).foregroundColor(Color(hex: 0x35583F))
+                        Text(task.tr).font(.body.weight(.medium)).foregroundColor(Color(hex: 0x35583F))
                         Spacer(minLength: 0)
                     }
                     .padding(14).frame(maxWidth: .infinity, alignment: .leading).background(Color(hex: 0xE4EFE7)).cornerRadius(12)
@@ -363,8 +374,8 @@ struct LessonDetailView: View {
                         HStack(spacing: 10) {
                             Image(systemName: "play.circle.fill").font(.title2).foregroundColor(.bbGreen)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(v.videoTitle ?? "配套视频").font(.subheadline.weight(.semibold)).foregroundColor(.bbInk)
-                                Text("来自 \(v.videoProvider ?? "视频")" + (v.author.map { " · UP主：\($0)" } ?? ""))
+                                Text(v.videoTitle ?? "配套视频".tr).font(.subheadline.weight(.semibold)).foregroundColor(.bbInk)
+                                Text("来自".tr + " \(v.videoProvider ?? "视频".tr)" + (v.author.map { BBLang.isEN ? " · by \($0)" : " · UP主：\($0)" } ?? ""))
                                     .font(.caption2).foregroundColor(.bbInk2)
                             }
                             Spacer(minLength: 0)
@@ -375,7 +386,7 @@ struct LessonDetailView: View {
                 }
 
                 Button { done.toggle(); store.setLessonDone(lesson.id, done) } label: {
-                    Label(done ? "已完成 · 取消标记" : "标记完成", systemImage: done ? "arrow.uturn.left" : "checkmark")
+                    Label(done ? "已完成 · 取消标记".tr : "标记完成".tr, systemImage: done ? "arrow.uturn.left" : "checkmark")
                         .font(.headline).foregroundColor(done ? .bbInk : .white)
                         .frame(maxWidth: .infinity).padding(.vertical, 14)
                         .background(done ? Color.bbSurface : Color.bbGreen)
@@ -385,9 +396,10 @@ struct LessonDetailView: View {
                 .padding(.top, 6)
             }
             .padding(16)
+            .bbPageWidth()
         }
         .background(Color.bbBg)
-        .navigationTitle(LEARN_CATS[lesson.cat]?.zh ?? "理财课程")
+        .navigationTitle(LEARN_CATS[lesson.cat]?.zh.tr ?? "理财课程".tr)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { done = store.isLessonDone(lesson.id) }
     }
@@ -408,6 +420,7 @@ struct GameDetailView: View {
     let story: Story
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.requestReview) private var requestReview
 
     enum Phase { case intro, play, done }
     @State private var phase: Phase = .intro
@@ -429,19 +442,22 @@ struct GameDetailView: View {
 
     var body: some View {
         ScrollView {
-            switch phase {
-            case .intro: introView
-            case .play: if let scene { playView(scene) }
-            case .done: if let ending { doneView(ending) }
+            Group {
+                switch phase {
+                case .intro: introView
+                case .play: if let scene { playView(scene) }
+                case .done: if let ending { doneView(ending) }
+                }
             }
+            .bbPageWidth()
         }
         .background(Color.bbBg)
-        .navigationTitle(story.title)
+        .navigationTitle(story.title.tr)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if phase == .play {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Text("第 \(step) / \(sceneCount) 关").font(.caption).foregroundColor(.bbInk2)
+                    Text(BBLang.isEN ? "Scene \(step) / \(sceneCount)" : "第 \(step) / \(sceneCount) 关").font(.caption).foregroundColor(.bbInk2)
                 }
             }
         }
@@ -454,18 +470,18 @@ struct GameDetailView: View {
                     .frame(width: 64, height: 64)
                     .overlay(Image(systemName: storySymbol(story.icon)).font(.system(size: 28)).foregroundColor(.bbInk))
                     .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.bbLine))
-                Text(story.title).font(.title2.bold()).foregroundColor(.bbInk)
+                Text(story.title.tr).font(.title2.bold()).foregroundColor(.bbInk)
                 if let d = story.desc {
-                    Text(d).font(.subheadline).foregroundColor(.bbInk2).multilineTextAlignment(.center)
+                    Text(d.tr).font(.subheadline).foregroundColor(.bbInk2).multilineTextAlignment(.center)
                 }
                 HStack(spacing: 8) {
-                    if let lv = story.level { levelBadge(lv) }
-                    if let c = story.cat { tag(c) }
-                    if let t = story.time { tag(t) }
-                    tag("\(sceneCount) 个场景")
+                    if let lv = story.level { levelBadge(lv.tr) }
+                    if let c = story.cat { tag(c.tr) }
+                    if let t = story.time { tag(t.tr) }
+                    tag((BBLang.isEN ? "\(sceneCount) scenes" : "\(sceneCount) 个场景"))
                 }
                 if store.isGameDone(story.id) {
-                    HStack(spacing: 4) { Image(systemName: "checkmark.circle.fill"); Text("已通关") }
+                    HStack(spacing: 4) { Image(systemName: "checkmark.circle.fill"); Text("已通关".tr) }
                         .font(.caption).foregroundColor(.bbGreen)
                 }
             }
@@ -473,12 +489,12 @@ struct GameDetailView: View {
             .background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
 
             if let intro = story.intro {
-                Text(intro).font(.body).foregroundColor(.bbInk).lineSpacing(6)
+                Text(intro.tr).font(.body).foregroundColor(.bbInk).lineSpacing(6)
                     .frame(maxWidth: .infinity, alignment: .leading).padding(16)
                     .background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
             }
             Button { start() } label: {
-                Label("开始游戏", systemImage: "play.fill").font(.headline).foregroundColor(.white)
+                Label("开始游戏".tr, systemImage: "play.fill").font(.headline).foregroundColor(.white)
                     .frame(maxWidth: .infinity).padding(.vertical, 14).duoPrimary()
             }
         }
@@ -523,10 +539,10 @@ struct GameDetailView: View {
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.bbLine))
                 VStack(alignment: .leading, spacing: 2) {
                     if let setting = scene.setting {
-                        HStack(spacing: 3) { Image(systemName: "mappin"); Text(setting) }
+                        HStack(spacing: 3) { Image(systemName: "mappin"); Text(setting.tr) }
                             .font(.caption.weight(.semibold)).foregroundColor(.bbInk)
                     }
-                    if let st = scene.sceneTitle { Text(st).font(.headline).foregroundColor(.bbInk) }
+                    if let st = scene.sceneTitle { Text(st.tr).font(.headline).foregroundColor(.bbInk) }
                 }
                 Spacer()
             }
@@ -534,18 +550,18 @@ struct GameDetailView: View {
 
             if let npc = scene.npcName, let line = scene.npcLine {
                 HStack(alignment: .top, spacing: 10) {
-                    Text(String(npc.prefix(1))).font(.system(size: 15, weight: .semibold)).foregroundColor(.white)
+                    Text(String(npc.tr.prefix(1))).font(.system(size: 15, weight: .semibold)).foregroundColor(.white)
                         .frame(width: 38, height: 38).background(Color.bbInk).cornerRadius(8)
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(npc).font(.caption).foregroundColor(.bbInk2)
-                        Text(line).font(.body).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true)
+                        Text(npc.tr).font(.caption).foregroundColor(.bbInk2)
+                        Text(line.tr).font(.body).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 0)
                 }
                 .padding(12).background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.bbLine)).cornerRadius(10)
             }
 
-            Text(scene.narrator).font(.body).foregroundColor(.bbInk).lineSpacing(5)
+            Text(scene.narrator.tr).font(.body).foregroundColor(.bbInk).lineSpacing(5)
                 .frame(maxWidth: .infinity, alignment: .leading).padding(16)
                 .background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
 
@@ -553,7 +569,7 @@ struct GameDetailView: View {
 
             if picked != nil {
                 Button { proceed() } label: {
-                    Text(scene.isFinal == true ? "看看结果" : "继续").font(.headline).foregroundColor(.white)
+                    Text(scene.isFinal == true ? "看看结果".tr : "继续".tr).font(.headline).foregroundColor(.white)
                         .frame(maxWidth: .infinity).padding(.vertical, 14).duoPrimary()
                 }
                 .padding(.top, 2)
@@ -581,12 +597,12 @@ struct GameDetailView: View {
         let dim = picked != nil && !isPicked
         return Button { choose(c) } label: {
             VStack(alignment: .leading, spacing: 6) {
-                Text(c.label).font(.body.weight(.medium)).foregroundColor(.bbInk)
+                Text(c.label.tr).font(.body.weight(.medium)).foregroundColor(.bbInk)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                if let hint = c.hint, !isPicked { Text(hint).font(.caption).foregroundColor(.bbInk2) }
+                if let hint = c.hint, !isPicked { Text(hint.tr).font(.caption).foregroundColor(.bbInk2) }
                 if isPicked {
                     if let cons = c.consequence {
-                        Text(cons).font(.subheadline).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true).padding(.top, 2)
+                        Text(cons.tr).font(.subheadline).foregroundColor(.bbInk).fixedSize(horizontal: false, vertical: true).padding(.top, 2)
                     }
                     if let effs = c.effects, !effs.isEmpty {
                         HStack(spacing: 8) {
@@ -603,7 +619,7 @@ struct GameDetailView: View {
                     if let tip = c.tip {
                         HStack(alignment: .top, spacing: 5) {
                             Image(systemName: "lightbulb").font(.caption)
-                            Text(tip).font(.caption).fixedSize(horizontal: false, vertical: true)
+                            Text(tip.tr).font(.caption).fixedSize(horizontal: false, vertical: true)
                         }
                         .foregroundColor(.bbGreen).padding(.top, 2)
                     }
@@ -624,26 +640,33 @@ struct GameDetailView: View {
             VStack(spacing: 10) {
                 Image(systemName: ending.tone == "good" ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
                     .font(.system(size: 46)).foregroundColor(ending.tone == "good" ? .bbGreen : Color(hex: 0xC9A227))
-                Text(ending.title).font(.title2.bold()).foregroundColor(.bbInk)
+                Text(ending.title.tr).font(.title2.bold()).foregroundColor(.bbInk)
             }
             .padding(.top, 24)
-            resultCard("做得好", ending.did_well, .bbGreen)
-            resultCard("可以更好", ending.improve, Color(hex: 0xC9A227))
-            resultCard("养成习惯", ending.habit, .bbInk)
+            resultCard("做得好".tr, ending.did_well?.tr, .bbGreen)
+            resultCard("可以更好".tr, ending.improve?.tr, Color(hex: 0xC9A227))
+            resultCard("养成习惯".tr, ending.habit?.tr, .bbInk)
             HStack(spacing: 10) {
                 Button { start() } label: {
-                    Text("再玩一次").font(.headline).foregroundColor(.bbInk)
+                    Text("再玩一次".tr).font(.headline).foregroundColor(.bbInk)
                         .frame(maxWidth: .infinity).padding(.vertical, 13)
                         .background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
                 }
                 Button { dismiss() } label: {
-                    Text("完成").font(.headline).foregroundColor(.white)
+                    Text("完成".tr).font(.headline).foregroundColor(.white)
                         .frame(maxWidth: .infinity).padding(.vertical, 13).duoPrimary()
                 }
             }
             .padding(.top, 4)
         }
         .padding(16)
+        .onAppear {
+            // A finished story with a good ending is the one happy moment we ask
+            // for a rating — once per install, and Apple caps the prompt anyway.
+            if ending.tone == "good", BBRating.consumeStoryDonePrompt() {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { requestReview() }
+            }
+        }
     }
 
     @ViewBuilder
@@ -667,11 +690,11 @@ struct GameDetailView: View {
     // MARK: Stats + logic (mirrors the web's vnStat / vnEffStr / vnApply)
     private func statLabel(_ key: String) -> String {
         switch key {
-        case "money":  return story.moneyLabel ?? "余额"
-        case "mood":   return "心情"
-        case "health": return "健康"
-        case "credit": return "信用"
-        case "risk":   return "风险"
+        case "money":  return (story.moneyLabel ?? "余额").tr
+        case "mood":   return "心情".tr
+        case "health": return "健康".tr
+        case "credit": return "信用".tr
+        case "risk":   return "风险".tr
         default:       return key
         }
     }
@@ -680,8 +703,8 @@ struct GameDetailView: View {
         switch key {
         case "money":  return "¥\(Int(v))"
         case "health": return "\(Int(v))%"
-        case "mood":   return v >= 67 ? "好" : (v >= 34 ? "一般" : "低落")
-        case "risk":   return v < 34 ? "低" : (v < 67 ? "中" : "高")
+        case "mood":   return v >= 67 ? "好".tr : (v >= 34 ? "一般".tr : "低落".tr)
+        case "risk":   return v < 34 ? "低".tr : (v < 67 ? "中".tr : "高".tr)
         case "credit":
             let n = max(0, min(5, Int((v / 20).rounded())))
             return String(repeating: "★", count: n) + String(repeating: "☆", count: 5 - n)
@@ -723,7 +746,7 @@ struct GameDetailView: View {
         let pct = maxScore > 0 ? Int(Double(score) / Double(maxScore) * 100) : 0
         let ranked = story.endings.values.filter { $0.min != nil }.sorted { ($0.min ?? 0) > ($1.min ?? 0) }
         return ranked.first { pct >= ($0.min ?? 0) } ?? ranked.last
-            ?? Ending(title: "完成", tone: "good", did_well: nil, improve: nil, habit: nil, min: 0)
+            ?? Ending(title: "完成".tr, tone: "good", did_well: nil, improve: nil, habit: nil, min: 0)
     }
     private func finish(_ e: Ending) { store.markGameComplete(story.id); ending = e; phase = .done }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // Warm "省钱搭子" palette (same meaning-based colors as the web app).
 extension Color {
@@ -24,6 +25,12 @@ let duoEdge = Color(hex: 0xE0D7C5)
 let duoGreenEdge = Color(hex: 0x2C4537)
 
 extension View {
+    /// Cap a phone-designed content column on big screens (iPad) so it stays a
+    /// centered, readable column instead of stretching edge-to-edge. No-op on iPhone.
+    func bbPageWidth(_ maxWidth: CGFloat = 640) -> some View {
+        frame(maxWidth: maxWidth).frame(maxWidth: .infinity)
+    }
+
     func duo(_ fill: Color, _ edge: Color, radius: CGFloat = 16) -> some View {
         background(
             ZStack {
@@ -34,4 +41,10 @@ extension View {
     }
     // primary green CTA
     func duoPrimary(_ radius: CGFloat = 16) -> some View { duo(.bbGreen, duoGreenEdge, radius: radius) }
+}
+
+
+/// Dismiss the on-screen keyboard from anywhere.
+func bbHideKeyboard() {
+    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 }

@@ -1,78 +1,60 @@
-# 省钱搭子 BudgetBuddy — iOS (native SwiftUI)
+# BudgetBuddy 省钱搭子 (iOS)
 
-Native SwiftUI iOS app for BudgetBuddy. It talks to the existing PHP/MySQL backend at `https://budgetbuddy.cn` and syncs with the web account state without using a WebView shell.
+专为学生设计的财商练习 App：互动故事里练消费决策，顺手记账，AI 搭子帮你复盘。
+A financial-literacy practice app for students — decision-making stories, quick expense logging, and an AI buddy for spending reviews.
 
-## Current Status
+**📱 App Store（中国区）**: https://apps.apple.com/cn/app/id6785993334 （v1.1：支持 iPad + 应用内评分入口）
+**🌐 Web 版**: https://budgetbuddy.cn · **🤖 Android**: https://budgetbuddy.cn/android/
 
-Build 7 is the App Store candidate baseline.
+| | |
+|---|---|
+| 语言/框架 | Swift 5 · SwiftUI · iOS 16+ · iPhone & iPad（竖屏） |
+| 工程生成 | [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`project.yml` 是唯一事实源，`.xcodeproj` 不入库） |
+| 后端 | 自建 PHP + MySQL（`https://budgetbuddy.cn/api.php?r=`，本仓库不含服务端代码/密钥） |
+| 内容 | 25 个互动故事、认知图鉴、理财课程、省钱挑战（`Sources/*.json` + `Assets.xcassets` 场景图） |
+| 双语 | 中文为源语言，`Sources/L10n.swift` + `content_en.json` 提供英文 |
 
-Latest verification on 2026-06-29:
-
-- Swift source typecheck passed for iOS 16 simulator.
-- `build-for-testing` passed on `iPhone 17 Pro` simulator.
-- Account deletion contract fixed and verified: Profile -> `删除账号` now asks for `当前密码`, sends it to `POST /auth/delete`, and failed deletion keeps the local session.
-- `StabilityFlowUITests/testColdStartFullFlowThreeRounds` passed on `iPhone 17 Pro` with 3 full cold-start rounds, 1 test, 0 failures, 990.909 seconds. Result bundle: `/tmp/bb-ui-result-delete-fix.xcresult`.
-- Generic iOS device build passed with `CODE_SIGNING_ALLOWED=NO`.
-- Built Info.plist contains `ITSAppUsesNonExemptEncryption = false`, bundle id `cn.budgetbuddy.BudgetBuddy`, version `1.0` build `7`.
-
-Implemented in SwiftUI:
-
-- Auth, onboarding, session restore
-- 首页 / 记账 / 故事 / AI搭子 / 我的 tab shell
-- 记账 + 消费反思 + 记账总结
-- 互动故事, 认知图鉴, 理财课程, generated scene art
-- 省钱挑战 with check-in feedback
-- AI 搭子 via the PHP backend proxy
-- 我的: nickname editing, data export/reset, diagnostics feedback, legal links, logout, account deletion with current-password confirmation
-- App Store support: app icon, real privacy/terms text, update check, screenshots/UI tests
-
-## Project Layout
-
-```text
-Sources/
-  App.swift             @main + RootView
-  Theme.swift           shared colors and view helpers
-  Models.swift          Codable app_state passthrough models
-  APIClient.swift       URLSession client for budgetbuddy.cn
-  AppStore.swift        @MainActor ObservableObject app state
-  AuthView.swift        login/register
-  MainView.swift        tab shell, home, AI, profile
-  TrackerView.swift     ledger, reflection sheet, summary
-  StoryView.swift       story path, codex, lessons, game player
-  ChallengesView.swift  savings challenges
-  LegalView.swift       in-app privacy policy and terms
-  FeedbackView.swift    diagnostics feedback screen
-  UpdateChecker.swift   version.json update prompt model/view
-Resources/              stories, lessons, codex, challenge JSON
-Assets.xcassets/         app icon + story scene art
-UITests/                 stability, scene-art, App Store screenshot tests
-project.yml              XcodeGen source of truth
-```
-
-## Build And Test
+## 构建
 
 ```bash
-cd "/Users/chenmingming/Documents/Claude code/BudgetBuddy-iOS"
-/tmp/XcodeGen/.build/release/xcodegen generate
+brew install xcodegen        # 或任意方式安装 XcodeGen
+cd BudgetBuddy-iOS
+xcodegen generate
+open BudgetBuddy.xcodeproj   # 或用下面的命令行构建
+```
+
+命令行（模拟器）：
+
+```bash
 xcodebuild -project BudgetBuddy.xcodeproj -scheme BudgetBuddy \
-  -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -derivedDataPath ~/cache/bb-dd clean build CODE_SIGNING_ALLOWED=NO
 ```
 
-Main one-device regression:
+已知坑（血泪换来的）：
+
+- 项目若放在 iCloud 同步目录，构建前先 `xattr -cr Sources Resources Assets.xcassets UITests project.yml`，并把 derivedData 指到 iCloud 之外，否则 codesign 报 "resource fork/detritus not allowed"。
+- `xcodegen generate` 之后必须 **clean** build，否则 UITests-Runner 缺 CFBundleIdentifier。
+- UI 测试点 Tab 一律用元素定位（见各套件的 `tapTab`）：iOS 26 SDK 下底边坐标点不到标签按钮，iPadOS 18+ 标签栏在顶部。
+
+## 测试
+
+`UITests/` 下按用途分套件：`V11SmokeUITests`（双端冒烟+评分跳转）、`GuestModeUITests`（App Store 5.1.1(v) 游客合规）、`StabilityFlowUITests`（三轮稳定性 soak）等。
 
 ```bash
-xcodebuild test -project BudgetBuddy.xcodeproj -scheme BudgetBuddy \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-  -only-testing:BudgetBuddyUITests/StabilityFlowUITests/testColdStartFullFlowThreeRounds \
-  -resultBundlePath /tmp/bb-ui-result-delete-fix.xcresult
+xcodebuild -project BudgetBuddy.xcodeproj -scheme BudgetBuddy \
+  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -derivedDataPath ~/cache/bb-dd \
+  -only-testing:BudgetBuddyUITests/V11SmokeUITests clean test CODE_SIGNING_ALLOWED=NO
 ```
 
-The regression writes run notes and screenshots to `/Users/chenmingming/Documents/Claude code/BudgetBuddy-iOS-TestScreenshots/stability-runs`.
+会通关故事的套件（如 StabilityFlow）通过启动参数 `-bb.review.prompted.v1 YES` 预置"已提示过评分"，避免系统评分弹窗干扰自动化。
 
-## App Store Notes
+## ⚠️ 安全说明（转公开仓库前必读）
 
-See `APP-STORE-LISTING.md` and `iOS-LAUNCH-CHECKLIST.md` for the submission checklist, review notes, privacy labels, and screenshot order.
+- `UITests/` 内硬编码了 **App Review 演示账号**（review@budgetbuddy.cn）的密码，`SERVER-DEPLOY-HANDOFF.md` 等文档含服务器信息。**本仓库应保持私有**；若要公开，先轮换演示账号密码并清理部署文档。
+- AI/数据库等真实密钥只存在于服务器端（`ai.local.php` / `db.local.php`），从不入库。
 
-Known external blocker: `https://budgetbuddy.cn/privacy.html` and `https://budgetbuddy.cn/terms.html` must be live before App Review. The local `省钱搭子 4.6.zip` release already includes those files, `version.json`, and the native `POST /auth/delete` endpoint that requires the current password, but it still needs to be deployed to the server.
+## License
 
-Current URL check: `https://budgetbuddy.cn/api.php?r=/health` returns 200, while `privacy.html`, `terms.html`, `version.json`, and `api.php?r=/ai/disclosure` still return 404. Deployment is blocked until valid server credentials or a refreshed BaoTa panel entrance are available for `/www/wwwroot/budgetbuddy.cn`.
+Apache License 2.0 — see [LICENSE](LICENSE). Copyright 2026 Mingming Chen.

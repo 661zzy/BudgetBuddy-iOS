@@ -163,7 +163,18 @@ final class AppStoreScreenshotsUITests: XCTestCase {
         }
     }
 
+    // Element-based first (isHittable guards the invalid-hit-point case the old
+    // custom tab bar had); bottom-edge coordinates miss the tab buttons under the
+    // iOS 26 SDK, and iPadOS 18+ puts the tab bar on TOP.
     private func tapTab(_ label: String) {
+        let tabButton = app.tabBars.buttons[label].firstMatch
+        if tabButton.waitForExistence(timeout: 2), tabButton.isHittable {
+            tabButton.tap(); sleep(1); return
+        }
+        let anyButton = app.buttons[label].firstMatch
+        if anyButton.waitForExistence(timeout: 2), anyButton.isHittable {
+            anyButton.tap(); sleep(1); return
+        }
         let x: CGFloat
         switch label {
         case "首页": x = 0.10
@@ -173,8 +184,6 @@ final class AppStoreScreenshotsUITests: XCTestCase {
         case "我的": x = 0.90
         default: x = 0.50
         }
-        // The custom chunky tab bar can expose buttons with invalid hit points in
-        // XCTest on the iOS 26.5 simulator. Coordinate taps are more stable here.
         app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: 0.965)).tap()
         sleep(1)
     }

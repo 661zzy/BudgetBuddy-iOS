@@ -98,7 +98,7 @@ final class APIClient {
             if let e = try? JSONDecoder().decode(APIErrorResponse.self, from: data) {
                 throw APIError(code: e.error.code, message: e.error.message)
             }
-            throw APIError(code: "HTTP_\(status)", message: "请求失败 (\(status))")
+            throw APIError(code: "HTTP_\(status)", message: "请求失败".tr + " (\(status))")
         }
         do {
             let value = try JSONDecoder().decode(T.self, from: data)

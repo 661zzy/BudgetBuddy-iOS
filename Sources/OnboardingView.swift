@@ -1,6 +1,6 @@
 import SwiftUI
 
-// First-run onboarding (3 swipeable slides), shown before auth. Mirrors the web OB_SLIDES.
+// First-run onboarding: a bilingual language picker first, then 3 swipeable slides.
 
 private struct OBSlide {
     let icon: String
@@ -12,6 +12,8 @@ private struct OBSlide {
 
 struct OnboardingView: View {
     @EnvironmentObject var store: AppStore
+    @AppStorage("bb.lang") private var bbLang = "zh"
+    @State private var langChosen = BBLang.chosen
     @State private var i = 0
 
     private let slides: [OBSlide] = [
@@ -27,43 +29,96 @@ struct OnboardingView: View {
     var body: some View {
         ZStack {
             Color.bbBg.ignoresSafeArea()
-            VStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    Button("跳过") { store.finishOnboarding() }
-                        .foregroundColor(.bbInk2).padding(.horizontal, 18).padding(.top, 10)
-                }
-
-                Spacer()
-
-                TabView(selection: $i) {
-                    ForEach(slides.indices, id: \.self) { idx in
-                        slideView(slides[idx]).tag(idx)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(height: 380)
-
-                HStack(spacing: 8) {
-                    ForEach(slides.indices, id: \.self) { k in
-                        Circle().fill(k == i ? Color.bbGreen : Color.bbLine)
-                            .frame(width: k == i ? 9 : 7, height: k == i ? 9 : 7)
-                    }
-                }
-                .padding(.top, 6)
-
-                Spacer()
-
-                Button {
-                    if last { store.finishOnboarding() } else { withAnimation { i += 1 } }
-                } label: {
-                    Text(last ? "开始体验" : "下一步").font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.white)
-                        .frame(maxWidth: .infinity).padding(.vertical, 16)
-                        .duoPrimary()
-                }
-                .padding(.horizontal, 28).padding(.bottom, 34)
-            }
+            if !langChosen { languagePicker } else { slidesView }
         }
+    }
+
+    // Shown in BOTH languages on purpose — the user hasn't picked one yet.
+    private var languagePicker: some View {
+        VStack(spacing: 0) {
+            Spacer()
+            ZStack {
+                RoundedRectangle(cornerRadius: 36).fill(Color(hex: 0xE4EFE7)).frame(width: 160, height: 160)
+                Image(systemName: "globe").font(.system(size: 70)).foregroundColor(Color(hex: 0x3E5F4D))
+            }
+            .padding(.bottom, 34)
+            Text("选择语言").font(.title2.bold()).foregroundColor(.bbInk)
+            Text("Choose Your Language").font(.subheadline).foregroundColor(.bbInk2).padding(.top, 4)
+
+            VStack(spacing: 14) {
+                langButton("中文", sub: "简体中文", lang: "zh")
+                langButton("English", sub: "English (US)", lang: "en")
+            }
+            .padding(.horizontal, 40).padding(.top, 36)
+            Spacer()
+            Text("之后可在「我的」里随时切换 · You can change this anytime in Me")
+                .font(.caption2).foregroundColor(.bbInk2)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 30).padding(.bottom, 30)
+        }
+        .bbPageWidth(520)
+    }
+
+    private func langButton(_ title: String, sub: String, lang: String) -> some View {
+        Button {
+            BBLang.set(lang)
+            bbLang = lang           // triggers RootView .id rebuild
+            langChosen = true
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
+                    Text(sub).font(.caption).foregroundColor(.bbInk2)
+                }
+                Spacer()
+                Image(systemName: "arrow.right.circle.fill").font(.system(size: 24)).foregroundColor(.bbGreen)
+            }
+            .padding(18)
+            .background(Color.bbSurface)
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.bbLine))
+            .cornerRadius(14)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var slidesView: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Spacer()
+                Button("跳过".tr) { store.finishOnboarding() }
+                    .foregroundColor(.bbInk2).padding(.horizontal, 18).padding(.top, 10)
+            }
+
+            Spacer()
+
+            TabView(selection: $i) {
+                ForEach(slides.indices, id: \.self) { idx in
+                    slideView(slides[idx]).tag(idx)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(height: 380)
+
+            HStack(spacing: 8) {
+                ForEach(slides.indices, id: \.self) { k in
+                    Circle().fill(k == i ? Color.bbGreen : Color.bbLine)
+                        .frame(width: k == i ? 9 : 7, height: k == i ? 9 : 7)
+                }
+            }
+            .padding(.top, 6)
+
+            Spacer()
+
+            Button {
+                if last { store.finishOnboarding() } else { withAnimation { i += 1 } }
+            } label: {
+                Text(last ? "开始体验".tr : "下一步".tr).font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.white)
+                    .frame(maxWidth: .infinity).padding(.vertical, 16)
+                    .duoPrimary()
+            }
+            .padding(.horizontal, 28).padding(.bottom, 34)
+        }
+        .bbPageWidth(520)
     }
 
     private func slideView(_ s: OBSlide) -> some View {
@@ -73,9 +128,9 @@ struct OnboardingView: View {
                 Image(systemName: s.icon).font(.system(size: 86)).foregroundColor(s.fg)
             }
             VStack(spacing: 12) {
-                Text(s.title).font(.title2.bold()).foregroundColor(.bbInk)
+                Text(s.title.tr).font(.title2.bold()).foregroundColor(.bbInk)
                     .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
-                Text(s.body).font(.body).foregroundColor(.bbInk2)
+                Text(s.body.tr).font(.body).foregroundColor(.bbInk2)
                     .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             }
             .padding(.horizontal, 32)

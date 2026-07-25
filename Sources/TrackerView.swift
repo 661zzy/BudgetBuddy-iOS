@@ -3,12 +3,16 @@ import SwiftUI
 struct TrackerView: View {
     @EnvironmentObject var store: AppStore
     @State private var showAdd = false
+    @State private var showAuth = false
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.bbBg.ignoresSafeArea()
-                if store.state.transactions.isEmpty {
+                if store.isGuest {
+                    // 记账是账号功能：数据云端同步，需要登录。进入本页自动弹登录。
+                    loginGate
+                } else if store.state.transactions.isEmpty {
                     emptyState
                 } else {
                     List {
@@ -16,13 +20,13 @@ struct TrackerView: View {
                             NavigationLink { TrackerSummaryView() } label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 3) {
-                                        Text("本月结余").font(.caption).foregroundColor(.bbInk2)
+                                        Text("本月结余".tr).font(.caption).foregroundColor(.bbInk2)
                                         Text("\(store.monthNet >= 0 ? "" : "−")¥\(abs(Int(store.monthNet)))")
                                             .font(.system(.title2, design: .rounded).weight(.bold))
                                             .foregroundColor(store.monthNet >= 0 ? .bbGreen : .bbRed)
                                     }
                                     Spacer()
-                                    HStack(spacing: 5) { Image(systemName: "sparkles"); Text("总结与建议") }
+                                    HStack(spacing: 5) { Image(systemName: "sparkles"); Text("总结与建议".tr) }
                                         .font(.system(.subheadline, design: .rounded).weight(.semibold))
                                         .foregroundColor(.bbGreen)
                                 }
@@ -39,33 +43,65 @@ struct TrackerView: View {
                                 Task { for id in ids { await store.deleteTransaction(id) } }
                             }
                         } header: {
-                            Text("本月支出 ¥\(Int(store.monthOut)) · 共 \(store.state.transactions.count) 笔")
+                            Text("本月支出".tr + " ¥\(Int(store.monthOut)) · \(store.state.transactions.count) " + "笔".tr)
                         }
                     }
                     .listStyle(.plain)
                 }
             }
-            .navigationTitle("记账")
+            .navigationTitle("记账".tr)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                if !store.isGuest {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
             }
             .sheet(isPresented: $showAdd) {
                 AddSheet().environmentObject(store)
             }
+            .sheet(isPresented: $showAuth) {
+                AuthView().environmentObject(store)
+            }
+            .onAppear {
+                if store.isGuest { showAuth = true }   // 自动跳出登录
+            }
         }
+    }
+
+    // Guests see why login is needed here (cloud-synced ledger = account feature)
+    // and can reopen the sheet any time after dismissing the automatic one.
+    private var loginGate: some View {
+        VStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 28).fill(Color(hex: 0xE4EFE7)).frame(width: 120, height: 120)
+                Image(systemName: "lock.shield").font(.system(size: 52)).foregroundColor(Color(hex: 0x3E5F4D))
+            }
+            .padding(.bottom, 6)
+            Text("登录后开始记账".tr).font(.title3.bold()).foregroundColor(.bbInk)
+            Text("你的每一笔记账都会安全同步到自己的账号，换设备登录也不会丢。".tr)
+                .font(.subheadline).foregroundColor(.bbInk2)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 36)
+            Button { showAuth = true } label: {
+                Text("登录 / 注册".tr).font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.white)
+                    .padding(.horizontal, 44).padding(.vertical, 14)
+                    .duoPrimary()
+            }
+            .padding(.top, 8)
+        }
+        .padding()
     }
 
     private var emptyState: some View {
         VStack(spacing: 12) {
             Image(systemName: "tray").font(.system(size: 40)).foregroundColor(.bbInk2)
-            Text("还没有记录").font(.headline).foregroundColor(.bbInk)
-            Text("从今天开始，记录一次真实的消费选择。")
+            Text("还没有记录".tr).font(.headline).foregroundColor(.bbInk)
+            Text("从今天开始，记录一次真实的消费选择。".tr)
                 .font(.subheadline).foregroundColor(.bbInk2)
                 .multilineTextAlignment(.center)
             Button { showAdd = true } label: {
-                Label("记录第一次选择", systemImage: "plus")
+                Label("记录第一次选择".tr, systemImage: "plus")
                     .foregroundColor(.white)
                     .padding(.horizontal, 18).padding(.vertical, 12)
                     .background(Color.bbGreen).cornerRadius(12)
@@ -79,11 +115,11 @@ struct TrackerView: View {
             Image(systemName: CATS[t.cat]?.icon ?? "circle.fill")
                 .foregroundColor(.bbGreen).frame(width: 26)
             VStack(alignment: .leading, spacing: 3) {
-                Text(t.note.isEmpty ? (CATS[t.cat]?.zh ?? t.cat) : t.note).foregroundColor(.bbInk)
+                Text(t.note.isEmpty ? (CATS[t.cat]?.zh.tr ?? t.cat) : t.note).foregroundColor(.bbInk)
                 HStack(spacing: 6) {
-                    Text(CATS[t.cat]?.zh ?? t.cat).font(.caption).foregroundColor(.bbInk2)
+                    Text(CATS[t.cat]?.zh.tr ?? t.cat).font(.caption).foregroundColor(.bbInk2)
                     if let need = t.reflect?.need {
-                        Text(need).font(.caption2)
+                        Text(need.tr).font(.caption2)
                             .padding(.horizontal, 7).padding(.vertical, 2)
                             .background(Capsule().fill(Color.bbGreen.opacity(0.12)))
                             .foregroundColor(.bbGreen)
@@ -117,8 +153,8 @@ struct AddSheet: View {
         NavigationStack {
             VStack(spacing: 0) {
                 HStack(spacing: 12) {
-                    toggle("支出", "out")
-                    toggle("收入", "in")
+                    toggle("支出".tr, "out")
+                    toggle("收入".tr, "in")
                 }
                 .padding(.horizontal, 16).padding(.top, 12)
 
@@ -136,7 +172,7 @@ struct AddSheet: View {
                     }
                 }
 
-                TextField("发生了什么？（选填）", text: $note)
+                TextField("发生了什么？（选填）".tr, text: $note)
                     .font(.system(.body, design: .rounded))
                     .padding(14)
                     .background(RoundedRectangle(cornerRadius: 14).fill(Color.bbSurface))
@@ -146,7 +182,7 @@ struct AddSheet: View {
                 Spacer(minLength: 10)
                 keypad
                 Button { save() } label: {
-                    Text(kind == "in" ? "保存这一笔" : "记一笔")
+                    Text(kind == "in" ? "保存这一笔".tr : "记一笔".tr)
                         .font(.system(.title3, design: .rounded).weight(.bold)).foregroundColor(.white)
                         .frame(maxWidth: .infinity).padding(.vertical, 16)
                         .duo(canSave ? Color.bbGreen : Color.bbLine, canSave ? duoGreenEdge : duoEdge)
@@ -155,11 +191,15 @@ struct AddSheet: View {
                 .padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 14)
             }
             .background(Color.bbBg)
-            .navigationTitle("记一笔")
+            .navigationTitle("记一笔".tr)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }.font(.system(.body, design: .rounded))
+                    Button("取消".tr) { dismiss() }.font(.system(.body, design: .rounded))
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("完成".tr) { bbHideKeyboard() }.font(.system(.body, design: .rounded).weight(.semibold))
                 }
             }
             .sheet(isPresented: $showReflect) { ReflectSheet(onDone: handleReflect) }
@@ -182,7 +222,7 @@ struct AddSheet: View {
         return Button { cat = c } label: {
             VStack(spacing: 6) {
                 Image(systemName: CATS[c]?.icon ?? "circle.fill").font(.system(size: 22))
-                Text(CATS[c]?.zh ?? c).font(.system(.subheadline, design: .rounded).weight(.semibold))
+                Text(CATS[c]?.zh.tr ?? c).font(.system(.subheadline, design: .rounded).weight(.semibold))
             }
             .foregroundColor(on ? .white : .bbInk)
             .frame(width: 76, height: 72)
@@ -237,7 +277,7 @@ struct AddSheet: View {
     }
 }
 
-// MARK: - Optional "记一次选择" prompt (after saving an expense)
+// MARK: - Optional "记一次选择".tr prompt (after saving an expense)
 
 struct ReflectSheet: View {
     let onDone: (Reflect?) -> Void
@@ -252,30 +292,30 @@ struct ReflectSheet: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 22) {
-                        Text("花完之后，停三秒回顾一下——想记就记，跳过也没关系。")
+                        Text("花完之后，停三秒回顾一下——想记就记，跳过也没关系。".tr)
                             .font(.system(.body, design: .rounded)).foregroundColor(.bbInk2)
-                        reflectRow("这是需要，还是想要？", REFLECT_NEED, $need)
-                        reflectRow("提前想好的，还是临时决定？", REFLECT_PLAN, $plan)
-                        reflectRow("是什么影响了你？", REFLECT_INFLUENCE, $influence)
-                        reflectRow("花完之后感觉怎么样？", REFLECT_FEELING, $feeling)
+                        reflectRow("这是需要，还是想要？".tr, REFLECT_NEED, $need)
+                        reflectRow("提前想好的，还是临时决定？".tr, REFLECT_PLAN, $plan)
+                        reflectRow("是什么影响了你？".tr, REFLECT_INFLUENCE, $influence)
+                        reflectRow("花完之后感觉怎么样？".tr, REFLECT_FEELING, $feeling)
                     }
                     .padding(18)
                 }
                 VStack(spacing: 10) {
                     Button { onDone(Reflect(need: need, plan: plan, influence: influence, feeling: feeling)) } label: {
-                        Text("记录这次选择").font(.system(.title3, design: .rounded).weight(.bold)).foregroundColor(.white)
+                        Text("记录这次选择".tr).font(.system(.title3, design: .rounded).weight(.bold)).foregroundColor(.white)
                             .frame(maxWidth: .infinity).padding(.vertical, 16)
                             .duo(anyPicked ? Color.bbGreen : Color.bbLine, anyPicked ? duoGreenEdge : duoEdge)
                     }
                     .disabled(!anyPicked)
                     Button { onDone(nil) } label: {
-                        Text("跳过").font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
+                        Text("跳过".tr).font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
                     }
                 }
                 .padding(.horizontal, 18).padding(.top, 8).padding(.bottom, 14)
             }
             .background(Color.bbBg)
-            .navigationTitle("记一次选择")
+            .navigationTitle("记一次选择".tr)
             .navigationBarTitleDisplayMode(.inline)
         }
         .presentationDetents([.large])
@@ -288,7 +328,7 @@ struct ReflectSheet: View {
                 ForEach(options, id: \.self) { opt in
                     let on = sel.wrappedValue == opt
                     Button { sel.wrappedValue = on ? nil : opt } label: {
-                        Text(opt).font(.system(.subheadline, design: .rounded).weight(.semibold))
+                        Text(opt.tr).font(.system(.subheadline, design: .rounded).weight(.semibold))
                             .frame(maxWidth: .infinity).padding(.vertical, 11)
                             .foregroundColor(on ? .white : .bbInk)
                             .duo(on ? Color.bbGreen : Color.bbSurface, on ? duoGreenEdge : duoEdge, radius: 14)
@@ -324,14 +364,14 @@ struct TrackerSummaryView: View {
         ScrollView {
             VStack(spacing: 16) {
                 VStack(spacing: 6) {
-                    Text("本月结余").font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
+                    Text("本月结余".tr).font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
                     Text("\(store.monthNet >= 0 ? "" : "−")¥\(abs(Int(store.monthNet)))")
                         .font(.system(size: 46, weight: .heavy, design: .rounded))
                         .foregroundColor(store.monthNet >= 0 ? .bbGreen : .bbRed)
                     HStack(spacing: 26) {
-                        stat("本月支出", store.monthOut, .bbInk)
+                        stat("本月支出".tr, store.monthOut, .bbInk)
                         Rectangle().fill(Color.bbLine).frame(width: 1, height: 30)
-                        stat("本月收入", store.monthIn, .bbGreen)
+                        stat("本月收入".tr, store.monthIn, .bbGreen)
                     }
                     .padding(.top, 8)
                 }
@@ -341,7 +381,7 @@ struct TrackerSummaryView: View {
 
                 if !catTotals.isEmpty {
                     VStack(alignment: .leading, spacing: 14) {
-                        Text("钱花在哪儿").font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
+                        Text("钱花在哪儿".tr).font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
                         ForEach(catTotals.prefix(5), id: \.cat) { item in
                             catBar(item.cat, item.amount, top: catTotals.first?.amount ?? 1)
                         }
@@ -352,21 +392,21 @@ struct TrackerSummaryView: View {
                 }
 
                 HStack(spacing: 10) {
-                    miniStat("\(monthCount)", "本月笔数")
-                    miniStat("\(store.recordDays)", "记账天数")
-                    miniStat("¥\(Int(store.totalNet))", "累计结余")
+                    miniStat("\(monthCount)", "本月笔数".tr)
+                    miniStat("\(store.recordDays)", "记账天数".tr)
+                    miniStat("¥\(Int(store.totalNet))", "累计结余".tr)
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 6) {
                         Image(systemName: "sparkles")
-                        Text("搭子帮你看看").font(.system(.headline, design: .rounded).weight(.bold))
+                        Text("搭子帮你看看".tr).font(.system(.headline, design: .rounded).weight(.bold))
                     }
                     .foregroundColor(.bbGreen)
                     if loadingAdvice {
                         HStack(spacing: 8) {
                             ProgressView().tint(.bbGreen)
-                            Text("正在分析你的花销…").font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
+                            Text("正在分析你的花销…".tr).font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
                         }
                         .padding(.vertical, 4)
                     } else {
@@ -374,7 +414,7 @@ struct TrackerSummaryView: View {
                             .fixedSize(horizontal: false, vertical: true).lineSpacing(4)
                     }
                     Button { loadAdvice() } label: {
-                        Label("再分析一次", systemImage: "arrow.clockwise")
+                        Label("再分析一次".tr, systemImage: "arrow.clockwise")
                             .font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbGreen)
                     }
                     .disabled(loadingAdvice).padding(.top, 2)
@@ -384,9 +424,10 @@ struct TrackerSummaryView: View {
                 .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.bbGreen.opacity(0.25)))
             }
             .padding(16)
+            .bbPageWidth()
         }
         .background(Color.bbBg)
-        .navigationTitle("记账总结")
+        .navigationTitle("记账总结".tr)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { if advice.isEmpty { loadAdvice() } }
     }
@@ -412,7 +453,7 @@ struct TrackerSummaryView: View {
         let frac = top > 0 ? CGFloat(amount / top) : 0
         return HStack(spacing: 10) {
             Image(systemName: CATS[cat]?.icon ?? "circle.fill").foregroundColor(.bbGreen).frame(width: 22)
-            Text(CATS[cat]?.zh ?? cat).font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk)
+            Text(CATS[cat]?.zh.tr ?? cat).font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk)
                 .frame(width: 64, alignment: .leading)
             GeometryReader { g in
                 ZStack(alignment: .leading) {
@@ -430,9 +471,9 @@ struct TrackerSummaryView: View {
         loadingAdvice = true
         Task {
             do {
-                advice = try await APIClient.shared.aiChat("请根据我的记账数据，分析一下我最近的花销情况，用轻松鼓励的语气给我 2-3 条具体、可执行的省钱小建议，不要说教。")
+                advice = try await APIClient.shared.aiChat(BBLang.isEN ? "Please look at my spending records and reply IN ENGLISH with 2-3 friendly, specific, doable money-saving tips. Encouraging tone, no lecturing." : "请根据我的记账数据，分析一下我最近的花销情况，用轻松鼓励的语气给我 2-3 条具体、可执行的省钱小建议，不要说教。")
             } catch {
-                advice = "哎呀，刚才没连上 AI 😅 点下方「再分析一次」我再帮你看看。"
+                advice = "哎呀，刚才没连上 AI 😅 点下方「再分析一次」我再帮你看看。".tr
             }
             loadingAdvice = false
         }
