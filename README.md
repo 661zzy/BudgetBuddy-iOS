@@ -1,5 +1,8 @@
 # BudgetBuddy 省钱搭子 (iOS)
 
+[![CI](https://github.com/661zzy/BudgetBuddy-iOS/actions/workflows/ci.yml/badge.svg)](https://github.com/661zzy/BudgetBuddy-iOS/actions/workflows/ci.yml)
+[![License: Apache 2.0 modified](https://img.shields.io/badge/License-Apache%202.0%20modified-blue.svg)](LICENSE)
+
 专为学生设计的财商练习 App：互动故事里练消费决策，顺手记账，AI 搭子帮你复盘。
 A financial-literacy practice app for students — decision-making stories, quick expense logging, and an AI buddy for spending reviews.
 
@@ -66,4 +69,7 @@ export TEST_RUNNER_BB_TEST_PASSWORD=***     # 本地测试账号（可选）
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE). Copyright 2026 Samuel Zhang.
+BudgetBuddy Source-Available License 1.0 — based on Apache License 2.0 with
+additional restrictions for hosted services, embedded commercial products,
+commercial app distribution, and resale. This is not an OSI-approved
+open-source license. See [LICENSE](LICENSE). Copyright 2026 Samuel Zhang.

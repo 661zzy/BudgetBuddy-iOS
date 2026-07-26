@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Build (iOS Simulator)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build (no signing)
+        run: |
+          set -o pipefail
+          xcodebuild -project BudgetBuddy.xcodeproj -scheme BudgetBuddy \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath DerivedData \
+            build CODE_SIGNING_ALLOWED=NO
