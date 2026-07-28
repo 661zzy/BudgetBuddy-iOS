@@ -6,6 +6,7 @@ import UIKit
 
 struct StoryView: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.horizontalSizeClass) private var hSize
     @State private var mode = "game"   // game | video
 
     var body: some View {
@@ -18,8 +19,8 @@ struct StoryView: View {
                     }
                     if mode == "game" { gameMode } else { videoMode }
                 }
-                .padding(16)
-                .bbPageWidth()
+                .padding(hSize == .regular ? 24 : 16)
+                .bbPageWidth(hSize == .regular ? 860 : 640)
             }
             .background(Color.bbBg)
             .navigationTitle("故事".tr)
@@ -74,8 +75,18 @@ struct StoryView: View {
                                 .frame(width: 28, height: 28).background(cat.tint).cornerRadius(8)
                             Text(cat.zh.tr).font(.subheadline.weight(.semibold)).foregroundColor(.bbInk)
                         }
-                        ForEach(items) { lesson in
-                            NavigationLink { LessonDetailView(lesson: lesson) } label: { LessonCard(lesson: lesson) }.buttonStyle(.plain)
+                        if hSize == .regular {
+                            // iPad: two-up lesson cards fill the width.
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 340), spacing: 14)],
+                                      alignment: .leading, spacing: 14) {
+                                ForEach(items) { lesson in
+                                    NavigationLink { LessonDetailView(lesson: lesson) } label: { LessonCard(lesson: lesson) }.buttonStyle(.plain)
+                                }
+                            }
+                        } else {
+                            ForEach(items) { lesson in
+                                NavigationLink { LessonDetailView(lesson: lesson) } label: { LessonCard(lesson: lesson) }.buttonStyle(.plain)
+                            }
                         }
                     }
                 }
@@ -107,11 +118,16 @@ struct StoryView: View {
         .overlay(Rectangle().fill(Color.bbLine).frame(height: 1), alignment: .bottom)
     }
 
-    // MARK: Duolingo-style story path
+    // MARK: Duolingo-style story path (bigger sweep + nodes on iPad)
+    private var pathMetrics: (spacing: CGFloat, amp: CGFloat, node: CGFloat) {
+        hSize == .regular ? (170, 170, 116) : (132, 66, 92)
+    }
+
     private var storyPath: some View {
         let stories = StoryStore.all
-        let spacing: CGFloat = 132
-        let amp: CGFloat = 66
+        let m = pathMetrics
+        let spacing = m.spacing
+        let amp = m.amp
         func off(_ i: Int) -> CGFloat { [0.0, 1.0, 0.0, -1.0][i % 4] }
         return GeometryReader { geo in
             let cx = geo.size.width / 2
@@ -125,7 +141,7 @@ struct StoryView: View {
                 .stroke(Color.bbLine, style: StrokeStyle(lineWidth: 6, lineCap: .round, dash: [1, 12]))
                 ForEach(Array(stories.enumerated()), id: \.offset) { i, story in
                     storyNode(story).position(x: cx + off(i) * amp, y: 60 + CGFloat(i) * spacing)
-                    storyLabel(story).position(x: cx + off(i) * amp, y: 60 + CGFloat(i) * spacing + 64)
+                    storyLabel(story).position(x: cx + off(i) * amp, y: 60 + CGFloat(i) * spacing + m.node / 2 + 18)
                 }
             }
         }
@@ -134,19 +150,20 @@ struct StoryView: View {
 
     private func storyNode(_ story: Story) -> some View {
         let done = store.isGameDone(story.id)
+        let size = pathMetrics.node
         let img = "scene_" + story.id.replacingOccurrences(of: "-", with: "_") + "_s1"
         return NavigationLink { GameDetailView(story: story) } label: {
             ZStack {
-                Circle().fill(Color.bbSurface).frame(width: 92, height: 92)
+                Circle().fill(Color.bbSurface).frame(width: size, height: size)
                 if UIImage(named: img) != nil {
                     Image(img).resizable().aspectRatio(contentMode: .fill)
-                        .frame(width: 84, height: 84).clipShape(Circle())
+                        .frame(width: size - 8, height: size - 8).clipShape(Circle())
                 } else {
                     // Stories without scene art yet fall back to the first scene's emoji.
-                    Circle().fill(Color(hex: 0xEFF3EE)).frame(width: 84, height: 84)
-                    Text(story.scenes[story.start]?.emoji ?? "📖").font(.system(size: 38))
+                    Circle().fill(Color(hex: 0xEFF3EE)).frame(width: size - 8, height: size - 8)
+                    Text(story.scenes[story.start]?.emoji ?? "📖").font(.system(size: size * 0.41))
                 }
-                Circle().stroke(done ? Color.bbGreen : Color.bbLine, lineWidth: 4).frame(width: 92, height: 92)
+                Circle().stroke(done ? Color.bbGreen : Color.bbLine, lineWidth: 4).frame(width: size, height: size)
             }
             .overlay(alignment: .bottomTrailing) {
                 if done {
@@ -420,6 +437,7 @@ struct GameDetailView: View {
     let story: Story
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.horizontalSizeClass) private var hSize
     @Environment(\.requestReview) private var requestReview
 
     enum Phase { case intro, play, done }
@@ -449,7 +467,7 @@ struct GameDetailView: View {
                 case .done: if let ending { doneView(ending) }
                 }
             }
-            .bbPageWidth()
+            .bbPageWidth(hSize == .regular ? 760 : 640)
         }
         .background(Color.bbBg)
         .navigationTitle(story.title.tr)
@@ -520,14 +538,14 @@ struct GameDetailView: View {
                 Image(imgName)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(height: 170)
+                    .frame(height: hSize == .regular ? 240 : 170)
                     .frame(maxWidth: .infinity)
                     .clipped()
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine))
             } else if let grid = pixelScene(story.id, sceneId) {
                 PixelArtView(grid: grid)
-                    .frame(height: 170)
+                    .frame(height: hSize == .regular ? 240 : 170)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine))
                     .frame(maxWidth: .infinity)

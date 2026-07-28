@@ -367,6 +367,7 @@ struct ReflectSheet: View {
 
 struct TrackerSummaryView: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.horizontalSizeClass) private var hSize
 
     // 周/月 double-cycle summary (v1.3): each scope keeps its own auto-loaded
     // AI advice; switching scopes re-analyzes that window automatically.
@@ -399,33 +400,15 @@ struct TrackerSummaryView: View {
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("summary.scope")
 
-                VStack(spacing: 6) {
-                    Text((scope == .week ? "本周结余" : "本月结余").tr)
-                        .font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
-                    Text("\(scopeNet >= 0 ? "" : "−")¥\(abs(Int(scopeNet)))")
-                        .font(.system(size: 46, weight: .heavy, design: .rounded))
-                        .foregroundColor(scopeNet >= 0 ? .bbGreen : .bbRed)
-                    HStack(spacing: 26) {
-                        stat((scope == .week ? "本周支出" : "本月支出").tr, scopeOut, .bbInk)
-                        Rectangle().fill(Color.bbLine).frame(width: 1, height: 30)
-                        stat((scope == .week ? "本周收入" : "本月收入").tr, scopeIn, .bbGreen)
+                // iPad: balance + category breakdown sit side by side.
+                if hSize == .regular && !catTotals.isEmpty {
+                    HStack(alignment: .top, spacing: 16) {
+                        balanceCard
+                        categoryCard
                     }
-                    .padding(.top, 8)
-                }
-                .frame(maxWidth: .infinity).padding(20)
-                .background(RoundedRectangle(cornerRadius: 18).fill(Color.bbSurface))
-                .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.bbLine))
-
-                if !catTotals.isEmpty {
-                    VStack(alignment: .leading, spacing: 14) {
-                        Text("钱花在哪儿".tr).font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
-                        ForEach(catTotals.prefix(5), id: \.cat) { item in
-                            catBar(item.cat, item.amount, top: catTotals.first?.amount ?? 1)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading).padding(18)
-                    .background(RoundedRectangle(cornerRadius: 18).fill(Color.bbSurface))
-                    .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.bbLine))
+                } else {
+                    balanceCard
+                    if !catTotals.isEmpty { categoryCard }
                 }
 
                 HStack(spacing: 10) {
@@ -460,14 +443,45 @@ struct TrackerSummaryView: View {
                 .background(RoundedRectangle(cornerRadius: 18).fill(Color(hex: 0xE9F1EA)))
                 .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.bbGreen.opacity(0.25)))
             }
-            .padding(16)
-            .bbPageWidth()
+            .padding(hSize == .regular ? 24 : 16)
+            .bbPageWidth(hSize == .regular ? 1000 : 640)
         }
         .background(Color.bbBg)
         .navigationTitle("记账总结".tr)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { loadAdvice() }
         .onChange(of: scope) { _ in loadAdvice() }
+    }
+
+    private var balanceCard: some View {
+        VStack(spacing: 6) {
+            Text((scope == .week ? "本周结余" : "本月结余").tr)
+                .font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
+            Text("\(scopeNet >= 0 ? "" : "−")¥\(abs(Int(scopeNet)))")
+                .font(.system(size: 46, weight: .heavy, design: .rounded))
+                .foregroundColor(scopeNet >= 0 ? .bbGreen : .bbRed)
+            HStack(spacing: 26) {
+                stat((scope == .week ? "本周支出" : "本月支出").tr, scopeOut, .bbInk)
+                Rectangle().fill(Color.bbLine).frame(width: 1, height: 30)
+                stat((scope == .week ? "本周收入" : "本月收入").tr, scopeIn, .bbGreen)
+            }
+            .padding(.top, 8)
+        }
+        .frame(maxWidth: .infinity).padding(20)
+        .background(RoundedRectangle(cornerRadius: 18).fill(Color.bbSurface))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.bbLine))
+    }
+
+    private var categoryCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("钱花在哪儿".tr).font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
+            ForEach(catTotals.prefix(5), id: \.cat) { item in
+                catBar(item.cat, item.amount, top: catTotals.first?.amount ?? 1)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading).padding(18)
+        .background(RoundedRectangle(cornerRadius: 18).fill(Color.bbSurface))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.bbLine))
     }
 
     private func stat(_ label: String, _ v: Double, _ color: Color) -> some View {

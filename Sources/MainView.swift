@@ -18,6 +18,7 @@ struct MainTabView: View {
 
 struct HomeView: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.horizontalSizeClass) private var hSize
     @Binding var tab: Int
     @State private var showAdd = false
     @State private var showAuthForAdd = false
@@ -29,71 +30,103 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 0) {
-                    // 1 — wordmark
-                    VStack(spacing: 9) {
-                        Text("省钱搭子").font(.system(size: 23, weight: .semibold)).tracking(5).foregroundColor(.bbInk)
-                        Text("BUDGETBUDDY").font(.system(size: 10)).tracking(6).foregroundColor(.bbInk2)
-                    }
-                    .padding(.top, 22).padding(.bottom, 20)
-
-                    // 2 — 今日故事
-                    sectionHeader("今 日 故 事".tr, trailing: "全部故事".tr) { tab = 2 }
-                    storyHero.padding(.top, 14)
-
-                    // 3 — 记录一次选择（记账 = 账号功能，游客先登录）
-                    Button { if store.isGuest { showAuthForAdd = true } else { showAdd = true } } label: {
-                        HStack(spacing: 14) {
-                            RoundedRectangle(cornerRadius: 8).stroke(Color.bbLine).frame(width: 38, height: 38)
-                                .overlay(Image(systemName: "plus").foregroundColor(.bbInk))
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text("记录一次选择".tr).font(.headline).foregroundColor(.bbInk)
-                                Text("每一笔消费，都是一次决定".tr).font(.caption).foregroundColor(.bbInk2)
-                            }
-                            Spacer()
-                            Image(systemName: "arrow.right").foregroundColor(.bbInk2)
-                        }
-                        .padding(16)
-                        .background(Color.bbSurface)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.bbLine))
-                        .cornerRadius(8)
-                    }
-                    .buttonStyle(.plain).padding(.top, 14)
-
-                    // 4 — 本周概览
-                    sectionHeader("本 周 概 览".tr, trailing: nil) {}.padding(.top, 26)
-                    weekGrid.padding(.top, 2)
-
-                    // 5 — 搭子说
-                    sectionHeader("搭 子 说".tr, trailing: nil) {}.padding(.top, 26)
-                    Button { tab = 3 } label: {
-                        VStack(alignment: .leading, spacing: 7) {
-                            Text("做选择前，先停三秒".tr).font(.headline).foregroundColor(.bbInk)
-                            Text("想要还是需要？这一笔花完，未来的你会感谢现在的决定吗？".tr)
-                                .font(.body).foregroundColor(.bbInk2).fixedSize(horizontal: false, vertical: true)
-                            HStack(spacing: 5) {
-                                Text("找搭子复盘一下".tr); Image(systemName: "arrow.right")
-                            }
-                            .font(.caption).foregroundColor(.bbInk).padding(.top, 6)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(18)
-                        .background(Color.bbSurface)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.bbLine))
-                        .cornerRadius(8)
-                    }
-                    .buttonStyle(.plain).padding(.top, 2)
-
-                    Spacer(minLength: 24)
-                }
-                .padding(.horizontal, 16)
-                .bbPageWidth()
+                if hSize == .regular { padLayout } else { phoneLayout }
             }
             .background(Color.bbBg)
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showAdd) { AddSheet().environmentObject(store) }
             .sheet(isPresented: $showAuthForAdd) { AuthView().environmentObject(store) }
         }
+    }
+
+    // iPhone — unchanged single column.
+    private var phoneLayout: some View {
+        VStack(spacing: 0) {
+            wordmark.padding(.top, 22).padding(.bottom, 20)
+            sectionHeader("今 日 故 事".tr, trailing: "全部故事".tr) { tab = 2 }
+            storyHero(imageHeight: 160).padding(.top, 14)
+            quickAddCard.padding(.top, 14)
+            sectionHeader("本 周 概 览".tr, trailing: nil) {}.padding(.top, 26)
+            weekGrid.padding(.top, 2)
+            sectionHeader("搭 子 说".tr, trailing: nil) {}.padding(.top, 26)
+            buddyTipCard.padding(.top, 2)
+            Spacer(minLength: 24)
+        }
+        .padding(.horizontal, 16)
+        .bbPageWidth()
+    }
+
+    // iPad — two balanced columns fill the canvas: the hero story carries the
+    // left; quick-add, week stats and the buddy tip stack on the right.
+    private var padLayout: some View {
+        VStack(spacing: 0) {
+            wordmark.padding(.top, 30).padding(.bottom, 26)
+            HStack(alignment: .top, spacing: 28) {
+                VStack(spacing: 0) {
+                    sectionHeader("今 日 故 事".tr, trailing: "全部故事".tr) { tab = 2 }
+                    storyHero(imageHeight: 280).padding(.top, 14)
+                }
+                VStack(spacing: 0) {
+                    sectionHeader("记 一 笔".tr, trailing: nil) {}
+                    quickAddCard.padding(.top, 14)
+                    sectionHeader("本 周 概 览".tr, trailing: nil) {}.padding(.top, 28)
+                    weekGrid.padding(.top, 2)
+                    sectionHeader("搭 子 说".tr, trailing: nil) {}.padding(.top, 28)
+                    buddyTipCard.padding(.top, 14)
+                }
+            }
+            Spacer(minLength: 32)
+        }
+        .padding(.horizontal, 32)
+        .bbPageWidth(1080)
+    }
+
+    private var wordmark: some View {
+        VStack(spacing: 9) {
+            Text("省钱搭子").font(.system(size: 23, weight: .semibold)).tracking(5).foregroundColor(.bbInk)
+            Text("BUDGETBUDDY").font(.system(size: 10)).tracking(6).foregroundColor(.bbInk2)
+        }
+    }
+
+    // 记账 = 账号功能，游客先登录
+    private var quickAddCard: some View {
+        Button { if store.isGuest { showAuthForAdd = true } else { showAdd = true } } label: {
+            HStack(spacing: 14) {
+                RoundedRectangle(cornerRadius: 8).stroke(Color.bbLine).frame(width: 38, height: 38)
+                    .overlay(Image(systemName: "plus").foregroundColor(.bbInk))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("记录一次选择".tr).font(.headline).foregroundColor(.bbInk)
+                    Text("每一笔消费，都是一次决定".tr).font(.caption).foregroundColor(.bbInk2)
+                }
+                Spacer()
+                Image(systemName: "arrow.right").foregroundColor(.bbInk2)
+            }
+            .padding(16)
+            .background(Color.bbSurface)
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.bbLine))
+            .cornerRadius(8)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var buddyTipCard: some View {
+        Button { tab = 3 } label: {
+            VStack(alignment: .leading, spacing: 7) {
+                Text("做选择前，先停三秒".tr).font(.headline).foregroundColor(.bbInk)
+                Text("想要还是需要？这一笔花完，未来的你会感谢现在的决定吗？".tr)
+                    .font(.body).foregroundColor(.bbInk2).fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 5) {
+                    Text("找搭子复盘一下".tr); Image(systemName: "arrow.right")
+                }
+                .font(.caption).foregroundColor(.bbInk).padding(.top, 6)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(18)
+            .background(Color.bbSurface)
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.bbLine))
+            .cornerRadius(8)
+        }
+        .buttonStyle(.plain)
     }
 
     private func sectionHeader(_ title: String, trailing: String?, action: @escaping () -> Void) -> some View {
@@ -111,15 +144,14 @@ struct HomeView: View {
         .overlay(Rectangle().fill(Color.bbLine).frame(height: 1), alignment: .bottom)
     }
 
-    // Hero card (cream "scene" header + featured story). Story content is ported
-    // later; this shows the first scenario, matching the web layout.
-    private var storyHero: some View {
+    // Hero card (cream "scene" header + featured story). Taller artwork on iPad.
+    private func storyHero(imageHeight: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack {
                 Color(hex: 0xFFF4DF)
                 Image("scene_month_life_s1").resizable().aspectRatio(contentMode: .fill)
             }
-            .frame(height: 160)
+            .frame(height: imageHeight)
             .frame(maxWidth: .infinity)
             .clipped()
             .overlay(alignment: .topLeading) {
@@ -175,9 +207,37 @@ struct HomeView: View {
 
 struct AIView: View {
     struct Message: Identifiable { let id = UUID(); let me: Bool; let text: String }
+    @Environment(\.horizontalSizeClass) private var hSize
     @State private var messages: [Message] = [Message(me: false, text: "我是你的决策复盘搭子，想聊聊哪一笔消费？".tr)]
     @State private var input = ""
     @State private var busy = false
+
+    private let starterPrompts = ["这周奶茶花多了怎么办？", "帮我复盘昨天一笔冲动消费", "给我一个这周能做到的省钱小目标"]
+
+    private var promptChips: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("可以这样开场".tr).font(.caption).tracking(2).foregroundColor(.bbInk2)
+            ForEach(starterPrompts, id: \.self) { p in
+                Button {
+                    input = p.tr
+                    send()
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "bubble.left").font(.caption).foregroundColor(.bbGreen)
+                        Text(p.tr).font(.subheadline).foregroundColor(.bbInk)
+                        Spacer(minLength: 0)
+                        Image(systemName: "arrow.up.right").font(.caption2).foregroundColor(.bbInk2)
+                    }
+                    .padding(.horizontal, 14).padding(.vertical, 12)
+                    .background(Color.bbSurface)
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.bbLine))
+                    .cornerRadius(10)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
 
     var body: some View {
         NavigationStack {
@@ -202,9 +262,14 @@ struct AIView: View {
                                 .padding(10).background(Color.bbBlue).cornerRadius(12)
                                 .id("thinking")
                             }
+                            // iPad: the fresh-chat screen is a big empty canvas —
+                            // fill it with tappable conversation starters.
+                            if hSize == .regular && messages.count <= 1 && !busy {
+                                promptChips.padding(.top, 16)
+                            }
                         }
                         .padding()
-                        .bbPageWidth()
+                        .bbPageWidth(hSize == .regular ? 760 : 640)
                     }
                     .scrollDismissesKeyboard(.interactively)
                     .onTapGesture { bbHideKeyboard() }
@@ -223,7 +288,7 @@ struct AIView: View {
                     .disabled(busy || input.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
                 .padding()
-                .bbPageWidth()
+                .bbPageWidth(hSize == .regular ? 760 : 640)
             }
             .background(Color.bbBg)
             .navigationTitle("AI搭子".tr)
@@ -267,12 +332,149 @@ struct AIView: View {
 
 struct ProfileView: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.horizontalSizeClass) private var hSize
     @Binding var tab: Int
     @State private var showEditNick = false
     @State private var showSyncInfo = false
     @State private var showResetConfirm = false
     @State private var showDeleteSheet = false
     @State private var showAuth = false
+
+    // iPhone — unchanged single column.
+    private var phoneLayout: some View {
+        VStack(spacing: 0) {
+            identityRow
+            summaryCards.padding(.top, 16)
+            storiesSection
+            recordsSection
+            accountSection
+            footer
+            Spacer(minLength: 24)
+        }
+        .padding(.horizontal, 16)
+        .bbPageWidth()
+    }
+
+    // iPad — identity + stat cards span the top; progress lives left,
+    // account settings right, so the width actually gets used.
+    private var padLayout: some View {
+        VStack(spacing: 0) {
+            identityRow
+            summaryCards.padding(.top, 18)
+            HStack(alignment: .top, spacing: 28) {
+                VStack(spacing: 0) {
+                    storiesSection
+                    recordsSection
+                }
+                VStack(spacing: 0) {
+                    accountSection
+                }
+            }
+            footer
+            Spacer(minLength: 32)
+        }
+        .padding(.horizontal, 32)
+        .bbPageWidth(1080)
+    }
+
+    // identity — guest: tap to log in; logged-in: tap to edit nickname
+    private var identityRow: some View {
+        Button { if store.isGuest { showAuth = true } else { showEditNick = true } } label: {
+            HStack(spacing: 14) {
+                RoundedRectangle(cornerRadius: 10).stroke(Color.bbLine).frame(width: 52, height: 52)
+                    .overlay(Image(systemName: "person").font(.title2).foregroundColor(.bbInk))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(store.isGuest ? "未登录".tr : store.displayName).font(.title3.bold()).foregroundColor(.bbInk)
+                    Text(identitySub).font(.caption).foregroundColor(.bbInk2)
+                }
+                Spacer(minLength: 0)
+                if store.isGuest {
+                    Text("登录 / 注册".tr).font(.caption.weight(.semibold)).foregroundColor(.bbGreen)
+                    Image(systemName: "chevron.right").font(.caption).foregroundColor(.bbInk2)
+                } else {
+                    Image(systemName: "pencil").font(.caption).foregroundColor(.bbInk2)
+                }
+            }
+            .padding(.vertical, 14).contentShape(Rectangle())
+            .overlay(Rectangle().fill(Color.bbLine).frame(height: 1), alignment: .bottom)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // summary cards (real, persisted counts)
+    private var summaryCards: some View {
+        HStack(spacing: 10) {
+            summaryCard("完成故事".tr, store.storiesCompleted, Color(hex: 0xE4EFE7), Color(hex: 0x35583F))
+            summaryCard("解锁图鉴".tr, store.codexUnlocked, Color.bbBlue, Color(hex: 0x3A5A78))
+            summaryCard("记账天数".tr, store.recordDays, Color(hex: 0xFFF4DF), Color(hex: 0x8A5A2B))
+        }
+    }
+
+    @ViewBuilder
+    private var storiesSection: some View {
+        profileSection("故 事 与 学 习".tr) {
+            Button { tab = 2 } label: { rowLabel("book", "已通关故事".tr, right: "\(store.storiesCompleted) / \(StoryStore.all.count)") }.buttonStyle(.plain)
+            NavigationLink { CodexView() } label: { rowLabel("rectangle.stack", "已解锁图鉴".tr, right: "\(store.codexUnlocked) / \(CodexStore.all.count)") }.buttonStyle(.plain)
+            Button { tab = 2 } label: { rowLabel("play.circle", "理财课程".tr, right: "已完成".tr + " \(store.lessonsCompleted)/\(LessonStore.all.count)") }.buttonStyle(.plain)
+            NavigationLink { ChallengesView() } label: { rowLabel("flag", "我的挑战".tr, right: store.activeChallengeCount > 0 ? "\(store.activeChallengeCount) " + "个进行中".tr : "去看看".tr) }.buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
+    private var recordsSection: some View {
+        profileSection("我 的 记 录".tr) {
+            Button { tab = 1 } label: { rowLabel("square.and.pencil", "消费选择记录".tr, right: "\(store.outCount) " + "次".tr) }.buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
+    private var accountSection: some View {
+        profileSection("账 户".tr) {
+            if store.isGuest {
+                Button { showAuth = true } label: { rowLabel("person.badge.plus", "登录 / 注册".tr, right: "同步与找回数据".tr) }.buttonStyle(.plain)
+                Button { showSyncInfo = true } label: { rowLabel("cloud", "云端同步".tr, right: "未开启".tr) }.buttonStyle(.plain)
+            } else {
+                Button { showSyncInfo = true } label: { rowLabel("cloud", "云端同步".tr, right: "已开启".tr) }.buttonStyle(.plain)
+            }
+            Button { showEditNick = true } label: { rowLabel("pencil", "编辑昵称".tr) }.buttonStyle(.plain)
+            ShareLink(item: exportJSON) { rowLabel("square.and.arrow.up", "导出数据".tr) }
+            NavigationLink { FeedbackView() } label: { rowLabel("ladybug", "问题反馈".tr) }.buttonStyle(.plain)
+            Button { BBRating.openWriteReview() } label: { rowLabel("star", "去 App Store 评分".tr) }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("profile.rate.app")
+            ShareLink(item: BBRating.listingURL,
+                      message: Text("我在用省钱搭子练财商，故事挺好玩的，推荐你试试！".tr)) {
+                rowLabel("gift", "推荐给朋友".tr)
+            }
+            .accessibilityIdentifier("profile.share.app")
+            Menu {
+                Button("中文") { BBLang.set("zh") }
+                Button("English") { BBLang.set("en") }
+            } label: { rowLabel("globe", "语言".tr, right: BBLang.isEN ? "English" : "中文") }
+            Button { showResetConfirm = true } label: { rowLabel("arrow.counterclockwise", "恢复默认数据".tr) }.buttonStyle(.plain)
+            if !store.isGuest {
+                Button { Task { await store.logout() } } label: { rowLabel("rectangle.portrait.and.arrow.right", "退出登录".tr, tint: .bbRed) }.buttonStyle(.plain)
+                Button { showDeleteSheet = true } label: { rowLabel("trash", "删除账号".tr, tint: .bbRed) }.buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var footer: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 6) {
+                NavigationLink { Legal.terms } label: { Text("用户协议".tr) }.foregroundColor(.bbInk)
+                Text("·").foregroundColor(.bbInk2)
+                NavigationLink { Legal.privacy } label: { Text("隐私政策".tr) }.foregroundColor(.bbInk)
+            }
+            .font(.caption).padding(.top, 24)
+
+            VStack(spacing: 3) {
+                Text("省钱搭子 BudgetBuddy").font(.caption.weight(.semibold)).foregroundColor(.bbInk2)
+                Text("陪你把每一次选择，变成更好的决定".tr).font(.caption2).foregroundColor(.bbInk2)
+            }
+            .padding(.top, 12)
+        }
+    }
 
     private var identitySub: String {
         if store.isGuest {
@@ -290,93 +492,7 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 0) {
-                    // identity — guest: tap to log in; logged-in: tap to edit nickname
-                    Button { if store.isGuest { showAuth = true } else { showEditNick = true } } label: {
-                        HStack(spacing: 14) {
-                            RoundedRectangle(cornerRadius: 10).stroke(Color.bbLine).frame(width: 52, height: 52)
-                                .overlay(Image(systemName: "person").font(.title2).foregroundColor(.bbInk))
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(store.isGuest ? "未登录".tr : store.displayName).font(.title3.bold()).foregroundColor(.bbInk)
-                                Text(identitySub).font(.caption).foregroundColor(.bbInk2)
-                            }
-                            Spacer(minLength: 0)
-                            if store.isGuest {
-                                Text("登录 / 注册".tr).font(.caption.weight(.semibold)).foregroundColor(.bbGreen)
-                                Image(systemName: "chevron.right").font(.caption).foregroundColor(.bbInk2)
-                            } else {
-                                Image(systemName: "pencil").font(.caption).foregroundColor(.bbInk2)
-                            }
-                        }
-                        .padding(.vertical, 14).contentShape(Rectangle())
-                        .overlay(Rectangle().fill(Color.bbLine).frame(height: 1), alignment: .bottom)
-                    }
-                    .buttonStyle(.plain)
-
-                    // summary cards (real, persisted counts)
-                    HStack(spacing: 10) {
-                        summaryCard("完成故事".tr, store.storiesCompleted, Color(hex: 0xE4EFE7), Color(hex: 0x35583F))
-                        summaryCard("解锁图鉴".tr, store.codexUnlocked, Color.bbBlue, Color(hex: 0x3A5A78))
-                        summaryCard("记账天数".tr, store.recordDays, Color(hex: 0xFFF4DF), Color(hex: 0x8A5A2B))
-                    }
-                    .padding(.top, 16)
-
-                    profileSection("故 事 与 学 习".tr) {
-                        Button { tab = 2 } label: { rowLabel("book", "已通关故事".tr, right: "\(store.storiesCompleted) / \(StoryStore.all.count)") }.buttonStyle(.plain)
-                        NavigationLink { CodexView() } label: { rowLabel("rectangle.stack", "已解锁图鉴".tr, right: "\(store.codexUnlocked) / \(CodexStore.all.count)") }.buttonStyle(.plain)
-                        Button { tab = 2 } label: { rowLabel("play.circle", "理财课程".tr, right: "已完成".tr + " \(store.lessonsCompleted)/\(LessonStore.all.count)") }.buttonStyle(.plain)
-                        NavigationLink { ChallengesView() } label: { rowLabel("flag", "我的挑战".tr, right: store.activeChallengeCount > 0 ? "\(store.activeChallengeCount) " + "个进行中".tr : "去看看".tr) }.buttonStyle(.plain)
-                    }
-
-                    profileSection("我 的 记 录".tr) {
-                        Button { tab = 1 } label: { rowLabel("square.and.pencil", "消费选择记录".tr, right: "\(store.outCount) " + "次".tr) }.buttonStyle(.plain)
-                    }
-
-                    profileSection("账 户".tr) {
-                        if store.isGuest {
-                            Button { showAuth = true } label: { rowLabel("person.badge.plus", "登录 / 注册".tr, right: "同步与找回数据".tr) }.buttonStyle(.plain)
-                            Button { showSyncInfo = true } label: { rowLabel("cloud", "云端同步".tr, right: "未开启".tr) }.buttonStyle(.plain)
-                        } else {
-                            Button { showSyncInfo = true } label: { rowLabel("cloud", "云端同步".tr, right: "已开启".tr) }.buttonStyle(.plain)
-                        }
-                        Button { showEditNick = true } label: { rowLabel("pencil", "编辑昵称".tr) }.buttonStyle(.plain)
-                        ShareLink(item: exportJSON) { rowLabel("square.and.arrow.up", "导出数据".tr) }
-                        NavigationLink { FeedbackView() } label: { rowLabel("ladybug", "问题反馈".tr) }.buttonStyle(.plain)
-                        Button { BBRating.openWriteReview() } label: { rowLabel("star", "去 App Store 评分".tr) }
-                            .buttonStyle(.plain)
-                            .accessibilityIdentifier("profile.rate.app")
-                        ShareLink(item: BBRating.listingURL,
-                                  message: Text("我在用省钱搭子练财商，故事挺好玩的，推荐你试试！".tr)) {
-                            rowLabel("gift", "推荐给朋友".tr)
-                        }
-                        .accessibilityIdentifier("profile.share.app")
-                        Menu {
-                            Button("中文") { BBLang.set("zh") }
-                            Button("English") { BBLang.set("en") }
-                        } label: { rowLabel("globe", "语言".tr, right: BBLang.isEN ? "English" : "中文") }
-                        Button { showResetConfirm = true } label: { rowLabel("arrow.counterclockwise", "恢复默认数据".tr) }.buttonStyle(.plain)
-                        if !store.isGuest {
-                            Button { Task { await store.logout() } } label: { rowLabel("rectangle.portrait.and.arrow.right", "退出登录".tr, tint: .bbRed) }.buttonStyle(.plain)
-                            Button { showDeleteSheet = true } label: { rowLabel("trash", "删除账号".tr, tint: .bbRed) }.buttonStyle(.plain)
-                        }
-                    }
-
-                    HStack(spacing: 6) {
-                        NavigationLink { Legal.terms } label: { Text("用户协议".tr) }.foregroundColor(.bbInk)
-                        Text("·").foregroundColor(.bbInk2)
-                        NavigationLink { Legal.privacy } label: { Text("隐私政策".tr) }.foregroundColor(.bbInk)
-                    }
-                    .font(.caption).padding(.top, 24)
-
-                    VStack(spacing: 3) {
-                        Text("省钱搭子 BudgetBuddy").font(.caption.weight(.semibold)).foregroundColor(.bbInk2)
-                        Text("陪你把每一次选择，变成更好的决定".tr).font(.caption2).foregroundColor(.bbInk2)
-                    }
-                    .padding(.top, 12)
-                    Spacer(minLength: 24)
-                }
-                .padding(.horizontal, 16)
-                .bbPageWidth()
+                if hSize == .regular { padLayout } else { phoneLayout }
             }
             .background(Color.bbBg)
             .navigationTitle("我的".tr)

@@ -153,6 +153,11 @@ enum L10n {
         "昨天": "Yesterday", "本周": "Week", "本月": "Month",
         "本周结余": "Net this week", "本周支出": "Spent", "本周收入": "Income",
         "本周笔数": "Entries", "周记账天数": "Days logged",
+        // ---- iPad layout (v1.3) ----
+        "记 一 笔": "QUICK ADD", "可以这样开场": "Ways to start",
+        "这周奶茶花多了怎么办？": "I spent too much on bubble tea this week — help?",
+        "帮我复盘昨天一笔冲动消费": "Help me review an impulse buy from yesterday",
+        "给我一个这周能做到的省钱小目标": "Give me a small savings goal I can hit this week",
         "还没有记录": "Nothing logged yet", "从今天开始，记录一次真实的消费选择。": "Start today — log one real spending choice.",
         "发生了什么？（选填）": "What happened? (optional)", "记一笔": "Add entry",
         "花完之后，停三秒回顾一下——想记就记，跳过也没关系。": "Take three seconds to reflect — log it if you like, skipping is fine too.",
