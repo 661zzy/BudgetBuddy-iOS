@@ -23,7 +23,7 @@ targets:
           - "$(inherited)"
           - "@executable_path/Frameworks"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        MARKETING_VERSION: "1.3"
+        MARKETING_VERSION: "1.4"
         CURRENT_PROJECT_VERSION: "21"
         GENERATE_INFOPLIST_FILE: "YES"
         INFOPLIST_KEY_CFBundleDisplayName: "省钱搭子"
