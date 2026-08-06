@@ -37,6 +37,7 @@ struct RootView: View {
             }
         }
         .task {
+            WatchBridge.shared.activate(store: store)
             if case .loading = store.phase { await store.boot() }
         }
         .sheet(item: $store.update) { UpdateSheet(prompt: $0) }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0C49FF4891983BB5C74A3AA5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7F99F7BE62095C9139DC4F /* OnboardingView.swift */; };
+		0DDDF1606A48303FBD8F4791 /* WatchAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429C6ADA6478AB8FC7FF6653 /* WatchAddView.swift */; };
 		1822015E0AF551219B3525A9 /* Build13EnglishContentProbeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53471A220F2E0AF7C10BBC1 /* Build13EnglishContentProbeUITests.swift */; };
 		1CC75968EEE63A82B15FC49A /* ManualScreenshotsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BFEAC08C0B7E406D7598CB /* ManualScreenshotsUITests.swift */; };
 		1D7134938206D59BCC6A8B4F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E923AA22C691DC1AA25A7753 /* PrivacyInfo.xcprivacy */; };
@@ -32,18 +33,23 @@
 		930BFF2B45A8E1F2B4E9071D /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6801DC07C088C6B7CD5C1E /* App.swift */; };
 		944DD9913573FCF67C439F9D /* AppStoreScreenshotsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA75BB7624CF060F34430F5C /* AppStoreScreenshotsUITests.swift */; };
 		962A2F4A8E2487A2CE4D7915 /* codex.json in Resources */ = {isa = PBXBuildFile; fileRef = AA866DDD3A50552E7424A0BA /* codex.json */; };
+		9C22D4F07302E1F100C03797 /* BudgetBuddyWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586066F5538B41CE9E1AA051 /* BudgetBuddyWatchApp.swift */; };
 		A46B7F3BFA9939B15E62FE7E /* GeneratedStoryArtSmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CD15C0640B5C2625DEEF06 /* GeneratedStoryArtSmokeUITests.swift */; };
 		A51E7AEE376A089D713342BA /* content_en.json in Resources */ = {isa = PBXBuildFile; fileRef = B33047B09F6CEE15FDC5B330 /* content_en.json */; };
 		AAF7F8A875408750E90A1246 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 168FF09AED732202ED653F49 /* APIClient.swift */; };
+		AE7068CA1BF6F431C989C115 /* WatchSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC285FB67DE3348DC46810D9 /* WatchSync.swift */; };
 		B04DC22EF155D90D0D14DEC8 /* challenge_defs.json in Resources */ = {isa = PBXBuildFile; fileRef = B2461CFF570E8B46E1049CEB /* challenge_defs.json */; };
 		BE3365546B0CB162150B0E67 /* ChallengesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF6C8BBC297480C5BFCD24A /* ChallengesView.swift */; };
 		C488AEF438185B63F81FC298 /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8502F5EFE6221CB20EF05F44 /* Diagnostics.swift */; };
 		C8C3C62DC8C515424D13DEE3 /* StabilityFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E84C5E625B38A2501CF21F0 /* StabilityFlowUITests.swift */; };
+		CCFBC6B66B9181A44353AABF /* BudgetBuddyWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 6DD4A16E66AD6AAC44E728FB /* BudgetBuddyWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CE5ED095F706EAF2D50FFAE1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BC153E24C5F2596E031918 /* Assets.xcassets */; };
 		D1A5C2797D1006A9C8EA4FED /* TrackerSummaryUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069C7D124CBD6C82DD2AB4AF /* TrackerSummaryUITests.swift */; };
 		D32F9BBBD318EA1835EFD74F /* AppRating.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71D45BDB9F5C48099B0DF3 /* AppRating.swift */; };
 		D37920BD12FD0B7CE890552C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4452A75854BBEC2F2673564 /* Models.swift */; };
 		E00C68CC617B8D382D94C484 /* GuestModeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62BB45B44ECA2EB0FB036018 /* GuestModeUITests.swift */; };
+		E46AC57C0EF89A952FC668C2 /* WatchBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04CCB2C18C63A7F65A4592 /* WatchBridge.swift */; };
+		FF5C01F4997AF84F7E8499D0 /* WatchQuickAddUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5F15F83CCC99F2DBA74140 /* WatchQuickAddUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,23 +60,55 @@
 			remoteGlobalIDString = B5B78C12675F2EFE1516B837;
 			remoteInfo = BudgetBuddy;
 		};
+		DA560C648E03C408E42AFCB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5FF655893054AC4B4A5FD3AE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8FC22903812FD384723A5338;
+			remoteInfo = BudgetBuddyWatch;
+		};
+		FA46E970255E45DA079793ED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5FF655893054AC4B4A5FD3AE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8FC22903812FD384723A5338;
+			remoteInfo = BudgetBuddyWatch;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		03F727D14BA4928B1C2D151B /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				CCFBC6B66B9181A44353AABF /* BudgetBuddyWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		069C7D124CBD6C82DD2AB4AF /* TrackerSummaryUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerSummaryUITests.swift; sourceTree = "<group>"; };
 		06CC3F27E573CDCBAEB67CE5 /* LegalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalView.swift; sourceTree = "<group>"; };
 		086B86EEFD49449A07F3DA99 /* Stories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
+		0A5F15F83CCC99F2DBA74140 /* WatchQuickAddUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchQuickAddUITests.swift; sourceTree = "<group>"; };
 		0FBA81EC46A06E0C83DDC53E /* SceneArtUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneArtUITests.swift; sourceTree = "<group>"; };
 		168FF09AED732202ED653F49 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		2CB327477B63C862CF4C4BDF /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		41F2A5A0F50EE631AE332537 /* lessons.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = lessons.json; sourceTree = "<group>"; };
+		429C6ADA6478AB8FC7FF6653 /* WatchAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAddView.swift; sourceTree = "<group>"; };
 		4308F2D9E35FBADE4AF01914 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		4700651E2770E76ADA27D2F9 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		56CD15C0640B5C2625DEEF06 /* GeneratedStoryArtSmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedStoryArtSmokeUITests.swift; sourceTree = "<group>"; };
 		580C6AF9335FC3A4784D7FE0 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		586066F5538B41CE9E1AA051 /* BudgetBuddyWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetBuddyWatchApp.swift; sourceTree = "<group>"; };
 		59E6305298343D4E0184491E /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		5B27166D2A1185543E0CDDA9 /* PixelArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelArt.swift; sourceTree = "<group>"; };
 		62BB45B44ECA2EB0FB036018 /* GuestModeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuestModeUITests.swift; sourceTree = "<group>"; };
+		6DD4A16E66AD6AAC44E728FB /* BudgetBuddyWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BudgetBuddyWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F6801DC07C088C6B7CD5C1E /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		75368C41319B0354ED4CEFBB /* Build13RetestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Build13RetestUITests.swift; sourceTree = "<group>"; };
 		7E84C5E625B38A2501CF21F0 /* StabilityFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StabilityFlowUITests.swift; sourceTree = "<group>"; };
@@ -78,14 +116,17 @@
 		8502F5EFE6221CB20EF05F44 /* Diagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
 		894F0C0185717F4301A2B9C7 /* BudgetBuddyUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BudgetBuddyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8987DDEDDFA31A9140706008 /* stories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stories.json; sourceTree = "<group>"; };
+		9BE4FDF9834C2A9B27690963 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A0BFEAC08C0B7E406D7598CB /* ManualScreenshotsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualScreenshotsUITests.swift; sourceTree = "<group>"; };
 		AA866DDD3A50552E7424A0BA /* codex.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = codex.json; sourceTree = "<group>"; };
 		B2461CFF570E8B46E1049CEB /* challenge_defs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = challenge_defs.json; sourceTree = "<group>"; };
 		B33047B09F6CEE15FDC5B330 /* content_en.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = content_en.json; sourceTree = "<group>"; };
 		B3BC153E24C5F2596E031918 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BABAFF6217EC65BC2FC171EA /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		BC04CCB2C18C63A7F65A4592 /* WatchBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchBridge.swift; sourceTree = "<group>"; };
 		C35712FDED470F48C2A0DEAC /* TrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerView.swift; sourceTree = "<group>"; };
 		C53471A220F2E0AF7C10BBC1 /* Build13EnglishContentProbeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Build13EnglishContentProbeUITests.swift; sourceTree = "<group>"; };
+		C7E9ACABCB3DB56BEF6F4A32 /* BudgetBuddyWatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BudgetBuddyWatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAF6C8BBC297480C5BFCD24A /* ChallengesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesView.swift; sourceTree = "<group>"; };
 		D2F2F10151DF065055DEE86F /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		DA7F99F7BE62095C9139DC4F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
@@ -95,6 +136,7 @@
 		F402A001BE0656EB0563C032 /* BudgetBuddy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BudgetBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4452A75854BBEC2F2673564 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		FA75BB7624CF060F34430F5C /* AppStoreScreenshotsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreScreenshotsUITests.swift; sourceTree = "<group>"; };
+		FC285FB67DE3348DC46810D9 /* WatchSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSync.swift; sourceTree = "<group>"; };
 		FD71D45BDB9F5C48099B0DF3 /* AppRating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRating.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -121,6 +163,8 @@
 			children = (
 				F402A001BE0656EB0563C032 /* BudgetBuddy.app */,
 				894F0C0185717F4301A2B9C7 /* BudgetBuddyUITests.xctest */,
+				6DD4A16E66AD6AAC44E728FB /* BudgetBuddyWatch.app */,
+				C7E9ACABCB3DB56BEF6F4A32 /* BudgetBuddyWatchUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,8 +177,18 @@
 				D2B96D7B2339836452B02BD1 /* Resources */,
 				C3A0A89CD2E19A2B8BD7A34E /* Sources */,
 				240A8E8F4B55B0BD5D3F53C9 /* UITests */,
+				C9975E5082B00D4E4CF55C34 /* WatchApp */,
+				BA53293BC164CCE5998D1098 /* WatchUITests */,
 				78407793A2B8064AEC6D3C70 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		BA53293BC164CCE5998D1098 /* WatchUITests */ = {
+			isa = PBXGroup;
+			children = (
+				0A5F15F83CCC99F2DBA74140 /* WatchQuickAddUITests.swift */,
+			);
+			path = WatchUITests;
 			sourceTree = "<group>";
 		};
 		C3A0A89CD2E19A2B8BD7A34E /* Sources */ = {
@@ -160,8 +214,20 @@
 				BABAFF6217EC65BC2FC171EA /* Theme.swift */,
 				C35712FDED470F48C2A0DEAC /* TrackerView.swift */,
 				4308F2D9E35FBADE4AF01914 /* UpdateChecker.swift */,
+				BC04CCB2C18C63A7F65A4592 /* WatchBridge.swift */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		C9975E5082B00D4E4CF55C34 /* WatchApp */ = {
+			isa = PBXGroup;
+			children = (
+				586066F5538B41CE9E1AA051 /* BudgetBuddyWatchApp.swift */,
+				9BE4FDF9834C2A9B27690963 /* Info.plist */,
+				429C6ADA6478AB8FC7FF6653 /* WatchAddView.swift */,
+				FC285FB67DE3348DC46810D9 /* WatchSync.swift */,
+			);
+			path = WatchApp;
 			sourceTree = "<group>";
 		};
 		D2B96D7B2339836452B02BD1 /* Resources */ = {
@@ -197,16 +263,53 @@
 			productReference = 894F0C0185717F4301A2B9C7 /* BudgetBuddyUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		8FC22903812FD384723A5338 /* BudgetBuddyWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2259C28D1C54DCB7B486855 /* Build configuration list for PBXNativeTarget "BudgetBuddyWatch" */;
+			buildPhases = (
+				C6843DFD677E0A6F50CEFF00 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BudgetBuddyWatch;
+			packageProductDependencies = (
+			);
+			productName = BudgetBuddyWatch;
+			productReference = 6DD4A16E66AD6AAC44E728FB /* BudgetBuddyWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A744AB99B29916E1CF1EB61D /* BudgetBuddyWatchUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F79AFBA74AEB3D8DC7A7714C /* Build configuration list for PBXNativeTarget "BudgetBuddyWatchUITests" */;
+			buildPhases = (
+				5F2ACDA5714D48BD8C93690E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				47F48B918B33270FE19661BB /* PBXTargetDependency */,
+			);
+			name = BudgetBuddyWatchUITests;
+			packageProductDependencies = (
+			);
+			productName = BudgetBuddyWatchUITests;
+			productReference = C7E9ACABCB3DB56BEF6F4A32 /* BudgetBuddyWatchUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		B5B78C12675F2EFE1516B837 /* BudgetBuddy */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D312AE38DE7C22E6EDDBE60B /* Build configuration list for PBXNativeTarget "BudgetBuddy" */;
 			buildPhases = (
 				7558A7EFE5DD189B3861D52F /* Sources */,
 				EC84329BA31019EE812A3E76 /* Resources */,
+				03F727D14BA4928B1C2D151B /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				E06962EDA1BD188ACBC18296 /* PBXTargetDependency */,
 			);
 			name = BudgetBuddy;
 			packageProductDependencies = (
@@ -226,6 +329,12 @@
 				TargetAttributes = {
 					1BD83FFD588D65BAA9A4BA24 = {
 						TestTargetID = B5B78C12675F2EFE1516B837;
+					};
+					8FC22903812FD384723A5338 = {
+						DevelopmentTeam = JUJB5U4698;
+					};
+					A744AB99B29916E1CF1EB61D = {
+						TestTargetID = 8FC22903812FD384723A5338;
 					};
 					B5B78C12675F2EFE1516B837 = {
 						DevelopmentTeam = JUJB5U4698;
@@ -248,6 +357,8 @@
 			targets = (
 				B5B78C12675F2EFE1516B837 /* BudgetBuddy */,
 				1BD83FFD588D65BAA9A4BA24 /* BudgetBuddyUITests */,
+				8FC22903812FD384723A5338 /* BudgetBuddyWatch */,
+				A744AB99B29916E1CF1EB61D /* BudgetBuddyWatchUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -287,6 +398,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5F2ACDA5714D48BD8C93690E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF5C01F4997AF84F7E8499D0 /* WatchQuickAddUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7558A7EFE5DD189B3861D52F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -311,6 +430,17 @@
 				2F2FDDE67545103B94865D76 /* Theme.swift in Sources */,
 				1F0F65794C6152C700A8BB98 /* TrackerView.swift in Sources */,
 				2675D1D5E6FE72780E26C6D6 /* UpdateChecker.swift in Sources */,
+				E46AC57C0EF89A952FC668C2 /* WatchBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C6843DFD677E0A6F50CEFF00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9C22D4F07302E1F100C03797 /* BudgetBuddyWatchApp.swift in Sources */,
+				0DDDF1606A48303FBD8F4791 /* WatchAddView.swift in Sources */,
+				AE7068CA1BF6F431C989C115 /* WatchSync.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,6 +451,16 @@
 			isa = PBXTargetDependency;
 			target = B5B78C12675F2EFE1516B837 /* BudgetBuddy */;
 			targetProxy = 34B4844627AE722151EF173B /* PBXContainerItemProxy */;
+		};
+		47F48B918B33270FE19661BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8FC22903812FD384723A5338 /* BudgetBuddyWatch */;
+			targetProxy = FA46E970255E45DA079793ED /* PBXContainerItemProxy */;
+		};
+		E06962EDA1BD188ACBC18296 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8FC22903812FD384723A5338 /* BudgetBuddyWatch */;
+			targetProxy = DA560C648E03C408E42AFCB2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -381,10 +521,23 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7BF955CEA842D861E9E1F9A0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGNING_ALLOWED[sdk=watchos*]" = NO;
+				"CODE_SIGNING_REQUIRED[sdk=watchos*]" = NO;
+				CODE_SIGN_STYLE = Manual;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddyWatchUITests;
+				SDKROOT = watchos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = BudgetBuddyWatch;
 			};
 			name = Debug;
 		};
@@ -416,7 +569,7 @@
 				"CODE_SIGNING_ALLOWED[sdk=iphoneos*]" = NO;
 				"CODE_SIGNING_REQUIRED[sdk=iphoneos*]" = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = JUJB5U4698;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "省钱搭子";
@@ -431,7 +584,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddy;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
@@ -446,7 +599,7 @@
 				"CODE_SIGNING_ALLOWED[sdk=iphoneos*]" = NO;
 				"CODE_SIGNING_REQUIRED[sdk=iphoneos*]" = NO;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = JUJB5U4698;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "省钱搭子";
@@ -461,11 +614,29 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddy;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BE19AF1FD3F91171673AFACA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGNING_ALLOWED[sdk=watchos*]" = NO;
+				"CODE_SIGNING_REQUIRED[sdk=watchos*]" = NO;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = JUJB5U4698;
+				INFOPLIST_FILE = WatchApp/Info.plist;
+				MARKETING_VERSION = 1.5;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddy.watchkitapp;
+				SDKROOT = watchos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
@@ -484,6 +655,33 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = BudgetBuddy;
+			};
+			name = Release;
+		};
+		CFEB352970C2210C7F4D1782 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddyWatchUITests;
+				SDKROOT = watchos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = BudgetBuddyWatch;
+			};
+			name = Release;
+		};
+		E60D57314FC8127AC1CAD363 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = JUJB5U4698;
+				INFOPLIST_FILE = WatchApp/Info.plist;
+				MARKETING_VERSION = 1.5;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddy.watchkitapp;
+				SDKROOT = watchos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -536,7 +734,6 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -569,6 +766,24 @@
 			buildConfigurations = (
 				9DF41BE522CCF61AF2B6F298 /* Debug */,
 				8904627B863FCEE1C4BE2001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E2259C28D1C54DCB7B486855 /* Build configuration list for PBXNativeTarget "BudgetBuddyWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE19AF1FD3F91171673AFACA /* Debug */,
+				E60D57314FC8127AC1CAD363 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F79AFBA74AEB3D8DC7A7714C /* Build configuration list for PBXNativeTarget "BudgetBuddyWatchUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7BF955CEA842D861E9E1F9A0 /* Debug */,
+				CFEB352970C2210C7F4D1782 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

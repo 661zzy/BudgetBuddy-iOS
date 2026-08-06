@@ -167,7 +167,7 @@ final class AppStore: ObservableObject {
 
     // MARK: Transactions
     @discardableResult
-    func addTransaction(amount: Double, cat: String, note: String, kind: String, reflect: Reflect? = nil) async -> String {
+    func addTransaction(amount: Double, cat: String, note: String, kind: String, reflect: Reflect? = nil, ts: String? = nil) async -> String {
         let label = note.isEmpty ? (CATS[cat]?.zh ?? "") : note
         let tx = Transaction(
             id: "tx" + UUID().uuidString.prefix(12).lowercased(),
@@ -175,10 +175,12 @@ final class AppStore: ObservableObject {
             cat: cat,
             note: label,
             amount: amount,
-            ts: ISO8601DateFormatter().string(from: Date()),
+            ts: ts ?? ISO8601DateFormatter().string(from: Date()),
             reflect: reflect
         )
-        state.transactions.insert(tx, at: 0)
+        // Watch entries can arrive late (queued offline) — keep the list newest-first.
+        let at = state.transactions.firstIndex { $0.ts <= tx.ts } ?? state.transactions.count
+        state.transactions.insert(tx, at: at)
         await save()
         return tx.id
     }
