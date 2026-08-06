@@ -17,6 +17,7 @@
 		1F0F65794C6152C700A8BB98 /* TrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35712FDED470F48C2A0DEAC /* TrackerView.swift */; };
 		2600BD14A81B5B9FB8414D18 /* LegalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CC3F27E573CDCBAEB67CE5 /* LegalView.swift */; };
 		2675D1D5E6FE72780E26C6D6 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4308F2D9E35FBADE4AF01914 /* UpdateChecker.swift */; };
+		287A34D4E4DF07FFED596D8A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 794DE158D71E2C44B6C92CD8 /* Assets.xcassets */; };
 		2F2FDDE67545103B94865D76 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABAFF6217EC65BC2FC171EA /* Theme.swift */; };
 		37D50F07E5690CD915343241 /* Stories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086B86EEFD49449A07F3DA99 /* Stories.swift */; };
 		3F6D588F48F9CE1B8DA78AA5 /* V11SmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8426D9EF5D90282736878D2C /* V11SmokeUITests.swift */; };
@@ -111,6 +112,7 @@
 		6DD4A16E66AD6AAC44E728FB /* BudgetBuddyWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BudgetBuddyWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F6801DC07C088C6B7CD5C1E /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		75368C41319B0354ED4CEFBB /* Build13RetestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Build13RetestUITests.swift; sourceTree = "<group>"; };
+		794DE158D71E2C44B6C92CD8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7E84C5E625B38A2501CF21F0 /* StabilityFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StabilityFlowUITests.swift; sourceTree = "<group>"; };
 		8426D9EF5D90282736878D2C /* V11SmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V11SmokeUITests.swift; sourceTree = "<group>"; };
 		8502F5EFE6221CB20EF05F44 /* Diagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 		C9975E5082B00D4E4CF55C34 /* WatchApp */ = {
 			isa = PBXGroup;
 			children = (
+				794DE158D71E2C44B6C92CD8 /* Assets.xcassets */,
 				586066F5538B41CE9E1AA051 /* BudgetBuddyWatchApp.swift */,
 				9BE4FDF9834C2A9B27690963 /* Info.plist */,
 				429C6ADA6478AB8FC7FF6653 /* WatchAddView.swift */,
@@ -268,6 +271,7 @@
 			buildConfigurationList = E2259C28D1C54DCB7B486855 /* Build configuration list for PBXNativeTarget "BudgetBuddyWatch" */;
 			buildPhases = (
 				C6843DFD677E0A6F50CEFF00 /* Sources */,
+				1289053B243A4C9FF813138C /* Resources */,
 			);
 			buildRules = (
 			);
@@ -364,6 +368,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1289053B243A4C9FF813138C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				287A34D4E4DF07FFED596D8A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC84329BA31019EE812A3E76 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -587,6 +599,7 @@
 				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddy;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -617,6 +630,7 @@
 				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddy;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -625,6 +639,7 @@
 		BE19AF1FD3F91171673AFACA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGNING_ALLOWED[sdk=watchos*]" = NO;
 				"CODE_SIGNING_REQUIRED[sdk=watchos*]" = NO;
 				CODE_SIGN_STYLE = Manual;
@@ -634,6 +649,7 @@
 				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddy.watchkitapp;
 				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 10.0;
@@ -672,6 +688,7 @@
 		E60D57314FC8127AC1CAD363 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = JUJB5U4698;
@@ -679,6 +696,7 @@
 				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddy.watchkitapp;
 				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 10.0;
