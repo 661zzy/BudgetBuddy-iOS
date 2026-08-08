@@ -164,6 +164,14 @@ final class APIClient {
         try await request("GET", "/auth/me", decode: UserResponse.self).user
     }
 
+    // MARK: Feedback (guest-friendly one-tap submission; server rate-limits by IP)
+    func sendFeedback(message: String, diagnostics: String) async throws {
+        struct Req: Encodable { let message: String; let diagnostics: String }
+        _ = try await request("POST", "/feedback",
+                              body: Req(message: message, diagnostics: diagnostics),
+                              decode: OkResponse.self)
+    }
+
     // MARK: State
     func loadState() async throws -> AppState {
         try await request("GET", "/state", decode: StateResponse.self).appState

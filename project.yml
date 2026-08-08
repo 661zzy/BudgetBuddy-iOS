@@ -27,7 +27,7 @@ targets:
           - "@executable_path/Frameworks"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         MARKETING_VERSION: "1.5"
-        CURRENT_PROJECT_VERSION: "22"
+        CURRENT_PROJECT_VERSION: "23"
         GENERATE_INFOPLIST_FILE: "YES"
         INFOPLIST_KEY_CFBundleDisplayName: "省钱搭子"
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: "NO"
@@ -81,7 +81,7 @@ targets:
         SKIP_INSTALL: "YES"
         TARGETED_DEVICE_FAMILY: "4"
         MARKETING_VERSION: "1.5"
-        CURRENT_PROJECT_VERSION: "22"
+        CURRENT_PROJECT_VERSION: "23"
         SWIFT_VERSION: "5.0"
       configs:
         Debug:

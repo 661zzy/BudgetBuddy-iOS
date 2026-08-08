@@ -71,6 +71,10 @@ enum L10n {
         "消费选择记录": "Choice log", "次": "times", "云端同步": "Cloud sync", "已开启": "On",
         "编辑昵称": "Edit nickname", "导出数据": "Export data", "问题反馈": "Feedback",
         "去 App Store 评分": "Rate on the App Store",
+        // ---- one-tap feedback (v1.5.x) ----
+        "直接发送": "Send now", "发送中…": "Sending…", "已发送，谢谢反馈 ✓": "Sent — thank you ✓",
+        "没发出去，试试下面的分享或邮件方式": "Couldn't send — try share or email below",
+        "或通过分享 / 邮件发送": "Or send via share / email",
         "推荐给朋友": "Share with friends",
         "我在用省钱搭子练财商，故事挺好玩的，推荐你试试！": "I'm using BudgetBuddy to practice money skills — the stories are fun. Give it a try!",
         "恢复默认数据": "Reset my data", "退出登录": "Log out", "删除账号": "Delete account",

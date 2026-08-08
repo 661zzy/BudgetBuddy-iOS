@@ -5,8 +5,27 @@ struct FeedbackView: View {
     @EnvironmentObject var store: AppStore
     @State private var note = ""
     @State private var copied = false
+    @State private var sending = false
+    @State private var sent = false
+    @State private var sendError = ""
 
     private var hasCrash: Bool { Diagnostics.lastCrash() != nil }
+
+    // 用户反馈：发送太麻烦（要走分享→邮件）。现在一键直达服务器，
+    // 分享/邮件降级为后备通道（服务端接口未就绪或断网时仍可用）。
+    private func submit() {
+        guard !sending, !sent else { return }
+        sending = true; sendError = ""
+        Task {
+            do {
+                try await APIClient.shared.sendFeedback(message: note, diagnostics: report)
+                sent = true
+            } catch {
+                sendError = bbAPIMessage(error) ?? "没发出去，试试下面的分享或邮件方式".tr
+            }
+            sending = false
+        }
+    }
 
     private var report: String {
         var s = "省钱搭子 BudgetBuddy · 诊断报告\n"
@@ -65,16 +84,39 @@ struct FeedbackView: View {
                     .background(RoundedRectangle(cornerRadius: 12).fill(Color.bbSurface))
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine))
 
+                Button { submit() } label: {
+                    HStack(spacing: 8) {
+                        if sending { ProgressView().tint(.white) }
+                        Text(sent ? "已发送，谢谢反馈 ✓".tr : (sending ? "发送中…".tr : "直接发送".tr))
+                            .font(.system(.headline, design: .rounded).weight(.bold))
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity).padding(.vertical, 15)
+                    .duo(sent ? Color(hex: 0x2C4537) : .bbGreen, duoGreenEdge)
+                }
+                .disabled(sending || sent)
+                .accessibilityIdentifier("feedback.submit")
+
+                if !sendError.isEmpty {
+                    HStack(spacing: 6) {
+                        Image(systemName: "exclamationmark.circle")
+                        Text(sendError)
+                    }
+                    .font(.footnote).foregroundColor(.bbRed)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
                 ShareLink(item: report) {
-                    Text("发送诊断报告".tr).font(.system(.headline, design: .rounded).weight(.bold)).foregroundColor(.white)
-                        .frame(maxWidth: .infinity).padding(.vertical, 15).duoPrimary()
+                    Text("或通过分享 / 邮件发送".tr).font(.system(.subheadline, design: .rounded).weight(.semibold))
+                        .foregroundColor(.bbGreen)
+                        .frame(maxWidth: .infinity).padding(.vertical, 4)
                 }
                 Button {
                     UIPasteboard.general.string = report
                     copied = true
                 } label: {
                     Text(copied ? "已复制 ✓".tr : "复制诊断信息".tr)
-                        .font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbGreen)
+                        .font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
                         .frame(maxWidth: .infinity).padding(.vertical, 4)
                 }
                 if hasCrash {
