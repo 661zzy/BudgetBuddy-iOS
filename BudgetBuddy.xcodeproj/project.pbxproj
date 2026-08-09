@@ -27,6 +27,7 @@
 		5317190862D74EC80D8352D5 /* PixelArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B27166D2A1185543E0CDDA9 /* PixelArt.swift */; };
 		55217E38CBAD6F9FA8BFB392 /* SceneArtUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FBA81EC46A06E0C83DDC53E /* SceneArtUITests.swift */; };
 		55A79EBA6120AF9912FE948C /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59E6305298343D4E0184491E /* FeedbackView.swift */; };
+		5AE94BAB5926BDC3685360D2 /* EngagementPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CB70D3CEA29F96726EBAAA /* EngagementPrompt.swift */; };
 		743626B539B64AB3BD829FD1 /* Build13RetestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75368C41319B0354ED4CEFBB /* Build13RetestUITests.swift */; };
 		76ECEE54D5EB78B0C20D76C8 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580C6AF9335FC3A4784D7FE0 /* MainView.swift */; };
 		77F19557CFFA16F550D24ADC /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4700651E2770E76ADA27D2F9 /* AppStore.swift */; };
@@ -42,6 +43,7 @@
 		AE7068CA1BF6F431C989C115 /* WatchSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC285FB67DE3348DC46810D9 /* WatchSync.swift */; };
 		B04DC22EF155D90D0D14DEC8 /* challenge_defs.json in Resources */ = {isa = PBXBuildFile; fileRef = B2461CFF570E8B46E1049CEB /* challenge_defs.json */; };
 		BE3365546B0CB162150B0E67 /* ChallengesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF6C8BBC297480C5BFCD24A /* ChallengesView.swift */; };
+		C2BC905110F430D04D007B6B /* EngagementPromptUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D895D088F5B60D141E6661 /* EngagementPromptUITests.swift */; };
 		C488AEF438185B63F81FC298 /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8502F5EFE6221CB20EF05F44 /* Diagnostics.swift */; };
 		C8C3C62DC8C515424D13DEE3 /* StabilityFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E84C5E625B38A2501CF21F0 /* StabilityFlowUITests.swift */; };
 		CCFBC6B66B9181A44353AABF /* BudgetBuddyWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 6DD4A16E66AD6AAC44E728FB /* BudgetBuddyWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -103,6 +105,7 @@
 		41F2A5A0F50EE631AE332537 /* lessons.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = lessons.json; sourceTree = "<group>"; };
 		429C6ADA6478AB8FC7FF6653 /* WatchAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAddView.swift; sourceTree = "<group>"; };
 		4308F2D9E35FBADE4AF01914 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
+		45CB70D3CEA29F96726EBAAA /* EngagementPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngagementPrompt.swift; sourceTree = "<group>"; };
 		4700651E2770E76ADA27D2F9 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		56CD15C0640B5C2625DEEF06 /* GeneratedStoryArtSmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedStoryArtSmokeUITests.swift; sourceTree = "<group>"; };
 		580C6AF9335FC3A4784D7FE0 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -139,6 +142,7 @@
 		E923AA22C691DC1AA25A7753 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F402A001BE0656EB0563C032 /* BudgetBuddy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BudgetBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4452A75854BBEC2F2673564 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		F6D895D088F5B60D141E6661 /* EngagementPromptUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngagementPromptUITests.swift; sourceTree = "<group>"; };
 		FA75BB7624CF060F34430F5C /* AppStoreScreenshotsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreScreenshotsUITests.swift; sourceTree = "<group>"; };
 		FC285FB67DE3348DC46810D9 /* WatchSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSync.swift; sourceTree = "<group>"; };
 		FD71D45BDB9F5C48099B0DF3 /* AppRating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRating.swift; sourceTree = "<group>"; };
@@ -151,6 +155,7 @@
 				FA75BB7624CF060F34430F5C /* AppStoreScreenshotsUITests.swift */,
 				C53471A220F2E0AF7C10BBC1 /* Build13EnglishContentProbeUITests.swift */,
 				75368C41319B0354ED4CEFBB /* Build13RetestUITests.swift */,
+				F6D895D088F5B60D141E6661 /* EngagementPromptUITests.swift */,
 				56CD15C0640B5C2625DEEF06 /* GeneratedStoryArtSmokeUITests.swift */,
 				62BB45B44ECA2EB0FB036018 /* GuestModeUITests.swift */,
 				A0BFEAC08C0B7E406D7598CB /* ManualScreenshotsUITests.swift */,
@@ -206,6 +211,7 @@
 				DD1246E39990390A20BC9B9A /* AuthView.swift */,
 				CAF6C8BBC297480C5BFCD24A /* ChallengesView.swift */,
 				8502F5EFE6221CB20EF05F44 /* Diagnostics.swift */,
+				45CB70D3CEA29F96726EBAAA /* EngagementPrompt.swift */,
 				59E6305298343D4E0184491E /* FeedbackView.swift */,
 				2CB327477B63C862CF4C4BDF /* ForgotPasswordView.swift */,
 				D2F2F10151DF065055DEE86F /* L10n.swift */,
@@ -403,6 +409,7 @@
 				944DD9913573FCF67C439F9D /* AppStoreScreenshotsUITests.swift in Sources */,
 				1822015E0AF551219B3525A9 /* Build13EnglishContentProbeUITests.swift in Sources */,
 				743626B539B64AB3BD829FD1 /* Build13RetestUITests.swift in Sources */,
+				C2BC905110F430D04D007B6B /* EngagementPromptUITests.swift in Sources */,
 				A46B7F3BFA9939B15E62FE7E /* GeneratedStoryArtSmokeUITests.swift in Sources */,
 				E00C68CC617B8D382D94C484 /* GuestModeUITests.swift in Sources */,
 				1CC75968EEE63A82B15FC49A /* ManualScreenshotsUITests.swift in Sources */,
@@ -433,6 +440,7 @@
 				4466260C110CD521C5571149 /* AuthView.swift in Sources */,
 				BE3365546B0CB162150B0E67 /* ChallengesView.swift in Sources */,
 				C488AEF438185B63F81FC298 /* Diagnostics.swift in Sources */,
+				5AE94BAB5926BDC3685360D2 /* EngagementPrompt.swift in Sources */,
 				55A79EBA6120AF9912FE948C /* FeedbackView.swift in Sources */,
 				1E9B30E23E2C23A39A42443E /* ForgotPasswordView.swift in Sources */,
 				86473B7A25E8A0F3A0D1B5ED /* L10n.swift in Sources */,

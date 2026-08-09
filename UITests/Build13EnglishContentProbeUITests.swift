@@ -15,6 +15,7 @@ final class Build13EnglishContentProbeUITests: XCTestCase {
         continueAfterFailure = false
         try FileManager.default.createDirectory(at: outputDirectory, withIntermediateDirectories: true)
         app = XCUIApplication()
+        app.launchArguments += ["-bb.engage.prompted.v1", "YES"]   // keep the 3-min engagement sheet out of automation
         app.launchArguments = ["--build13-english-content-probe"]
         app.launch()
     }

@@ -13,6 +13,7 @@ struct BudgetBuddyApp: App {
 
 struct RootView: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.scenePhase) private var scenePhase
     // Language switch rebuilds the whole tree so every .tr re-evaluates instantly.
     @AppStorage("bb.lang") private var bbLang = "zh"
     var body: some View {
@@ -33,12 +34,15 @@ struct RootView: View {
                 // login/register lives in 我的 as an optional sheet.
                 OnboardingView()
             case .app:
-                MainTabView()
+                MainTabView().modifier(EngagementPromptModifier())
             }
         }
         .task {
             WatchBridge.shared.activate(store: store)
             if case .loading = store.phase { await store.boot() }
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase == .active { Task { await store.foregroundUpdateCheck() } }
         }
         .sheet(item: $store.update) { UpdateSheet(prompt: $0) }
         .id(bbLang)   // rebuild everything when the language changes

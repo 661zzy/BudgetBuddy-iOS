@@ -8,6 +8,7 @@ final class AppStoreScreenshotsUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments += ["-bb.engage.prompted.v1", "YES"]   // keep the 3-min engagement sheet out of automation
         app.launchArguments = ["--appstore-screenshots"]
         app.launch()
         prepareLoggedInState()

@@ -11,6 +11,7 @@ final class AppStore: ObservableObject {
     @Published var errorMessage: String?
     @Published var onboarded: Bool = UserDefaults.standard.bool(forKey: "onboarded")
     @Published var update: UpdatePrompt?
+    private var lastUpdateCheckAt = Date.distantPast
 
     private let api = APIClient.shared
 
@@ -90,7 +91,15 @@ final class AppStore: ObservableObject {
 
     // Auto-check for a newer build (silent no-op if version.json is unreachable).
     func checkUpdate() async {
-        guard let info = try? await api.appVersion() else { return }
+        var fetched: AppVersionInfo?
+        // UITest seam: -bb.test.latestBuild 999 fakes the channel via NSArgumentDomain.
+        let fake = UserDefaults.standard.integer(forKey: "bb.test.latestBuild")
+        if fake > 0 {
+            fetched = AppVersionInfo(latest: "9.9", latestBuild: fake, minBuild: nil, url: nil, note: nil)
+        } else {
+            fetched = try? await api.appVersion()
+        }
+        guard let info = fetched else { return }
         let current = Int(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0") ?? 0
         let url = info.url ?? "https://budgetbuddy.cn"
         if current < (info.minBuild ?? 0) {
@@ -98,6 +107,15 @@ final class AppStore: ObservableObject {
         } else if current < (info.latestBuild ?? 0) {
             update = UpdatePrompt(note: info.note ?? "发现新版本，建议更新以获得更好体验。".tr, url: url, force: false)
         }
+    }
+
+    // iOS keeps apps alive for days, so a launch-only check meant most users never
+    // saw the update prompt (real-user complaint). Re-offer on each return to
+    // foreground, throttled to every 10 min, and never over an already-open sheet.
+    func foregroundUpdateCheck() async {
+        guard update == nil, Date().timeIntervalSince(lastUpdateCheckAt) > 600 else { return }
+        lastUpdateCheckAt = Date()
+        await checkUpdate()
     }
 
     func register(identifier: String, password: String, nickname: String, code: String) async -> Bool {

@@ -37,6 +37,7 @@ final class GeneratedStoryArtSmokeUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments += ["-bb.engage.prompted.v1", "YES"]   // keep the 3-min engagement sheet out of automation
         app.launchArguments = ["--generated-story-art-smoke"]
         app.launch()
     }

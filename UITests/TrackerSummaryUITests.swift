@@ -13,6 +13,7 @@ final class TrackerSummaryUITests: XCTestCase {
         continueAfterFailure = false
         try XCTSkipIf(password.isEmpty, "Set BB_REVIEW_PASSWORD to run account-based tests")
         app = XCUIApplication()
+        app.launchArguments += ["-bb.engage.prompted.v1", "YES"]   // keep the 3-min engagement sheet out of automation
         app.launchArguments = ["-bb.review.prompted.v1", "YES"]
         app.launch()
     }

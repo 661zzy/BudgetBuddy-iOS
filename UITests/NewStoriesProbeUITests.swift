@@ -15,6 +15,7 @@ final class NewStoriesProbeUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments += ["-bb.engage.prompted.v1", "YES"]   // keep the 3-min engagement sheet out of automation
     }
 
     // All 8 titles listed; three of them played into scene 2 with real choices.
@@ -129,6 +130,7 @@ final class NewStoriesProbeUITests: XCTestCase {
     private func relaunchZH() {
         app.terminate()
         app = XCUIApplication()
+        app.launchArguments += ["-bb.engage.prompted.v1", "YES"]   // keep the 3-min engagement sheet out of automation
         app.launch()
         ensureInApp()
     }

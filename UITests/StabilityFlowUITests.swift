@@ -20,6 +20,7 @@ final class StabilityFlowUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments += ["-bb.engage.prompted.v1", "YES"]   // keep the 3-min engagement sheet out of automation
         // -bb.review.prompted.v1 YES presets the "already asked for a rating"
         // flag via NSArgumentDomain, so the one-time post-story system rating
         // sheet can't overlap taps mid-soak (bit us once on build 17 testing).

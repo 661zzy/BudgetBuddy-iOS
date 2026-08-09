@@ -16,6 +16,7 @@ final class Build13RetestUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments += ["-bb.engage.prompted.v1", "YES"]   // keep the 3-min engagement sheet out of automation
         // Preset the one-time rating-prompt flag — this suite finishes stories,
         // and the system rating sheet must not overlap automated taps.
         app.launchArguments = ["--build13-retest", "-bb.review.prompted.v1", "YES"]

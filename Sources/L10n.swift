@@ -71,6 +71,12 @@ enum L10n {
         "消费选择记录": "Choice log", "次": "times", "云端同步": "Cloud sync", "已开启": "On",
         "编辑昵称": "Edit nickname", "导出数据": "Export data", "问题反馈": "Feedback",
         "去 App Store 评分": "Rate on the App Store",
+        // ---- engagement funnel (v1.5.x) ----
+        "用得还顺手吗？": "Enjoying BudgetBuddy?",
+        "你已经用了一小会儿。一句好评或一条吐槽，都特别有用。": "You've been here a little while. A quick rating — or a gripe — helps a lot.",
+        "去 App Store 好评": "Rate on the App Store",
+        "有问题，直接反馈": "Something's wrong — send feedback",
+        "下次再说": "Maybe later",
         // ---- one-tap feedback (v1.5.x) ----
         "直接发送": "Send now", "发送中…": "Sending…", "已发送，谢谢反馈 ✓": "Sent — thank you ✓",
         "没发出去，试试下面的分享或邮件方式": "Couldn't send — try share or email below",
