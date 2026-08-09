@@ -77,6 +77,8 @@ enum L10n {
         "去 App Store 好评": "Rate on the App Store",
         "有问题，直接反馈": "Something's wrong — send feedback",
         "下次再说": "Maybe later",
+        "喜欢的话，给个五星": "Liking it? Leave five stars",
+        "一句话发给我们，秒到": "One line to us — arrives instantly",
         // ---- one-tap feedback (v1.5.x) ----
         "直接发送": "Send now", "发送中…": "Sending…", "已发送，谢谢反馈 ✓": "Sent — thank you ✓",
         "没发出去，试试下面的分享或邮件方式": "Couldn't send — try share or email below",

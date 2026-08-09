@@ -29,42 +29,101 @@ struct EngagementSheet: View {
     @State private var showFeedback = false
 
     var body: some View {
-        VStack(spacing: 18) {
-            Spacer()
-            Text("💚").font(.system(size: 56))
+        VStack(spacing: 0) {
+            // Mascot band — the cream page needs a colored anchor at the top,
+            // otherwise the emoji floats alone in a field of beige.
+            ZStack {
+                Circle().fill(Color.bbGreen.opacity(0.10)).frame(width: 96, height: 96)
+                Circle().fill(Color.bbSurface).frame(width: 74, height: 74)
+                    .overlay(Circle().stroke(Color.bbLine))
+                Text("💚").font(.system(size: 38))
+            }
+            .padding(.top, 26)
+
             Text("用得还顺手吗？".tr)
-                .font(.system(.title2, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
+                .font(.system(.title3, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
+                .padding(.top, 14)
             Text("你已经用了一小会儿。一句好评或一条吐槽，都特别有用。".tr)
-                .font(.system(.body, design: .rounded)).foregroundColor(.bbInk2)
+                .font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
                 .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
-            Spacer()
-            Button {
-                // Consume the system-prompt shot as well — one rating moment total.
-                UserDefaults.standard.set(true, forKey: "bb.review.prompted.v1")
-                BBRating.openWriteReview()
-                onDone()
-            } label: {
-                Text("去 App Store 好评".tr).font(.system(.headline, design: .rounded).weight(.bold))
-                    .foregroundColor(.white).frame(maxWidth: .infinity).padding(.vertical, 16).duoPrimary()
+                .padding(.horizontal, 26).padding(.top, 6)
+
+            VStack(spacing: 10) {
+                Button {
+                    // Consume the system-prompt shot as well — one rating moment total.
+                    UserDefaults.standard.set(true, forKey: "bb.review.prompted.v1")
+                    BBRating.openWriteReview()
+                    onDone()
+                } label: {
+                    optionRow("star.fill", "去 App Store 好评".tr, "喜欢的话，给个五星".tr, primary: true)
+                }
+                .accessibilityIdentifier("engage.rate")
+
+                Button { showFeedback = true } label: {
+                    optionRow("ladybug.fill", "有问题，直接反馈".tr, "一句话发给我们，秒到".tr, primary: false)
+                }
+                .accessibilityIdentifier("engage.feedback")
             }
-            .accessibilityIdentifier("engage.rate")
-            Button { showFeedback = true } label: {
-                Text("有问题，直接反馈".tr).font(.system(.headline, design: .rounded).weight(.semibold))
-                    .foregroundColor(.bbInk).frame(maxWidth: .infinity).padding(.vertical, 15)
-                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.bbSurface))
-                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.bbLine))
-            }
-            .accessibilityIdentifier("engage.feedback")
+            .padding(.horizontal, 20).padding(.top, 22)
+
             Button { onDone() } label: {
-                Text("下次再说".tr).font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
+                Text("下次再说".tr)
+                    .font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
+                    .padding(.vertical, 14).frame(maxWidth: .infinity)
             }
             .accessibilityIdentifier("engage.later")
+            .padding(.top, 4)
+
+            Spacer(minLength: 0)
         }
-        .padding(28)
+        .bbPageWidth(520)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.bbBg)
+        .presentationDetents([.height(430)])
+        .presentationDragIndicator(.visible)
         .sheet(isPresented: $showFeedback, onDismiss: onDone) {
             NavigationView { FeedbackView() }
+        }
+    }
+
+    // Card row: icon tile + title + one line of why-bother, chevron on the end.
+    private func optionRow(_ icon: String, _ title: String, _ sub: String, primary: Bool) -> some View {
+        HStack(spacing: 13) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 11)
+                    .fill(primary ? Color.white.opacity(0.18) : Color.bbBg)
+                    .frame(width: 42, height: 42)
+                Image(systemName: icon).font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(primary ? .white : .bbGreen)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.system(.subheadline, design: .rounded).weight(.bold))
+                    .foregroundColor(primary ? .white : .bbInk)
+                Text(sub).font(.caption).foregroundColor(primary ? Color.white.opacity(0.75) : .bbInk2)
+            }
+            Spacer(minLength: 4)
+            Image(systemName: "chevron.right").font(.system(size: 13, weight: .bold))
+                .foregroundColor(primary ? Color.white.opacity(0.65) : .bbInk2.opacity(0.5))
+        }
+        .padding(.horizontal, 14).padding(.top, 13)
+        // duo() paints a 4pt bottom edge behind the fill — pad for it so the
+        // pressable lip stays visible instead of being covered by the content.
+        .padding(.bottom, primary ? 17 : 13)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .modifier(OptionRowSkin(primary: primary))
+    }
+}
+
+// Primary = chunky green duo card; secondary = plain surface card.
+private struct OptionRowSkin: ViewModifier {
+    let primary: Bool
+    func body(content: Content) -> some View {
+        if primary {
+            content.duo(.bbGreen, duoGreenEdge, radius: 15)
+        } else {
+            content
+                .background(RoundedRectangle(cornerRadius: 15).fill(Color.bbSurface))
+                .overlay(RoundedRectangle(cornerRadius: 15).stroke(Color.bbLine))
         }
     }
 }
