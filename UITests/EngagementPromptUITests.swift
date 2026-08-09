@@ -18,12 +18,14 @@ final class EngagementPromptUITests: XCTestCase {
                                 "-bb.review.prompted.v1", "NO"]
         app.launch()
         ensureInApp()
-        XCTAssertTrue(waitForText("用得还顺手吗？", timeout: 20), "Engagement funnel did not appear")
+        XCTAssertTrue(waitForText("搭子想问你一句", timeout: 20), "Engagement funnel did not appear")
         save("e1-funnel")
         app.buttons["engage.feedback"].tap()
         XCTAssertTrue(waitForText("问题反馈", timeout: 8), "Feedback page did not open from funnel")
         XCTAssertTrue(app.buttons["feedback.submit"].waitForExistence(timeout: 6),
                       "One-tap submit missing on feedback page")
+        XCTAssertTrue(app.buttons["feedback.addshot"].waitForExistence(timeout: 4),
+                      "Screenshot attach tile missing on feedback page")
         save("e2-funnel-to-feedback")
     }
 
@@ -39,8 +41,9 @@ final class EngagementPromptUITests: XCTestCase {
         }
         save("e3-update-sheet")
         tapButtonIfExists(containing: "稍后再说")
-        sleep(1)
-        XCTAssertFalse(app.staticTexts["有新版本"].exists, "Update sheet did not dismiss")
+        // Sheet dismissal is animated — the label lingers in the tree for a
+        // beat, so poll for absence instead of asserting on the next frame.
+        XCTAssertTrue(waitForTextToDisappear("有新版本", timeout: 8), "Update sheet did not dismiss")
         ensureInApp()
     }
 
@@ -54,7 +57,7 @@ final class EngagementPromptUITests: XCTestCase {
         if app.buttons["跳过"].waitForExistence(timeout: 3) { app.buttons["跳过"].tap() }
         XCTAssertTrue(
             waitForText("今 日 故 事", timeout: 15) || waitForText("本 周 概 览", timeout: 0.5)
-                || waitForText("用得还顺手吗？", timeout: 0.5) || waitForText("有新版本", timeout: 0.5),
+                || waitForText("搭子想问你一句", timeout: 0.5) || waitForText("有新版本", timeout: 0.5),
             "Did not reach the main app")
     }
 
@@ -62,6 +65,16 @@ final class EngagementPromptUITests: XCTestCase {
         let predicate = NSPredicate(format: "label CONTAINS %@", text)
         return app.staticTexts.matching(predicate).firstMatch.waitForExistence(timeout: timeout)
             || app.buttons.matching(predicate).firstMatch.waitForExistence(timeout: 0.2)
+    }
+
+    private func waitForTextToDisappear(_ text: String, timeout: TimeInterval) -> Bool {
+        let predicate = NSPredicate(format: "label CONTAINS %@", text)
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if !app.staticTexts.matching(predicate).firstMatch.exists { return true }
+            usleep(300_000)
+        }
+        return !app.staticTexts.matching(predicate).firstMatch.exists
     }
 
     private func tapButtonIfExists(containing text: String) {

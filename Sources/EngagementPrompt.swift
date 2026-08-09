@@ -1,11 +1,11 @@
 import SwiftUI
 
-// v1.5.1 engagement prompts (real-user feedback round 2: "更新没人提醒、
-// 评价和反馈入口太深"). One popup after ~3 minutes of cumulative foreground
-// use, with two exits — good experience goes to the App Store review sheet,
-// problems go to the one-tap feedback page. Single shot per install, and the
-// story-completion rating moment counts as that shot too, so users are never
-// nagged twice. Pairs with the foreground update re-check in RootView.
+// v1.5.1 engagement prompts (real-user feedback: "更新没人提醒、评价和反馈入口太深").
+// One popup after ~3 minutes of cumulative foreground use, with two exits —
+// a good experience goes to the App Store review sheet, a problem goes to the
+// one-tap feedback page. Single shot per install, and the story-completion
+// rating moment counts as that shot too, so users are never nagged twice.
+// Pairs with the foreground update re-check in RootView.
 enum BBEngage {
     static let usageKey = "bb.usage.seconds"
     static let promptedKey = "bb.engage.prompted.v1"
@@ -24,107 +24,104 @@ enum BBEngage {
     }
 }
 
+// The app already owns a language for asking someone to choose: the story
+// engine — 📍setting card → narrator card → choice cards with a hint line.
+// Players have read 33 scenes in that grammar, so the feedback ask is staged
+// as one more scene (「现实场景」— the only non-fictional one in the app)
+// rather than a stock rating dialog with a mascot emoji bolted on top.
 struct EngagementSheet: View {
     let onDone: () -> Void
     @State private var showFeedback = false
 
+    private var minutesHere: Int {
+        max(3, UserDefaults.standard.integer(forKey: BBEngage.usageKey) / 60)
+    }
+
     var body: some View {
-        VStack(spacing: 0) {
-            // Mascot band — the cream page needs a colored anchor at the top,
-            // otherwise the emoji floats alone in a field of beige.
-            ZStack {
-                Circle().fill(Color.bbGreen.opacity(0.10)).frame(width: 96, height: 96)
-                Circle().fill(Color.bbSurface).frame(width: 74, height: 74)
-                    .overlay(Circle().stroke(Color.bbLine))
-                Text("💚").font(.system(size: 38))
+        VStack(alignment: .leading, spacing: 13) {
+            // Story scenes open with a progress capsule. Here it reads full:
+            // you already walked the distance that earned the question.
+            Capsule().fill(Color.bbGreen).frame(height: 7).padding(.top, 4)
+
+            sceneCard
+            narratorCard
+
+            choiceCard("去 App Store 打个分".tr, "让更多同学找得到它".tr) {
+                // Consume the system-prompt shot too — one rating moment total.
+                UserDefaults.standard.set(true, forKey: "bb.review.prompted.v1")
+                BBRating.openWriteReview()
+                onDone()
             }
-            .padding(.top, 26)
+            .accessibilityIdentifier("engage.rate")
 
-            Text("用得还顺手吗？".tr)
-                .font(.system(.title3, design: .rounded).weight(.bold)).foregroundColor(.bbInk)
-                .padding(.top, 14)
-            Text("你已经用了一小会儿。一句好评或一条吐槽，都特别有用。".tr)
-                .font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
-                .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 26).padding(.top, 6)
-
-            VStack(spacing: 10) {
-                Button {
-                    // Consume the system-prompt shot as well — one rating moment total.
-                    UserDefaults.standard.set(true, forKey: "bb.review.prompted.v1")
-                    BBRating.openWriteReview()
-                    onDone()
-                } label: {
-                    optionRow("star.fill", "去 App Store 好评".tr, "喜欢的话，给个五星".tr, primary: true)
-                }
-                .accessibilityIdentifier("engage.rate")
-
-                Button { showFeedback = true } label: {
-                    optionRow("ladybug.fill", "有问题，直接反馈".tr, "一句话发给我们，秒到".tr, primary: false)
-                }
+            choiceCard("有问题，想吐槽".tr, "直接发给开发者，很快能看到".tr) { showFeedback = true }
                 .accessibilityIdentifier("engage.feedback")
-            }
-            .padding(.horizontal, 20).padding(.top, 22)
 
             Button { onDone() } label: {
-                Text("下次再说".tr)
-                    .font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
-                    .padding(.vertical, 14).frame(maxWidth: .infinity)
+                Text("先不了，继续用".tr)
+                    .font(.subheadline.weight(.semibold)).foregroundColor(.bbInk2)
+                    .padding(.vertical, 12).frame(maxWidth: .infinity)
             }
             .accessibilityIdentifier("engage.later")
-            .padding(.top, 4)
 
             Spacer(minLength: 0)
         }
+        .padding(16)
         .bbPageWidth(520)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color.bbBg)
-        .presentationDetents([.height(430)])
+        .presentationDetents([.height(455)])
         .presentationDragIndicator(.visible)
         .sheet(isPresented: $showFeedback, onDismiss: onDone) {
             NavigationView { FeedbackView() }
         }
     }
 
-    // Card row: icon tile + title + one line of why-bother, chevron on the end.
-    private func optionRow(_ icon: String, _ title: String, _ sub: String, primary: Bool) -> some View {
-        HStack(spacing: 13) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 11)
-                    .fill(primary ? Color.white.opacity(0.18) : Color.bbBg)
-                    .frame(width: 42, height: 42)
-                Image(systemName: icon).font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(primary ? .white : .bbGreen)
-            }
+    private var sceneCard: some View {
+        HStack(spacing: 12) {
+            Text("💬").font(.system(size: 26))
+                .frame(width: 50, height: 50).background(Color.bbBg).cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.bbLine))
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.system(.subheadline, design: .rounded).weight(.bold))
-                    .foregroundColor(primary ? .white : .bbInk)
-                Text(sub).font(.caption).foregroundColor(primary ? Color.white.opacity(0.75) : .bbInk2)
+                HStack(spacing: 3) { Image(systemName: "mappin"); Text("现实场景".tr) }
+                    .font(.caption.weight(.semibold)).foregroundColor(.bbInk)
+                Text("搭子想问你一句".tr).font(.headline).foregroundColor(.bbInk)
             }
-            Spacer(minLength: 4)
-            Image(systemName: "chevron.right").font(.system(size: 13, weight: .bold))
-                .foregroundColor(primary ? Color.white.opacity(0.65) : .bbInk2.opacity(0.5))
+            Spacer()
         }
-        .padding(.horizontal, 14).padding(.top, 13)
-        // duo() paints a 4pt bottom edge behind the fill — pad for it so the
-        // pressable lip stays visible instead of being covered by the content.
-        .padding(.bottom, primary ? 17 : 13)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .modifier(OptionRowSkin(primary: primary))
+        .padding(13).background(Color.bbSurface)
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.bbLine)).cornerRadius(10)
     }
-}
 
-// Primary = chunky green duo card; secondary = plain surface card.
-private struct OptionRowSkin: ViewModifier {
-    let primary: Bool
-    func body(content: Content) -> some View {
-        if primary {
-            content.duo(.bbGreen, duoGreenEdge, radius: 15)
-        } else {
-            content
-                .background(RoundedRectangle(cornerRadius: 15).fill(Color.bbSurface))
-                .overlay(RoundedRectangle(cornerRadius: 15).stroke(Color.bbLine))
+    // Normally fires at exactly 3 minutes, so the number is concrete and true.
+    // Past half an hour, quoting it back reads like surveillance — drop it.
+    private var narratorLine: String {
+        minutesHere <= 30
+            ? String(format: "你已经在这儿待了 %d 分钟。花 10 秒，让它对下一个人更好用？".tr, minutesHere)
+            : "你已经用了好一阵了。花 10 秒，让它对下一个人更好用？".tr
+    }
+
+    private var narratorCard: some View {
+        Text(narratorLine)
+            .font(.body).foregroundColor(.bbInk).lineSpacing(5)
+            .frame(maxWidth: .infinity, alignment: .leading).padding(16)
+            .background(Color.bbSurface)
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
+    }
+
+    // Same shape as StoryView.choiceButton: bold label, quiet hint underneath.
+    private func choiceCard(_ label: String, _ hint: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(label).font(.body.weight(.medium)).foregroundColor(.bbInk)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(hint).font(.caption).foregroundColor(.bbInk2)
+            }
+            .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.bbSurface)
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
         }
+        .buttonStyle(.plain)
     }
 }
 

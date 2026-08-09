@@ -71,18 +71,23 @@ enum L10n {
         "消费选择记录": "Choice log", "次": "times", "云端同步": "Cloud sync", "已开启": "On",
         "编辑昵称": "Edit nickname", "导出数据": "Export data", "问题反馈": "Feedback",
         "去 App Store 评分": "Rate on the App Store",
-        // ---- engagement funnel (v1.5.x) ----
-        "用得还顺手吗？": "Enjoying BudgetBuddy?",
-        "你已经用了一小会儿。一句好评或一条吐槽，都特别有用。": "You've been here a little while. A quick rating — or a gripe — helps a lot.",
-        "去 App Store 好评": "Rate on the App Store",
-        "有问题，直接反馈": "Something's wrong — send feedback",
-        "下次再说": "Maybe later",
-        "喜欢的话，给个五星": "Liking it? Leave five stars",
-        "一句话发给我们，秒到": "One line to us — arrives instantly",
+        // ---- engagement funnel (v1.5.x), staged as a story scene ----
+        "现实场景": "Real life", "搭子想问你一句": "Your buddy has a question",
+        "你已经在这儿待了 %d 分钟。花 10 秒，让它对下一个人更好用？":
+            "You've spent %d minutes here. Got ten seconds to make it better for whoever comes next?",
+        "你已经用了好一阵了。花 10 秒，让它对下一个人更好用？":
+            "You've been using this a while. Got ten seconds to make it better for whoever comes next?",
+        "去 App Store 打个分": "Rate it on the App Store",
+        "让更多同学找得到它": "Helps more people find it",
+        "有问题，想吐槽": "Something's off — tell us",
+        "直接发给开发者，很快能看到": "Goes straight to the developer",
+        "先不了，继续用": "Not now, keep going",
         // ---- one-tap feedback (v1.5.x) ----
         "直接发送": "Send now", "发送中…": "Sending…", "已发送，谢谢反馈 ✓": "Sent — thank you ✓",
         "没发出去，试试下面的分享或邮件方式": "Couldn't send — try share or email below",
         "或通过分享 / 邮件发送": "Or send via share / email",
+        "截图（选填，最多 3 张）": "Screenshots (optional, up to 3)", "添加": "Add",
+        "%d 张截图会跟着一起发出": "%d screenshot(s) will be sent along",
         "推荐给朋友": "Share with friends",
         "我在用省钱搭子练财商，故事挺好玩的，推荐你试试！": "I'm using BudgetBuddy to practice money skills — the stories are fun. Give it a try!",
         "恢复默认数据": "Reset my data", "退出登录": "Log out", "删除账号": "Delete account",

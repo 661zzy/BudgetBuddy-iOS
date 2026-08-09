@@ -165,10 +165,12 @@ final class APIClient {
     }
 
     // MARK: Feedback (guest-friendly one-tap submission; server rate-limits by IP)
-    func sendFeedback(message: String, diagnostics: String) async throws {
-        struct Req: Encodable { let message: String; let diagnostics: String }
+    // images: up to 3 base64 JPEGs (no data: prefix). Older servers ignore the
+    // field, so a client that sends screenshots still submits fine against them.
+    func sendFeedback(message: String, diagnostics: String, images: [String] = []) async throws {
+        struct Req: Encodable { let message: String; let diagnostics: String; let images: [String] }
         _ = try await request("POST", "/feedback",
-                              body: Req(message: message, diagnostics: diagnostics),
+                              body: Req(message: message, diagnostics: diagnostics, images: images),
                               decode: OkResponse.self)
     }
 
