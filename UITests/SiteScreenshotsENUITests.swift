@@ -92,6 +92,21 @@ final class SiteScreenshotsENUITests: XCTestCase {
         shoot("app-reflect-en")
     }
 
+
+    func testD_StoriesListEN() throws {
+        app.launch()
+        ensureInApp()
+        tapTab("Stories")
+        XCTAssertTrue(waitForText("INTERACTIVE STORIES", timeout: 10), "EN stories tab did not load")
+        // Scroll down a touch so the path shows several English titles at once.
+        app.swipeUp(); usleep(500_000)
+        XCTAssertTrue(app.staticTexts["Want or Need?"].waitForExistence(timeout: 4)
+                        || app.staticTexts["The Anti-Scam Battle"].exists,
+                      "Stories list titles not in English")
+        sleep(1)
+        shoot("app-stories-list-en")
+    }
+
     // MARK: helpers
 
     private func shoot(_ name: String) {
