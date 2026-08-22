@@ -35,55 +35,74 @@ struct WatchAddView: View {
 
     var body: some View {
         Group {
-            if saved { savedView } else { keypad }
+            if saved {
+                savedView.navigationTitle("记一笔")
+            } else {
+                // watchOS 26 的大标题要占掉约 76pt——40mm 上那点高度全用来
+                // 显示「记一笔」太奢侈了：键盘页把标题栏收起来，空间留给金额。
+                keypad.toolbar(.hidden, for: .navigationBar)
+            }
         }
-        .navigationTitle("记一笔")
     }
 
     // MARK: amount keypad
 
-    // Everything must fit one 46mm screen (~248pt incl. nav bar) — the default
-    // .bordered buttons are ~52pt tall and overflow, so keys are drawn plain
-    // with a fixed compact height.
+    // One screen, no scrolling — and the supported watches range from 40mm
+    // (SE, ~171pt of content) to 49mm Ultra (~215pt). A fixed font that reads
+    // well on the Ultra overflows the SE, so sizes are derived from the actual
+    // height: keys and the action button take a fixed share, and the amount
+    // gets whatever is left. That way it cannot overflow, and the number comes
+    // out as large as the watch allows (was a flat 20pt, too small to glance at).
     private var keypad: some View {
-        VStack(spacing: 3) {
-            Text("¥" + (amount.isEmpty ? "0" : amount))
-                .font(.system(size: 20, weight: .heavy, design: .rounded))
-                .foregroundColor(wGreen)
-                .frame(maxWidth: .infinity)
-                .lineLimit(1).minimumScaleFactor(0.5)
-                .accessibilityIdentifier("watch.amount")
+        GeometryReader { geo in
+            let gap: CGFloat = 3
+            let gaps = gap * 5                       // 6 rows → 5 gaps
+            let keyH = min(32, max(23, (geo.size.height - gaps) * 0.155))
+            let btnH = min(30, max(23, (geo.size.height - gaps) * 0.145))
+            let amountH = max(26, geo.size.height - gaps - keyH * 4 - btnH)
+            let amountFont = min(44, max(24, amountH * 0.80))
+            let keyFont = min(19, max(14, keyH * 0.55))
 
-            let keys = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], [".", "0", "⌫"]]
-            ForEach(keys, id: \.self) { row in
-                HStack(spacing: 3) {
-                    ForEach(row, id: \.self) { k in
-                        Button { tap(k) } label: {
-                            Text(k)
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                                .foregroundColor(k == "⌫" ? .red : .white)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 30)
-                                .background(RoundedRectangle(cornerRadius: 8).fill(Color.white.opacity(0.14)))
-                                .contentShape(Rectangle())
+            VStack(spacing: gap) {
+                Text("¥" + (amount.isEmpty ? "0" : amount))
+                    .font(.system(size: amountFont, weight: .heavy, design: .rounded))
+                    .foregroundColor(wGreen)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: amountH)
+                    .lineLimit(1).minimumScaleFactor(0.4)   // 六位数也不截断
+                    .accessibilityIdentifier("watch.amount")
+
+                let keys = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], [".", "0", "⌫"]]
+                ForEach(keys, id: \.self) { row in
+                    HStack(spacing: gap) {
+                        ForEach(row, id: \.self) { k in
+                            Button { tap(k) } label: {
+                                Text(k)
+                                    .font(.system(size: keyFont, weight: .semibold, design: .rounded))
+                                    .foregroundColor(k == "⌫" ? .red : .white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: keyH)
+                                    .background(RoundedRectangle(cornerRadius: 8).fill(Color.white.opacity(0.14)))
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
-            }
 
-            NavigationLink {
-                CategoryPickerView(amount: amountValue) { saved = true }
-            } label: {
-                Text("选分类")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 30)
-                    .background(RoundedRectangle(cornerRadius: 8).fill(amountValue > 0 ? wGreen : Color.gray.opacity(0.3)))
+                NavigationLink {
+                    CategoryPickerView(amount: amountValue) { saved = true }
+                } label: {
+                    Text("选分类")
+                        .font(.system(size: keyFont, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: btnH)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(amountValue > 0 ? wGreen : Color.gray.opacity(0.3)))
+                }
+                .buttonStyle(.plain)
+                .disabled(amountValue <= 0)
             }
-            .buttonStyle(.plain)
-            .disabled(amountValue <= 0)
         }
         .ignoresSafeArea(edges: .bottom)
     }
