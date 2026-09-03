@@ -21,14 +21,17 @@
 		287A34D4E4DF07FFED596D8A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 794DE158D71E2C44B6C92CD8 /* Assets.xcassets */; };
 		2F2FDDE67545103B94865D76 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABAFF6217EC65BC2FC171EA /* Theme.swift */; };
 		37D50F07E5690CD915343241 /* Stories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086B86EEFD49449A07F3DA99 /* Stories.swift */; };
+		38E31B3BC670D58176D7A773 /* V153ProbeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455251A24C5EC3B52630A850 /* V153ProbeUITests.swift */; };
 		3F6D588F48F9CE1B8DA78AA5 /* V11SmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8426D9EF5D90282736878D2C /* V11SmokeUITests.swift */; };
 		4466260C110CD521C5571149 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1246E39990390A20BC9B9A /* AuthView.swift */; };
 		475EEDF9A239AA387F10DB22 /* stories.json in Resources */ = {isa = PBXBuildFile; fileRef = 8987DDEDDFA31A9140706008 /* stories.json */; };
+		4766A935AE7599242CC8A82B /* StoriesDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FB73FEF96886609FCF9D18 /* StoriesDataTests.swift */; };
 		5317190862D74EC80D8352D5 /* PixelArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B27166D2A1185543E0CDDA9 /* PixelArt.swift */; };
 		55217E38CBAD6F9FA8BFB392 /* SceneArtUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FBA81EC46A06E0C83DDC53E /* SceneArtUITests.swift */; };
 		55A79EBA6120AF9912FE948C /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59E6305298343D4E0184491E /* FeedbackView.swift */; };
 		5AE94BAB5926BDC3685360D2 /* EngagementPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CB70D3CEA29F96726EBAAA /* EngagementPrompt.swift */; };
 		5B0F57426532FC6DE1140E18 /* SiteScreenshotsENUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E28412D16C4F4B9719BE7C /* SiteScreenshotsENUITests.swift */; };
+		6EA63568517E165570EB24C9 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BA808525E5AF91B50F6C00 /* Reminder.swift */; };
 		743626B539B64AB3BD829FD1 /* Build13RetestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75368C41319B0354ED4CEFBB /* Build13RetestUITests.swift */; };
 		76ECEE54D5EB78B0C20D76C8 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580C6AF9335FC3A4784D7FE0 /* MainView.swift */; };
 		77F19557CFFA16F550D24ADC /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4700651E2770E76ADA27D2F9 /* AppStore.swift */; };
@@ -38,6 +41,7 @@
 		944DD9913573FCF67C439F9D /* AppStoreScreenshotsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA75BB7624CF060F34430F5C /* AppStoreScreenshotsUITests.swift */; };
 		962A2F4A8E2487A2CE4D7915 /* codex.json in Resources */ = {isa = PBXBuildFile; fileRef = AA866DDD3A50552E7424A0BA /* codex.json */; };
 		9C22D4F07302E1F100C03797 /* BudgetBuddyWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586066F5538B41CE9E1AA051 /* BudgetBuddyWatchApp.swift */; };
+		A0A5D2D9750D50534BE1C1BD /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3157445FBFA50EC6C5E3621 /* Keychain.swift */; };
 		A46B7F3BFA9939B15E62FE7E /* GeneratedStoryArtSmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CD15C0640B5C2625DEEF06 /* GeneratedStoryArtSmokeUITests.swift */; };
 		A51E7AEE376A089D713342BA /* content_en.json in Resources */ = {isa = PBXBuildFile; fileRef = B33047B09F6CEE15FDC5B330 /* content_en.json */; };
 		AAF7F8A875408750E90A1246 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 168FF09AED732202ED653F49 /* APIClient.swift */; };
@@ -59,6 +63,13 @@
 
 /* Begin PBXContainerItemProxy section */
 		34B4844627AE722151EF173B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5FF655893054AC4B4A5FD3AE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B5B78C12675F2EFE1516B837;
+			remoteInfo = BudgetBuddy;
+		};
+		53A5498F5477C2D83FB397BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5FF655893054AC4B4A5FD3AE /* Project object */;
 			proxyType = 1;
@@ -96,6 +107,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0367A2A7DEF40EC6346FAF87 /* BudgetBuddyTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BudgetBuddyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		069C7D124CBD6C82DD2AB4AF /* TrackerSummaryUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerSummaryUITests.swift; sourceTree = "<group>"; };
 		06CC3F27E573CDCBAEB67CE5 /* LegalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalView.swift; sourceTree = "<group>"; };
 		086B86EEFD49449A07F3DA99 /* Stories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
@@ -107,6 +119,7 @@
 		41F2A5A0F50EE631AE332537 /* lessons.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = lessons.json; sourceTree = "<group>"; };
 		429C6ADA6478AB8FC7FF6653 /* WatchAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAddView.swift; sourceTree = "<group>"; };
 		4308F2D9E35FBADE4AF01914 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
+		455251A24C5EC3B52630A850 /* V153ProbeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V153ProbeUITests.swift; sourceTree = "<group>"; };
 		45CB70D3CEA29F96726EBAAA /* EngagementPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngagementPrompt.swift; sourceTree = "<group>"; };
 		4700651E2770E76ADA27D2F9 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		56CD15C0640B5C2625DEEF06 /* GeneratedStoryArtSmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedStoryArtSmokeUITests.swift; sourceTree = "<group>"; };
@@ -115,6 +128,7 @@
 		59E6305298343D4E0184491E /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		5B27166D2A1185543E0CDDA9 /* PixelArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelArt.swift; sourceTree = "<group>"; };
 		62BB45B44ECA2EB0FB036018 /* GuestModeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuestModeUITests.swift; sourceTree = "<group>"; };
+		64FB73FEF96886609FCF9D18 /* StoriesDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesDataTests.swift; sourceTree = "<group>"; };
 		6DD4A16E66AD6AAC44E728FB /* BudgetBuddyWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BudgetBuddyWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F6801DC07C088C6B7CD5C1E /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		75368C41319B0354ED4CEFBB /* Build13RetestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Build13RetestUITests.swift; sourceTree = "<group>"; };
@@ -122,6 +136,7 @@
 		7E84C5E625B38A2501CF21F0 /* StabilityFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StabilityFlowUITests.swift; sourceTree = "<group>"; };
 		8426D9EF5D90282736878D2C /* V11SmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V11SmokeUITests.swift; sourceTree = "<group>"; };
 		8502F5EFE6221CB20EF05F44 /* Diagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
+		87BA808525E5AF91B50F6C00 /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
 		894F0C0185717F4301A2B9C7 /* BudgetBuddyUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BudgetBuddyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8987DDEDDFA31A9140706008 /* stories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stories.json; sourceTree = "<group>"; };
 		8CDD78B034F919B5AD3238D3 /* NewStoriesProbeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStoriesProbeUITests.swift; sourceTree = "<group>"; };
@@ -142,6 +157,7 @@
 		DC1F68CD7C39D13E37ACD238 /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		DD1246E39990390A20BC9B9A /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		E923AA22C691DC1AA25A7753 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		F3157445FBFA50EC6C5E3621 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		F402A001BE0656EB0563C032 /* BudgetBuddy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BudgetBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4452A75854BBEC2F2673564 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		F6D895D088F5B60D141E6661 /* EngagementPromptUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngagementPromptUITests.swift; sourceTree = "<group>"; };
@@ -167,6 +183,7 @@
 				7E84C5E625B38A2501CF21F0 /* StabilityFlowUITests.swift */,
 				069C7D124CBD6C82DD2AB4AF /* TrackerSummaryUITests.swift */,
 				8426D9EF5D90282736878D2C /* V11SmokeUITests.swift */,
+				455251A24C5EC3B52630A850 /* V153ProbeUITests.swift */,
 			);
 			path = UITests;
 			sourceTree = "<group>";
@@ -175,6 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				F402A001BE0656EB0563C032 /* BudgetBuddy.app */,
+				0367A2A7DEF40EC6346FAF87 /* BudgetBuddyTests.xctest */,
 				894F0C0185717F4301A2B9C7 /* BudgetBuddyUITests.xctest */,
 				6DD4A16E66AD6AAC44E728FB /* BudgetBuddyWatch.app */,
 				C7E9ACABCB3DB56BEF6F4A32 /* BudgetBuddyWatchUITests.xctest */,
@@ -189,6 +207,7 @@
 				E923AA22C691DC1AA25A7753 /* PrivacyInfo.xcprivacy */,
 				D2B96D7B2339836452B02BD1 /* Resources */,
 				C3A0A89CD2E19A2B8BD7A34E /* Sources */,
+				D825A1256B7230E78A5D02C5 /* Tests */,
 				240A8E8F4B55B0BD5D3F53C9 /* UITests */,
 				C9975E5082B00D4E4CF55C34 /* WatchApp */,
 				BA53293BC164CCE5998D1098 /* WatchUITests */,
@@ -217,12 +236,14 @@
 				45CB70D3CEA29F96726EBAAA /* EngagementPrompt.swift */,
 				59E6305298343D4E0184491E /* FeedbackView.swift */,
 				2CB327477B63C862CF4C4BDF /* ForgotPasswordView.swift */,
+				F3157445FBFA50EC6C5E3621 /* Keychain.swift */,
 				D2F2F10151DF065055DEE86F /* L10n.swift */,
 				06CC3F27E573CDCBAEB67CE5 /* LegalView.swift */,
 				580C6AF9335FC3A4784D7FE0 /* MainView.swift */,
 				F4452A75854BBEC2F2673564 /* Models.swift */,
 				DA7F99F7BE62095C9139DC4F /* OnboardingView.swift */,
 				5B27166D2A1185543E0CDDA9 /* PixelArt.swift */,
+				87BA808525E5AF91B50F6C00 /* Reminder.swift */,
 				086B86EEFD49449A07F3DA99 /* Stories.swift */,
 				DC1F68CD7C39D13E37ACD238 /* StoryView.swift */,
 				BABAFF6217EC65BC2FC171EA /* Theme.swift */,
@@ -255,6 +276,14 @@
 				8987DDEDDFA31A9140706008 /* stories.json */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		D825A1256B7230E78A5D02C5 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				64FB73FEF96886609FCF9D18 /* StoriesDataTests.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -334,6 +363,24 @@
 			productReference = F402A001BE0656EB0563C032 /* BudgetBuddy.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F7709054B70B82C5E82C4C79 /* BudgetBuddyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 444E7B1543A789EC2DE248AB /* Build configuration list for PBXNativeTarget "BudgetBuddyTests" */;
+			buildPhases = (
+				AB67FFC74D1F7EB9F0320AF3 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				26A09BE80782E87492176A67 /* PBXTargetDependency */,
+			);
+			name = BudgetBuddyTests;
+			packageProductDependencies = (
+			);
+			productName = BudgetBuddyTests;
+			productReference = 0367A2A7DEF40EC6346FAF87 /* BudgetBuddyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -372,6 +419,7 @@
 			projectRoot = "";
 			targets = (
 				B5B78C12675F2EFE1516B837 /* BudgetBuddy */,
+				F7709054B70B82C5E82C4C79 /* BudgetBuddyTests */,
 				1BD83FFD588D65BAA9A4BA24 /* BudgetBuddyUITests */,
 				8FC22903812FD384723A5338 /* BudgetBuddyWatch */,
 				A744AB99B29916E1CF1EB61D /* BudgetBuddyWatchUITests */,
@@ -422,6 +470,7 @@
 				C8C3C62DC8C515424D13DEE3 /* StabilityFlowUITests.swift in Sources */,
 				D1A5C2797D1006A9C8EA4FED /* TrackerSummaryUITests.swift in Sources */,
 				3F6D588F48F9CE1B8DA78AA5 /* V11SmokeUITests.swift in Sources */,
+				38E31B3BC670D58176D7A773 /* V153ProbeUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,18 +496,28 @@
 				5AE94BAB5926BDC3685360D2 /* EngagementPrompt.swift in Sources */,
 				55A79EBA6120AF9912FE948C /* FeedbackView.swift in Sources */,
 				1E9B30E23E2C23A39A42443E /* ForgotPasswordView.swift in Sources */,
+				A0A5D2D9750D50534BE1C1BD /* Keychain.swift in Sources */,
 				86473B7A25E8A0F3A0D1B5ED /* L10n.swift in Sources */,
 				2600BD14A81B5B9FB8414D18 /* LegalView.swift in Sources */,
 				76ECEE54D5EB78B0C20D76C8 /* MainView.swift in Sources */,
 				D37920BD12FD0B7CE890552C /* Models.swift in Sources */,
 				0C49FF4891983BB5C74A3AA5 /* OnboardingView.swift in Sources */,
 				5317190862D74EC80D8352D5 /* PixelArt.swift in Sources */,
+				6EA63568517E165570EB24C9 /* Reminder.swift in Sources */,
 				37D50F07E5690CD915343241 /* Stories.swift in Sources */,
 				86F8BFEFFB86C4CB29ABD0DF /* StoryView.swift in Sources */,
 				2F2FDDE67545103B94865D76 /* Theme.swift in Sources */,
 				1F0F65794C6152C700A8BB98 /* TrackerView.swift in Sources */,
 				2675D1D5E6FE72780E26C6D6 /* UpdateChecker.swift in Sources */,
 				E46AC57C0EF89A952FC668C2 /* WatchBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB67FFC74D1F7EB9F0320AF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4766A935AE7599242CC8A82B /* StoriesDataTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,6 +534,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		26A09BE80782E87492176A67 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B5B78C12675F2EFE1516B837 /* BudgetBuddy */;
+			targetProxy = 53A5498F5477C2D83FB397BF /* PBXContainerItemProxy */;
+		};
 		38D9165D982DE36BFF73F5D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B5B78C12675F2EFE1516B837 /* BudgetBuddy */;
@@ -672,6 +736,27 @@
 			};
 			name = Debug;
 		};
+		C7D60542E270015D99A7FE36 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGNING_ALLOWED[sdk=iphoneos*]" = NO;
+				"CODE_SIGNING_REQUIRED[sdk=iphoneos*]" = NO;
+				CODE_SIGN_STYLE = Manual;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddyTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BudgetBuddy.app/BudgetBuddy";
+			};
+			name = Debug;
+		};
 		C988272FEDA970941FBF2425 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -698,6 +783,24 @@
 				SDKROOT = watchos;
 				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = BudgetBuddyWatch;
+			};
+			name = Release;
+		};
+		DE88C08C90EA77DC3D52A640 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = cn.budgetbuddy.BudgetBuddyTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BudgetBuddy.app/BudgetBuddy";
 			};
 			name = Release;
 		};
@@ -782,6 +885,15 @@
 			buildConfigurations = (
 				27604B201E4F182CE22D3A19 /* Debug */,
 				FE939582067BC923BB8127E5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		444E7B1543A789EC2DE248AB /* Build configuration list for PBXNativeTarget "BudgetBuddyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7D60542E270015D99A7FE36 /* Debug */,
+				DE88C08C90EA77DC3D52A640 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

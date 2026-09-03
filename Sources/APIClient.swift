@@ -40,11 +40,18 @@ final class APIClient {
         guard let url = URL(string: "https://budgetbuddy.cn"),
               let c = HTTPCookieStorage.shared.cookies(for: url)?.first(where: { $0.name == "bb_session" })
         else { return }
-        UserDefaults.standard.set(c.value, forKey: sessionKey)
+        Keychain.set(c.value, for: sessionKey)
     }
 
     private func restoreSessionCookie() {
-        guard let value = UserDefaults.standard.string(forKey: sessionKey), !value.isEmpty else { return }
+        var stored = Keychain.get(sessionKey)
+        if stored == nil, let legacy = UserDefaults.standard.string(forKey: sessionKey), !legacy.isEmpty {
+            // One-time migration (v1.5.3): sessions used to be kept in UserDefaults.
+            Keychain.set(legacy, for: sessionKey)
+            UserDefaults.standard.removeObject(forKey: sessionKey)
+            stored = legacy
+        }
+        guard let value = stored, !value.isEmpty else { return }
         let props: [HTTPCookiePropertyKey: Any] = [
             .name: "bb_session",
             .value: value,
@@ -59,7 +66,8 @@ final class APIClient {
     }
 
     func clearSessionCookie() {
-        UserDefaults.standard.removeObject(forKey: sessionKey)
+        Keychain.delete(sessionKey)
+        UserDefaults.standard.removeObject(forKey: sessionKey)   // legacy slot
         if let url = URL(string: "https://budgetbuddy.cn") {
             HTTPCookieStorage.shared.cookies(for: url)?
                 .filter { $0.name == "bb_session" }

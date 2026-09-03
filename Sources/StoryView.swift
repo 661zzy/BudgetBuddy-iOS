@@ -448,6 +448,8 @@ struct GameDetailView: View {
     @State private var stats: [String: Double]
     @State private var score = 0
     @State private var ending: Ending?
+    @State private var showReminderOffer = false      // v1.5.3: shown once, on the first ending screen
+    @State private var reminderJustEnabled = false
 
     init(story: Story) {
         self.story = story
@@ -664,6 +666,7 @@ struct GameDetailView: View {
             resultCard("做得好".tr, ending.did_well?.tr, .bbGreen)
             resultCard("可以更好".tr, ending.improve?.tr, Color(hex: 0xC9A227))
             resultCard("养成习惯".tr, ending.habit?.tr, .bbInk)
+            if showReminderOffer { reminderOffer }
             HStack(spacing: 10) {
                 Button { start() } label: {
                     Text("再玩一次".tr).font(.headline).foregroundColor(.bbInk)
@@ -679,12 +682,38 @@ struct GameDetailView: View {
         }
         .padding(16)
         .onAppear {
+            showReminderOffer = !BBReminder.enabled && !BBReminder.offered
             // A finished story with a good ending is the one happy moment we ask
             // for a rating — once per install, and Apple caps the prompt anyway.
             if ending.tone == "good", BBRating.consumeStoryDonePrompt() {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { requestReview() }
             }
         }
+    }
+
+    // The ending screen is the moment someone has just felt what a story is
+    // worth, so it is where the daily nudge is offered — once, and as a card
+    // in the same voice as the result cards, not a system alert.
+    private var reminderOffer: some View {
+        Button {
+            BBReminder.markOffered()
+            guard !reminderJustEnabled else { return }
+            BBReminder.enable { ok in reminderJustEnabled = ok }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: reminderJustEnabled ? "bell.badge.fill" : "bell.badge").font(.title3).foregroundColor(.bbGreen)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(reminderJustEnabled ? "已开启，每天 20:00 见".tr : "每天提醒我来玩一个故事".tr)
+                        .font(.subheadline.weight(.semibold)).foregroundColor(.bbInk)
+                    Text("晚上 8 点一条提醒，随时可在「我的」里关掉".tr).font(.caption).foregroundColor(.bbInk2)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("story.reminder.offer")
     }
 
     @ViewBuilder

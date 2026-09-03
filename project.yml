@@ -112,6 +112,34 @@ targets:
           CODE_SIGNING_ALLOWED[sdk=watchos*]: "NO"
           CODE_SIGNING_REQUIRED[sdk=watchos*]: "NO"
 
+  # v1.5.3: first unit-test target — data-integrity checks on the bundled JSON.
+  BudgetBuddyTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: BudgetBuddy
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cn.budgetbuddy.BudgetBuddyTests
+        SDKROOT: iphoneos
+        # Link against the host app so @testable import resolves its types.
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/BudgetBuddy.app/BudgetBuddy"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+          - "@loader_path/Frameworks"
+        GENERATE_INFOPLIST_FILE: "YES"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+      configs:
+        Debug:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGNING_ALLOWED[sdk=iphoneos*]: "NO"
+          CODE_SIGNING_REQUIRED[sdk=iphoneos*]: "NO"
+
   BudgetBuddyUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -144,9 +172,11 @@ schemes:
     build:
       targets:
         BudgetBuddy: all
+        BudgetBuddyTests: [test]
         BudgetBuddyUITests: [test]
     test:
       targets:
+        - BudgetBuddyTests
         - BudgetBuddyUITests
   BudgetBuddyWatch:
     build:

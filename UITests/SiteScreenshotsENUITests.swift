@@ -98,13 +98,41 @@ final class SiteScreenshotsENUITests: XCTestCase {
         ensureInApp()
         tapTab("Stories")
         XCTAssertTrue(waitForText("INTERACTIVE STORIES", timeout: 10), "EN stories tab did not load")
-        // Scroll down a touch so the path shows several English titles at once.
-        app.swipeUp(); usleep(500_000)
-        XCTAssertTrue(app.staticTexts["Want or Need?"].waitForExistence(timeout: 4)
-                        || app.staticTexts["The Anti-Scam Battle"].exists,
+        // Shoot from the top: the header plus the first nodes, nothing half-cut.
+        XCTAssertTrue(app.staticTexts["The One-Month Budget Challenge"].waitForExistence(timeout: 4)
+                        || app.staticTexts["Want or Need?"].exists,
                       "Stories list titles not in English")
         sleep(1)
         shoot("app-stories-list-en")
+    }
+
+    func testE_HomeSignedInEN() throws {
+        try XCTSkipIf(password.isEmpty, "Set BB_REVIEW_PASSWORD to capture the signed-in home")
+        app.launch()
+        ensureInApp()
+        signInIfNeeded()
+        tapTab("Home")
+        XCTAssertTrue(waitForText("TODAY'S STORY", timeout: 12), "EN home did not render")
+        XCTAssertFalse(app.staticTexts["Welcome back"].exists, "Auth sheet still on screen")
+        sleep(2)
+        shoot("app-home-signedin-en")
+    }
+
+    private func signInIfNeeded() {
+        tapTab("Me")
+        guard waitForText("Not signed in", timeout: 4) else { return }
+        tapButton(containing: "Sign in / Sign up")
+        XCTAssertTrue(waitForText("Welcome back", timeout: 8), "Auth sheet did not open")
+        let idField = app.textFields["Phone or email"].exists
+            ? app.textFields["Phone or email"] : app.textFields.element(boundBy: 0)
+        XCTAssertTrue(idField.waitForExistence(timeout: 6), "Missing identifier field")
+        idField.tap(); idField.typeText(account)
+        let pw = app.secureTextFields.element(boundBy: 0)
+        XCTAssertTrue(pw.waitForExistence(timeout: 5), "Missing password field")
+        pw.tap(); pw.typeText(password)
+        app.buttons["Log in"].firstMatch.tap()
+        XCTAssertTrue(waitForText("Review demo", timeout: 25) || waitForText("审核演示", timeout: 2), "Login did not complete")
+        dismissSavePasswordPromptIfNeeded()
     }
 
     // MARK: helpers

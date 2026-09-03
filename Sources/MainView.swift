@@ -165,7 +165,7 @@ struct HomeView: View {
                         .background(Capsule().fill(Color(hex: 0xFFF4DF))).foregroundColor(Color(hex: 0x8A5A2B))
                     HStack(spacing: 4) { Image(systemName: "clock"); Text("3分钟".tr) }.font(.caption2).foregroundColor(.bbInk2)
                 }
-                Text("一个月生活费大作战".tr).font(.system(size: 20, weight: .semibold)).foregroundColor(.bbInk)
+                Text("一个月生活费大作战".tr).font(.title3.weight(.semibold)).foregroundColor(.bbInk)
                 Text("这个月有 ¥1000，看看你能不能稳稳花到月底。".tr)
                     .font(.body).foregroundColor(.bbInk2).fixedSize(horizontal: false, vertical: true)
                 Button { tab = 2 } label: {
@@ -417,6 +417,7 @@ struct ProfileView: View {
             NavigationLink { CodexView() } label: { rowLabel("rectangle.stack", "已解锁图鉴".tr, right: "\(store.codexUnlocked) / \(CodexStore.all.count)") }.buttonStyle(.plain)
             Button { tab = 2 } label: { rowLabel("play.circle", "理财课程".tr, right: "已完成".tr + " \(store.lessonsCompleted)/\(LessonStore.all.count)") }.buttonStyle(.plain)
             NavigationLink { ChallengesView() } label: { rowLabel("flag", "我的挑战".tr, right: store.activeChallengeCount > 0 ? "\(store.activeChallengeCount) " + "个进行中".tr : "去看看".tr) }.buttonStyle(.plain)
+            ReminderToggleRow()
         }
     }
 

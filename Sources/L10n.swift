@@ -38,6 +38,22 @@ enum L10n {
     }()
 
     static let en: [String: String] = [
+        // v1.5.3 — daily reminder, update skip, age at sign-up
+        "今天的故事等你来选": "Today's story is waiting for you",
+        "三分钟，做一个不花真钱的选择。": "Three minutes, one choice — and no real money on the line.",
+        "每日故事提醒": "Daily story reminder",
+        "每天 20:00": "Every day at 8 pm",
+        "通知权限已关闭，请到系统设置里允许": "Notifications are off — allow them in Settings",
+        "每天提醒我来玩一个故事": "Remind me to play a story every day",
+        "晚上 8 点一条提醒，随时可在「我的」里关掉": "One nudge at 8 pm. Switch it off any time in Me.",
+        "已开启，每天 20:00 见": "On — see you at 8 pm",
+        "这个版本不再提醒": "Skip this version",
+        "年龄": "Age",
+        "14 岁及以上": "14 or older",
+        "未满 14 岁": "Under 14",
+        "我的监护人已同意我注册并使用": "My parent or guardian has agreed to this",
+        "未满 14 岁需要监护人同意后才能注册": "Under 14, a parent or guardian needs to agree before you can sign up",
+        "面向 14 岁及以上的学生。未满 14 岁，请在监护人同意和陪同下使用。": "For students 13 and up (14 in mainland China). Younger? Use it with a parent or guardian's consent.",
         // ---- tabs ----
         "首页": "Home", "记账": "Track", "故事": "Stories", "AI搭子": "AI Buddy", "我的": "Me",
         // ---- home ----

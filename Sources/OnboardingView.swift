@@ -116,7 +116,11 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity).padding(.vertical, 16)
                     .duoPrimary()
             }
-            .padding(.horizontal, 28).padding(.bottom, 34)
+            .padding(.horizontal, 28).padding(.bottom, 10)
+
+            Text("面向 14 岁及以上的学生。未满 14 岁，请在监护人同意和陪同下使用。".tr)
+                .font(.caption2).foregroundColor(.bbInk2).multilineTextAlignment(.center)
+                .padding(.horizontal, 32).padding(.bottom, 24)
         }
         .bbPageWidth(520)
     }

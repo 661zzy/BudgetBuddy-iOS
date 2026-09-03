@@ -102,10 +102,11 @@ final class AppStore: ObservableObject {
         guard let info = fetched else { return }
         let current = Int(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0") ?? 0
         let url = info.url ?? "https://budgetbuddy.cn"
+        let latest = info.latestBuild ?? 0
         if current < (info.minBuild ?? 0) {
-            update = UpdatePrompt(note: info.note ?? "请更新到最新版本后继续使用。".tr, url: url, force: true)
-        } else if current < (info.latestBuild ?? 0) {
-            update = UpdatePrompt(note: info.note ?? "发现新版本，建议更新以获得更好体验。".tr, url: url, force: false)
+            update = UpdatePrompt(note: info.note ?? "请更新到最新版本后继续使用。".tr, url: url, force: true, build: latest)
+        } else if current < latest, latest != BBUpdateSkip.build {
+            update = UpdatePrompt(note: info.note ?? "发现新版本，建议更新以获得更好体验。".tr, url: url, force: false, build: latest)
         }
     }
 
@@ -118,9 +119,9 @@ final class AppStore: ObservableObject {
         await checkUpdate()
     }
 
-    func register(identifier: String, password: String, nickname: String, code: String) async -> Bool {
+    func register(identifier: String, password: String, nickname: String, code: String, ageGroup: String = "") async -> Bool {
         do {
-            user = try await api.register(identifier: identifier, password: password, nickname: nickname, ageGroup: "", code: code)
+            user = try await api.register(identifier: identifier, password: password, nickname: nickname, ageGroup: ageGroup, code: code)
             await adoptServerState()
             phase = .app
             return true

@@ -16,6 +16,8 @@ struct AuthView: View {
     @State private var err = ""
     @State private var hint = ""
     @State private var showForgot = false
+    @State private var under14 = false          // v1.5.3: PIPL — under-14s need a guardian's consent
+    @State private var guardianOK = false
     private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -45,6 +47,7 @@ struct AuthView: View {
                     if mode == 1 {
                         field(icon: "face.smiling", placeholder: "昵称".tr, text: $nickname, secure: false)
                         codeRow(purpose: "register")
+                        ageRow
                     }
 
                     if !hint.isEmpty {
@@ -169,6 +172,35 @@ struct AuthView: View {
         }
     }
 
+    // Asked once, at sign-up, because that is the only moment the app collects
+    // personal data (guests never send any). Under 14 → a guardian must agree.
+    private var ageRow: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 12) {
+                Image(systemName: "person.crop.circle.badge.questionmark").foregroundColor(.bbInk2).frame(width: 20)
+                Text("年龄".tr).foregroundColor(.bbInk)
+                Spacer()
+                Picker("", selection: $under14) {
+                    Text("14 岁及以上".tr).tag(false)
+                    Text("未满 14 岁".tr).tag(true)
+                }
+                .pickerStyle(.segmented).frame(maxWidth: 220)
+                .accessibilityIdentifier("auth.age")
+            }
+            .padding(.horizontal, 14).padding(.vertical, 10)
+            .background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
+            if under14 {
+                Toggle(isOn: $guardianOK) {
+                    Text("我的监护人已同意我注册并使用".tr).font(.footnote).foregroundColor(.bbInk)
+                }
+                .tint(.bbGreen)
+                .padding(.horizontal, 14).padding(.vertical, 8)
+                .background(Color.bbSurface).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.bbLine)).cornerRadius(12)
+                .accessibilityIdentifier("auth.guardian")
+            }
+        }
+    }
+
     private func submit() {
         guard !busy else { return }
         let id = identifier.trimmingCharacters(in: .whitespaces)
@@ -177,12 +209,14 @@ struct AuthView: View {
             guard bbPasswordOK(password) else { err = "密码至少 8 位，且需同时包含大写和小写字母".tr; return }
             guard nickname.trimmingCharacters(in: .whitespaces).count > 0 else { err = "请填写昵称".tr; return }
             guard !code.isEmpty else { err = "请先获取并填写验证码".tr; return }
+            guard !under14 || guardianOK else { err = "未满 14 岁需要监护人同意后才能注册".tr; return }
         }
         busy = true; err = ""
         Task {
             let ok = (mode == 0)
                 ? await store.login(identifier: id, password: password)
-                : await store.register(identifier: id, password: password, nickname: nickname, code: code)
+                : await store.register(identifier: id, password: password, nickname: nickname, code: code,
+                                       ageGroup: under14 ? "u14-guardian" : "14+")
             if !ok { err = store.errorMessage ?? "出错了，请重试".tr }
             busy = false
         }

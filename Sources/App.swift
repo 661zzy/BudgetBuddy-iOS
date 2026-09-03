@@ -42,7 +42,10 @@ struct RootView: View {
             if case .loading = store.phase { await store.boot() }
         }
         .onChange(of: scenePhase) { phase in
-            if phase == .active { Task { await store.foregroundUpdateCheck() } }
+            if phase == .active {
+                BBReminder.resync()
+                Task { await store.foregroundUpdateCheck() }
+            }
         }
         .sheet(item: $store.update) { UpdateSheet(prompt: $0) }
         .id(bbLang)   // rebuild everything when the language changes

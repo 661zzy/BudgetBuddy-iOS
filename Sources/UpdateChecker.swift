@@ -18,6 +18,13 @@ struct UpdatePrompt: Identifiable {
     let note: String
     let url: String
     let force: Bool        // true = blocking (current build < minBuild)
+    let build: Int         // the build being offered, so "skip this version" can remember it
+}
+
+enum BBUpdateSkip {
+    static let key = "bb.update.skippedBuild"
+    static var build: Int { UserDefaults.standard.integer(forKey: key) }
+    static func skip(_ b: Int) { UserDefaults.standard.set(b, forKey: key) }
 }
 
 struct UpdateSheet: View {
@@ -44,6 +51,12 @@ struct UpdateSheet: View {
                 Button { dismiss() } label: {
                     Text("稍后再说".tr).font(.system(.subheadline, design: .rounded).weight(.semibold)).foregroundColor(.bbInk2)
                 }
+                // v1.5.3: the prompt re-offers on every foreground; without this
+                // exit it reads as nagging for anyone who chooses not to update.
+                Button { BBUpdateSkip.skip(prompt.build); dismiss() } label: {
+                    Text("这个版本不再提醒".tr).font(.system(.footnote, design: .rounded)).foregroundColor(.bbInk2.opacity(0.7))
+                }
+                .accessibilityIdentifier("update.skip")
             }
         }
         .padding(28)

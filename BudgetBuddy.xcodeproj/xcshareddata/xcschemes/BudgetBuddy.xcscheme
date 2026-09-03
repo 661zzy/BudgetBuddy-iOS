@@ -29,6 +29,20 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F7709054B70B82C5E82C4C79"
+               BuildableName = "BudgetBuddyTests.xctest"
+               BlueprintName = "BudgetBuddyTests"
+               ReferencedContainer = "container:BudgetBuddy.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "1BD83FFD588D65BAA9A4BA24"
                BuildableName = "BudgetBuddyUITests.xctest"
                BlueprintName = "BudgetBuddyUITests"
@@ -53,6 +67,17 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F7709054B70B82C5E82C4C79"
+               BuildableName = "BudgetBuddyTests.xctest"
+               BlueprintName = "BudgetBuddyTests"
+               ReferencedContainer = "container:BudgetBuddy.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
          <TestableReference
             skipped = "NO"
             parallelizable = "NO">
