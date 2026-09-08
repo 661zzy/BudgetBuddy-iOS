@@ -27,14 +27,21 @@ final class V153ProbeUITests: XCTestCase {
     }
 
     func testA_UpdateSkipPersists() throws {
-        app.launchArguments += ["-bb.test.latestBuild", "999"]
+        // The skip is persisted on purpose, so a previous run leaves 999 behind
+        // and the sheet would never show. First launch overrides the stored
+        // value through NSArgumentDomain (read-only, does not clear it); the
+        // second launch drops the override so the freshly written skip is read.
+        let base = app.launchArguments
+        app.launchArguments = base + ["-bb.test.latestBuild", "999", "-bb.update.skippedBuild", "0"]
         app.launch(); ensureInApp()
         let skip = app.buttons["update.skip"]
         XCTAssertTrue(skip.waitForExistence(timeout: 10), "update sheet or its skip button missing")
         shoot("update-sheet-with-skip")
         skip.tap()
         XCTAssertTrue(waitGone(skip, 5), "sheet did not dismiss")
-        app.terminate(); app.launch(); ensureInApp()
+        app.terminate()
+        app.launchArguments = base + ["-bb.test.latestBuild", "999"]
+        app.launch(); ensureInApp()
         XCTAssertFalse(app.buttons["update.skip"].waitForExistence(timeout: 4), "skipped build was offered again")
     }
 

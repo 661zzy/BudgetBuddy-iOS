@@ -31,7 +31,7 @@ final class EngagementPromptUITests: XCTestCase {
 
     // Fake channel (latestBuild 999 > current) → update sheet on entry; 稍后再说 dismisses.
     func testB_UpdateSheetFromChannelAndDismiss() throws {
-        app.launchArguments += ["-bb.test.latestBuild", "999",
+        app.launchArguments += ["-bb.test.latestBuild", "999", "-bb.update.skippedBuild", "0",
                                 "-bb.engage.prompted.v1", "YES"]
         app.launch()
         // The sheet can beat onboarding chrome; clear it first if it's already up.
