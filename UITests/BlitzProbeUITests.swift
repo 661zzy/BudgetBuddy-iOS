@@ -49,6 +49,46 @@ final class BlitzProbeUITests: XCTestCase {
         finishRound(prefix: "pack")
     }
 
+    /// Store art: a clean winning run on the instalments pack (answers read from the
+    /// bank on disk, options kept in authored order via -bb.blitz.noshuffle).
+    func testC_StoreShots() throws {
+        let bankPath = ProcessInfo.processInfo.environment["BB_QUIZ_JSON"]
+            ?? "/Users/chenmingming/Documents/Claude code/BudgetBuddy-iOS-blitz/Resources/quiz.json"
+        guard let data = FileManager.default.contents(atPath: bankPath),
+              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let qs = root["questions"] as? [[String: Any]] else { throw XCTSkip("quiz.json not readable at \(bankPath)") }
+        let pack = qs.filter { ($0["pack"] as? String) == "credit" }
+        app.launchArguments += ["-bb.blitz.noshuffle", "YES"]
+        app.launch(); ensureInApp()
+        tapTab(["故事", "Stories"])
+        let hub = app.buttons["blitz.hub"]
+        for _ in 0..<4 where !hub.isHittable { app.swipeUp() }
+        hub.tap()
+        let tile = app.buttons["blitz.pack.credit"]
+        XCTAssertTrue(tile.waitForExistence(timeout: 6)); tile.tap()
+        for (i, q) in pack.enumerated() {
+            let t0 = app.buttons["blitz.tile.0"], slider = app.buttons["blitz.slider.submit"]
+            XCTAssertTrue(t0.waitForExistence(timeout: 12) || slider.waitForExistence(timeout: 2))
+            let target = t0.exists ? t0 : slider
+            let deadline = Date().addingTimeInterval(8)
+            while !target.isEnabled && Date() < deadline { usleep(50_000) }
+            if (q["type"] as? String) == "slider" {
+                // The slider starts mid-range; the exact value isn't needed for the shot flow.
+                slider.tap()
+            } else {
+                if i == 3 { shoot("store-1-question") }
+                app.buttons["blitz.tile.\(q["answer"] as? Int ?? 0)"].tap()
+            }
+            let next = app.buttons["blitz.next"]
+            XCTAssertTrue(next.waitForExistence(timeout: 6))
+            if i == 3 { sleep(1); shoot("store-2-reveal") }
+            next.tap()
+        }
+        let podium = app.buttons["blitz.podium.continue"]
+        XCTAssertTrue(podium.waitForExistence(timeout: 8)); sleep(2)
+        shoot("store-3-podium")
+    }
+
     // MARK: helpers
 
     private func playRound(count: Int, shotPrefix: String) {

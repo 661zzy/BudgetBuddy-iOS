@@ -304,9 +304,12 @@ final class BlitzGame: ObservableObject {
             questions = BlitzProgress.mistakes.compactMap(BlitzStore.find).prefix(8).map { $0 }
             seed = "review|\(BlitzProgress.dayKey())"
         }
+        // Store-screenshot seam (launch argument only): keep authored option order so
+        // a UI test can pick the right answer. Players always get shuffled options.
+        let keepOrder = UserDefaults.standard.bool(forKey: "bb.blitz.noshuffle")
         orders = questions.map { q in
             let n = q.choices.count
-            return q.type == "quiz" ? Array(0..<n).shuffled() : Array(0..<n)
+            return q.type == "quiz" && !keepOrder ? Array(0..<n).shuffled() : Array(0..<n)
         }
         ghost = mode.ghostKey.map(BlitzProgress.ghost) ?? []
         fast = UserDefaults.standard.bool(forKey: "bb.blitz.fast")
