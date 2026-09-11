@@ -1,0 +1,850 @@
+{
+ "packs": [
+  {
+   "id": "budget",
+   "title": "预算入门",
+   "titleEN": "Budget basics",
+   "icon": "chart.pie.fill",
+   "tint": "E4EFE7",
+   "fg": "3E5F4D"
+  },
+  {
+   "id": "wantneed",
+   "title": "想要还是需要",
+   "titleEN": "Want or need",
+   "icon": "scalemass.fill",
+   "tint": "FFF4DF",
+   "fg": "8A5A2B"
+  },
+  {
+   "id": "scam",
+   "title": "防骗反诈",
+   "titleEN": "Scam alert",
+   "icon": "exclamationmark.shield.fill",
+   "tint": "F6E3DF",
+   "fg": "9A4A3C"
+  },
+  {
+   "id": "credit",
+   "title": "分期与利息",
+   "titleEN": "Instalments & interest",
+   "icon": "creditcard.fill",
+   "tint": "E5EEF7",
+   "fg": "3A5A78"
+  },
+  {
+   "id": "save",
+   "title": "攒钱与复利",
+   "titleEN": "Saving & compounding",
+   "icon": "leaf.fill",
+   "tint": "E9F1E4",
+   "fg": "4B6B3A"
+  },
+  {
+   "id": "traps",
+   "title": "消费陷阱",
+   "titleEN": "Spending traps",
+   "icon": "cart.fill",
+   "tint": "F1E7F0",
+   "fg": "7A4A6E"
+  }
+ ],
+ "questions": [
+  {
+   "id": "b1",
+   "pack": "budget",
+   "type": "quiz",
+   "q": "月初拿到 1000 元生活费，最稳的第一步是？",
+   "qEN": "You get ¥1,000 for the month. What's the safest first move?",
+   "options": [
+    "先把一直想买的买了，剩下慢慢花",
+    "先分成几份：吃饭、交通、存钱",
+    "先借一部分给同学，反正会还",
+    "先不管，月底看剩多少再说"
+   ],
+   "optionsEN": [
+    "Buy what you've wanted, then see what's left",
+    "Split it first: food, transport, savings",
+    "Lend some to a friend, they'll pay it back",
+    "Don't plan, just see what's left at month end"
+   ],
+   "answer": 1,
+   "why": "先分好再花，钱就不容易在月中花光。这就是预算。",
+   "whyEN": "Split it before you spend it, and it won't vanish mid-month. That's all a budget is."
+  },
+  {
+   "id": "b2",
+   "pack": "budget",
+   "type": "tf",
+   "q": "「先存后花」比「花剩下的再存」更容易攒下钱。",
+   "qEN": "\"Save first, then spend\" works better than \"save whatever's left\".",
+   "answer": 0,
+   "why": "先把要存的钱拿出来，剩下的才是能花的。这样存钱就不靠意志力。",
+   "whyEN": "Take the savings out first and spend what remains. Then saving doesn't depend on willpower."
+  },
+  {
+   "id": "b3",
+   "pack": "budget",
+   "type": "slider",
+   "q": "每天一杯 15 元的奶茶，一个月（30 天）要花多少元？",
+   "qEN": "A ¥15 bubble tea every day. How much is that over 30 days?",
+   "min": 0,
+   "max": 1000,
+   "step": 10,
+   "value": 450,
+   "tol": 20,
+   "unit": "元",
+   "unitEN": "yuan",
+   "why": "15 × 30 = 450。小钱天天花，一个月就是一大笔。",
+   "whyEN": "15 × 30 = 450. Small amounts every day add up to a big one.",
+   "time": 25
+  },
+  {
+   "id": "b4",
+   "pack": "budget",
+   "type": "quiz",
+   "q": "「50/30/20 法则」里的 20，通常指什么？",
+   "qEN": "In the 50/30/20 rule, what does the 20 usually stand for?",
+   "options": [
+    "娱乐",
+    "必需开支",
+    "储蓄",
+    "请客"
+   ],
+   "optionsEN": [
+    "Fun",
+    "Essentials",
+    "Savings",
+    "Treating friends"
+   ],
+   "answer": 2,
+   "why": "常见的简易分法：50% 必需、30% 想要、20% 储蓄。学生可以按自己的情况调整比例。",
+   "whyEN": "A common simple split: 50% needs, 30% wants, 20% savings. Adjust the ratio to fit your life."
+  },
+  {
+   "id": "b5",
+   "pack": "budget",
+   "type": "tf",
+   "q": "记账的主要目的，是证明自己没有乱花钱。",
+   "qEN": "The main point of tracking is to prove you didn't waste money.",
+   "answer": 1,
+   "why": "记账是为了看清钱去了哪，下次做决定有依据，不是为了自责。",
+   "whyEN": "Tracking shows you where money went so your next decision is better informed. It isn't about guilt."
+  },
+  {
+   "id": "b6",
+   "pack": "budget",
+   "type": "quiz",
+   "q": "这个月预算超了 100 元，最好的做法是？",
+   "qEN": "You went ¥100 over budget this month. Best move?",
+   "options": [
+    "跟家长说下个月再多要 100 元",
+    "找到超在哪，下月那项少花点",
+    "反正超了，这个月干脆不管了",
+    "以后不记账了，免得看着难受"
+   ],
+   "optionsEN": [
+    "Ask your parents for ¥100 more",
+    "Find the overspend, trim it next month",
+    "It's blown anyway, forget this month",
+    "Stop tracking so it stops feeling bad"
+   ],
+   "answer": 1,
+   "why": "超支不可怕，找到原因、调整一项就好。预算是用来调的，不是用来考试的。",
+   "whyEN": "Going over isn't a disaster. Find the cause and adjust one category. A budget is meant to be tuned."
+  },
+  {
+   "id": "b7",
+   "pack": "budget",
+   "type": "slider",
+   "q": "想买一双 600 元的球鞋，每周能存 50 元，需要几周？",
+   "qEN": "You want ¥600 sneakers and can save ¥50 a week. How many weeks?",
+   "min": 0,
+   "max": 30,
+   "step": 1,
+   "value": 12,
+   "tol": 0,
+   "unit": "周",
+   "unitEN": "weeks",
+   "why": "600 ÷ 50 = 12 周。把目标拆成每周的小数目，就知道要坚持多久。",
+   "whyEN": "600 ÷ 50 = 12 weeks. Breaking a goal into weekly amounts tells you how long it takes.",
+   "time": 25
+  },
+  {
+   "id": "b8",
+   "pack": "budget",
+   "type": "quiz",
+   "q": "以下哪一项最适合算作「固定支出」？",
+   "qEN": "Which one is a fixed expense?",
+   "options": [
+    "每月手机话费",
+    "周末看电影",
+    "放学买零食",
+    "同学生日礼物"
+   ],
+   "optionsEN": [
+    "Monthly phone bill",
+    "Weekend movie",
+    "After-school snacks",
+    "A friend's birthday gift"
+   ],
+   "answer": 0,
+   "why": "每个月金额差不多、而且必须付的叫固定支出。做预算要先把它扣掉。",
+   "whyEN": "Something you pay every month for about the same amount is fixed. Take it out before planning the rest."
+  },
+  {
+   "id": "w1",
+   "pack": "wantneed",
+   "type": "quiz",
+   "q": "以下哪一项最接近「需要」？",
+   "qEN": "Which one is closest to a need?",
+   "options": [
+    "限量款盲盒",
+    "上学用的公交卡充值",
+    "游戏皮肤",
+    "今天的第三杯奶茶"
+   ],
+   "optionsEN": [
+    "A limited-edition blind box",
+    "Topping up your bus card for school",
+    "A game skin",
+    "Your third bubble tea today"
+   ],
+   "answer": 1,
+   "why": "没有它会影响上学和正常生活的，才算需要。",
+   "whyEN": "A need is something that affects school or daily life if you go without it."
+  },
+  {
+   "id": "w2",
+   "pack": "wantneed",
+   "type": "tf",
+   "q": "「想要」的东西都不应该买。",
+   "qEN": "You should never buy things you merely want.",
+   "answer": 1,
+   "why": "想要的东西可以买。先保证需要，再在预算里给想要留一份。",
+   "whyEN": "Wants are fine. Cover needs first, then set aside part of the budget for wants."
+  },
+  {
+   "id": "w3",
+   "pack": "wantneed",
+   "type": "quiz",
+   "q": "突然很想买一件东西时，一个简单有效的办法是？",
+   "qEN": "You suddenly really want to buy something. A simple trick that works?",
+   "options": [
+    "马上下单，犹豫一下就会涨价",
+    "先加购物车，等一天再决定",
+    "问问主播还有没有别的优惠券",
+    "先借钱买下来，以后再慢慢还"
+   ],
+   "optionsEN": [
+    "Order now before the price goes up",
+    "Add it to the cart, decide tomorrow",
+    "Ask the streamer for another coupon",
+    "Borrow for it now and repay slowly"
+   ],
+   "answer": 1,
+   "why": "冷静期能过滤掉很多冲动。一天后还想要，再看预算。",
+   "whyEN": "A cooling-off period filters out a lot of impulses. Still want it tomorrow? Check the budget."
+  },
+  {
+   "id": "w4",
+   "pack": "wantneed",
+   "type": "tf",
+   "q": "同学都有的东西，就是我的「需要」。",
+   "qEN": "If everyone in class has it, it's a need for me.",
+   "answer": 1,
+   "why": "跟风带来的是「想要」。问问自己：没有它，生活和学习会不会真受影响？",
+   "whyEN": "Keeping up with others is a want. Ask: would life or school actually suffer without it?"
+  },
+  {
+   "id": "w5",
+   "pack": "wantneed",
+   "type": "quiz",
+   "q": "旧手机还能正常用，新款一出就换，这属于？",
+   "qEN": "Your phone works fine, but you upgrade as soon as a new model drops. That's a…",
+   "options": [
+    "需要",
+    "想要"
+   ],
+   "optionsEN": [
+    "Need",
+    "Want"
+   ],
+   "answer": 1,
+   "why": "能用却想换，是想要。想要不是错，只是要知道自己在为什么花钱。",
+   "whyEN": "Replacing something that still works is a want. Not wrong, just know what you're paying for."
+  },
+  {
+   "id": "w6",
+   "pack": "wantneed",
+   "type": "slider",
+   "q": "一件 199 元的衣服，一年只穿了 4 次，平均每次穿要花多少元？",
+   "qEN": "A ¥199 top you wore 4 times this year. What did each wear cost?",
+   "min": 0,
+   "max": 200,
+   "step": 1,
+   "value": 50,
+   "tol": 5,
+   "unit": "元",
+   "unitEN": "yuan",
+   "why": "199 ÷ 4 ≈ 50 元。算「每次使用成本」，能帮你判断值不值。",
+   "whyEN": "199 ÷ 4 ≈ 50. Cost per use is a quick way to judge whether something was worth it.",
+   "time": 25
+  },
+  {
+   "id": "w7",
+   "pack": "wantneed",
+   "type": "quiz",
+   "q": "判断需要还是想要，最好的一个问题是？",
+   "qEN": "The best single question for telling a need from a want?",
+   "options": [
+    "它的价格是不是超出了预算",
+    "没有它，会不会影响生活学习",
+    "身边的同学是不是都已经有了",
+    "它是不是今年最流行的款式"
+   ],
+   "optionsEN": [
+    "Is it over my budget?",
+    "Would life or school suffer without it?",
+    "Do all my classmates already have it?",
+    "Is it this year's trendiest style?"
+   ],
+   "answer": 1,
+   "why": "价格、别人、颜值都不决定需不需要，影响才决定。",
+   "whyEN": "Price, other people and looks don't decide it. Impact does."
+  },
+  {
+   "id": "w8",
+   "pack": "wantneed",
+   "type": "tf",
+   "q": "同一样东西，对一个人是需要，对另一个人可能只是想要。",
+   "qEN": "The same item can be a need for one person and a want for another.",
+   "answer": 0,
+   "why": "学画画的同学需要好一点的颜料，对别人可能只是想要。判断要看自己的真实情况。",
+   "whyEN": "Good paints are a need for an art student and a want for most others. It depends on your situation."
+  },
+  {
+   "id": "s1",
+   "pack": "scam",
+   "type": "tf",
+   "q": "陌生人介绍「刷单返利」：先垫钱，再返佣金。这是正规兼职。",
+   "qEN": "A stranger offers \"order-boosting\" work: pay upfront, get commission back. It's a real job.",
+   "answer": 1,
+   "why": "刷单本身违规，「先垫付后返利」是最常见的诈骗套路：先小额返利让你信任，再让你越垫越多。",
+   "whyEN": "Order-boosting breaks the rules, and \"pay first, get paid back\" is the most common scam: small payouts build trust, then the amounts grow."
+  },
+  {
+   "id": "s2",
+   "pack": "scam",
+   "type": "quiz",
+   "q": "有人说「免费送游戏皮肤」，要你把手机收到的验证码告诉他。你应该？",
+   "qEN": "Someone offers a free game skin if you tell them the code texted to your phone. You…",
+   "options": [
+    "告诉他，反正皮肤是免费的",
+    "不给，验证码谁问都不给",
+    "只告诉他前面几位数字",
+    "让同学先去试试看"
+   ],
+   "optionsEN": [
+    "Tell them, the skin is free anyway",
+    "Refuse. Never share a code with anyone",
+    "Only tell them the first few digits",
+    "Let a friend try it first"
+   ],
+   "answer": 1,
+   "why": "验证码就是你账号的钥匙，谁要都不给，包括自称客服、老师、家人的人。",
+   "whyEN": "A verification code is the key to your account. Never share it, even with someone claiming to be support, a teacher or family."
+  },
+  {
+   "id": "s3",
+   "pack": "scam",
+   "type": "quiz",
+   "q": "全国统一的反诈预警劝阻专线是？",
+   "qEN": "China's national anti-fraud warning hotline is…",
+   "options": [
+    "12315",
+    "96110",
+    "10086",
+    "12345"
+   ],
+   "optionsEN": [
+    "12315",
+    "96110",
+    "10086",
+    "12345"
+   ],
+   "answer": 1,
+   "why": "96110 是反诈预警劝阻专线，接到它的来电一定要接。12315 是消费投诉。",
+   "whyEN": "96110 is the anti-fraud warning line. If it calls you, pick up. 12315 is for consumer complaints."
+  },
+  {
+   "id": "s4",
+   "pack": "scam",
+   "type": "tf",
+   "q": "自称「公安局」的人打电话说你涉嫌犯罪，要你把钱转到「安全账户」。",
+   "qEN": "A caller says he's from the police, you're under investigation, and you must move money to a \"safe account\".",
+   "answer": 1,
+   "why": "公检法不会通过电话办案，更没有「安全账户」。挂断，打 110 核实。",
+   "whyEN": "Police never handle cases by phone, and there's no such thing as a \"safe account\". Hang up and call 110."
+  },
+  {
+   "id": "s5",
+   "pack": "scam",
+   "type": "quiz",
+   "q": "有人低价卖游戏账号，要你「私下转账，别走平台」。最大的风险是？",
+   "qEN": "Someone sells a game account cheap but wants a private transfer, off the platform. The biggest risk?",
+   "options": [
+    "价格太便宜，可能收到的是次品",
+    "付完钱，对方可能直接拉黑你",
+    "账号等级太高，自己根本用不上",
+    "需要做实名认证，流程比较麻烦"
+   ],
+   "optionsEN": [
+    "It's so cheap it might be junk",
+    "Once you pay, they can just block you",
+    "The level's too high for you to use",
+    "It needs ID checks, which is a hassle"
+   ],
+   "answer": 1,
+   "why": "绕开平台就没有保障，这是游戏交易诈骗最常见的一步。",
+   "whyEN": "Leaving the platform removes every protection. It's the classic move in game-trade scams."
+  },
+  {
+   "id": "s6",
+   "pack": "scam",
+   "type": "tf",
+   "q": "「退款链接」要你填银行卡号和密码，只要页面看起来像官方的就可以填。",
+   "qEN": "A refund link asks for your card number and PIN. If the page looks official, it's fine.",
+   "answer": 1,
+   "why": "钓鱼网站可以做得和官方一模一样。退款只在官方 App 里操作，不点陌生链接。",
+   "whyEN": "Phishing pages can look identical to the real thing. Only handle refunds inside the official app."
+  },
+  {
+   "id": "s7",
+   "pack": "scam",
+   "type": "quiz",
+   "q": "以下哪句话最像骗子会说的？",
+   "qEN": "Which line sounds most like a scammer?",
+   "options": [
+    "「请在官方 App 内查看订单」",
+    "「就差你一个了，先别告诉家长」",
+    "「如有疑问请拨打官方客服」",
+    "「请勿向他人透露验证码」"
+   ],
+   "optionsEN": [
+    "\"Please check your order in the official app\"",
+    "\"We only need you. Don't tell your parents yet\"",
+    "\"If in doubt, call official support\"",
+    "\"Never share your verification code\""
+   ],
+   "answer": 1,
+   "why": "制造紧迫、让你瞒着家人，是诈骗最典型的信号。",
+   "whyEN": "Urgency plus \"keep it secret from your family\" is the clearest scam signal there is."
+  },
+  {
+   "id": "s8",
+   "pack": "scam",
+   "type": "tf",
+   "q": "不小心被骗转账后，应该马上报警（110），并保存聊天记录和转账凭证。",
+   "qEN": "If you've been tricked into sending money, call 110 right away and keep the chats and receipts.",
+   "answer": 0,
+   "why": "越早报警，追回的机会越大。截图和转账记录是关键证据。",
+   "whyEN": "The sooner you report it, the better the chance of recovery. Screenshots and receipts are key evidence."
+  },
+  {
+   "id": "c1",
+   "pack": "credit",
+   "type": "quiz",
+   "q": "「0 利息」分期，但每期收 0.6% 手续费。这意味着？",
+   "qEN": "\"Zero interest\" instalments, but a 0.6% fee each month. That means…",
+   "options": [
+    "真的一分钱都不用多付给商家",
+    "手续费就是利息，实际更贵",
+    "只有第一期需要收取手续费",
+    "手续费等全部还完后会退回"
+   ],
+   "optionsEN": [
+    "You really pay the shop nothing extra",
+    "The fee is interest, it costs more",
+    "Only the first month has a fee",
+    "The fees come back once you finish"
+   ],
+   "answer": 1,
+   "why": "手续费按全部本金收，可你每月都在还本金。12 期算下来，实际年化成本约 13%。",
+   "whyEN": "The fee is charged on the full amount even as you pay it down. Over 12 months that's roughly 13% a year."
+  },
+  {
+   "id": "c2",
+   "pack": "credit",
+   "type": "slider",
+   "q": "一部 3600 元的手机，分 12 期、每期 330 元，总共要付多少元？",
+   "qEN": "A ¥3,600 phone on 12 payments of ¥330. What do you pay in total?",
+   "min": 3000,
+   "max": 5000,
+   "step": 10,
+   "value": 3960,
+   "tol": 40,
+   "unit": "元",
+   "unitEN": "yuan",
+   "why": "330 × 12 = 3960，比一次付清多 360 元。",
+   "whyEN": "330 × 12 = 3,960. That's ¥360 more than paying upfront.",
+   "time": 25
+  },
+  {
+   "id": "c3",
+   "pack": "credit",
+   "type": "tf",
+   "q": "信用卡选「最低还款」后，没还的部分不会产生利息。",
+   "qEN": "After a credit card \"minimum payment\", the unpaid part doesn't collect interest.",
+   "answer": 1,
+   "why": "没还的部分会按日计息，常见日利率万分之五，一年约 18%。",
+   "whyEN": "The unpaid balance accrues daily interest, commonly 0.05% a day, about 18% a year."
+  },
+  {
+   "id": "c4",
+   "pack": "credit",
+   "type": "quiz",
+   "q": "借 1000 元，一年后还 1100 元，年利率是多少？",
+   "qEN": "Borrow ¥1,000, repay ¥1,100 a year later. What's the annual rate?",
+   "options": [
+    "1%",
+    "10%",
+    "11%",
+    "100%"
+   ],
+   "optionsEN": [
+    "1%",
+    "10%",
+    "11%",
+    "100%"
+   ],
+   "answer": 1,
+   "why": "多还的 100 元就是利息，100 ÷ 1000 = 10%。",
+   "whyEN": "The extra ¥100 is the interest. 100 ÷ 1,000 = 10%."
+  },
+  {
+   "id": "c5",
+   "pack": "credit",
+   "type": "tf",
+   "q": "「先用后付」本质上也是一种借钱。",
+   "qEN": "\"Buy now, pay later\" is really a form of borrowing.",
+   "answer": 0,
+   "why": "东西先拿到、钱以后给，就是借了一笔钱。逾期还会产生费用、影响信用。",
+   "whyEN": "Getting the item now and paying later is a loan. Late payment brings fees and can hurt your credit."
+  },
+  {
+   "id": "c6",
+   "pack": "credit",
+   "type": "quiz",
+   "q": "以下哪种情况，分期最可能是合理的？",
+   "qEN": "When is paying in instalments most likely reasonable?",
+   "options": [
+    "为了买最新款手机，在同学面前有面子",
+    "急需的学习用品，还得起、总价算清了",
+    "直播间限时优惠，不分期就抢不到",
+    "已经有几笔分期，再加一笔也差不多"
+   ],
+   "optionsEN": [
+    "The newest phone, to look good at school",
+    "A needed school item, affordable, total cost known",
+    "A livestream flash deal you'd miss otherwise",
+    "You already have a few, one more won't matter"
+   ],
+   "answer": 1,
+   "why": "分期不是不能用：真需要、还得起、算清总成本，三条都满足才考虑。",
+   "whyEN": "Instalments can be OK only if it's a real need, you can repay, and you know the full cost."
+  },
+  {
+   "id": "c7",
+   "pack": "credit",
+   "type": "slider",
+   "q": "存 1000 元，年利率 2%，一年后大约有多少元利息？",
+   "qEN": "¥1,000 saved at 2% a year. About how much interest after one year?",
+   "min": 0,
+   "max": 100,
+   "step": 1,
+   "value": 20,
+   "tol": 2,
+   "unit": "元",
+   "unitEN": "yuan",
+   "why": "1000 × 2% = 20 元。对比一下：借钱的利率往往高得多。",
+   "whyEN": "1,000 × 2% = 20. Compare that with borrowing rates, which are usually far higher.",
+   "time": 25
+  },
+  {
+   "id": "c8",
+   "pack": "credit",
+   "type": "tf",
+   "q": "网贷广告说「无抵押、秒到账」，说明它的利息一定很低。",
+   "qEN": "A loan ad says \"no collateral, instant cash\", so the interest must be low.",
+   "answer": 1,
+   "why": "放款越容易，往往成本越高、风险越大。正规平台不向未成年人放贷。",
+   "whyEN": "The easier the money, the higher the cost usually is. Licensed lenders don't lend to minors."
+  },
+  {
+   "id": "v1",
+   "pack": "save",
+   "type": "quiz",
+   "q": "「复利」的意思是？",
+   "qEN": "What does compound interest mean?",
+   "options": [
+    "利息只按本金算",
+    "利息也会再生利息",
+    "利率每年都翻倍",
+    "银行额外给的奖励"
+   ],
+   "optionsEN": [
+    "Interest only on the original amount",
+    "Interest earns more interest",
+    "The rate doubles every year",
+    "An extra bonus from the bank"
+   ],
+   "answer": 1,
+   "why": "利息加进本金，下一期连它一起算利息。时间越长，差别越大。",
+   "whyEN": "Interest is added to the balance, so next time it earns interest too. The longer, the bigger the gap."
+  },
+  {
+   "id": "v2",
+   "pack": "save",
+   "type": "slider",
+   "q": "每月存 100 元，坚持 3 年（不算利息），一共能存多少元？",
+   "qEN": "Save ¥100 a month for 3 years, ignoring interest. How much in total?",
+   "min": 0,
+   "max": 6000,
+   "step": 100,
+   "value": 3600,
+   "tol": 0,
+   "unit": "元",
+   "unitEN": "yuan",
+   "why": "100 × 36 个月 = 3600 元。每月一点点，三年就是一大笔。",
+   "whyEN": "100 × 36 months = 3,600. A little each month becomes a lot in three years.",
+   "time": 25
+  },
+  {
+   "id": "v3",
+   "pack": "save",
+   "type": "tf",
+   "q": "攒钱越早开始越好，哪怕每次只存一点。",
+   "qEN": "Starting to save early matters, even with small amounts.",
+   "answer": 0,
+   "why": "时间是复利最重要的原料。早点养成习惯，比金额大小更要紧。",
+   "whyEN": "Time is compounding's key ingredient, and the habit matters more than the amount."
+  },
+  {
+   "id": "v4",
+   "pack": "save",
+   "type": "quiz",
+   "q": "以下哪个攒钱目标写得最好？",
+   "qEN": "Which saving goal is written best?",
+   "options": [
+    "我要多存点钱，存得越多越好",
+    "12 周存 600 元，每周存 50",
+    "等以后零花钱多了再开始存",
+    "一直存到自己不想存了为止"
+   ],
+   "optionsEN": [
+    "Save more, the more the better",
+    "¥600 in 12 weeks, ¥50 a week",
+    "Start when I get more pocket money",
+    "Keep going until I don't feel like it"
+   ],
+   "answer": 1,
+   "why": "好目标要具体：多少钱、多久、每次存多少。",
+   "whyEN": "A good goal is specific: how much, by when, and how much each time."
+  },
+  {
+   "id": "v5",
+   "pack": "save",
+   "type": "tf",
+   "q": "把钱单独放进储蓄目标，会让你更不容易乱花。",
+   "qEN": "Keeping savings in a separate goal makes you less likely to spend them.",
+   "answer": 0,
+   "why": "单独放的钱，不容易被当成可以随便花的钱；看得见的目标也让花钱前多想一步。",
+   "whyEN": "Money set aside stops feeling like spending money, and a visible goal makes you pause."
+  },
+  {
+   "id": "v6",
+   "pack": "save",
+   "type": "slider",
+   "q": "「72 法则」：年收益率 6%，钱大约多少年能翻一倍？",
+   "qEN": "The Rule of 72: at 6% a year, roughly how many years for money to double?",
+   "min": 1,
+   "max": 30,
+   "step": 1,
+   "value": 12,
+   "tol": 1,
+   "unit": "年",
+   "unitEN": "years",
+   "why": "72 ÷ 6 = 12 年。这是估算复利翻倍时间的小工具。",
+   "whyEN": "72 ÷ 6 = 12 years. A quick way to estimate doubling time.",
+   "time": 25
+  },
+  {
+   "id": "v7",
+   "pack": "save",
+   "type": "quiz",
+   "q": "收到 2000 元压岁钱，最稳妥的第一步是？",
+   "qEN": "You get ¥2,000 in New Year money. The safest first step?",
+   "options": [
+    "全部买成游戏点卡，一次用完",
+    "和家长商量，存一部分花一部分",
+    "借给网上认识的朋友赚点利息",
+    "投进一个「稳赚不赔」的项目"
+   ],
+   "optionsEN": [
+    "Spend it all on game credits at once",
+    "Talk with your parents: save some, spend some",
+    "Lend it to an online friend for interest",
+    "Put it in a \"can't-lose\" scheme"
+   ],
+   "answer": 1,
+   "why": "存一部分、花一部分是好开始。「稳赚不赔」本身就是危险信号。",
+   "whyEN": "Saving some and spending some is a good start. \"Can't lose\" is itself a warning sign."
+  },
+  {
+   "id": "v8",
+   "pack": "save",
+   "type": "tf",
+   "q": "「稳赚不赔、高收益」的投资项目，值得马上投。",
+   "qEN": "A \"guaranteed high return, zero risk\" investment is worth jumping into.",
+   "answer": 1,
+   "why": "收益和风险是绑在一起的。承诺高收益又没风险的，往往是骗局。",
+   "whyEN": "Return and risk come together. High return with no risk is usually a scam."
+  },
+  {
+   "id": "t1",
+   "pack": "traps",
+   "type": "quiz",
+   "q": "直播间喊「只剩最后 3 件，倒计时 10 秒」，主要是在利用什么？",
+   "qEN": "A livestream shouts \"Only 3 left, 10 seconds!\" What is it playing on?",
+   "options": [
+    "你对这件商品的真实需要",
+    "紧迫感，让你来不及思考",
+    "商品本身的质量很好",
+    "物流发货的速度很快"
+   ],
+   "optionsEN": [
+    "Your real need for the product",
+    "Urgency, so you don't stop to think",
+    "The product's great quality",
+    "Really fast delivery"
+   ],
+   "answer": 1,
+   "why": "倒计时和「最后几件」是为了让你跳过思考。慢下来，本身就是省钱。",
+   "whyEN": "Countdowns and \"last few\" exist to make you skip thinking. Slowing down saves money."
+  },
+  {
+   "id": "t2",
+   "pack": "traps",
+   "type": "tf",
+   "q": "盲盒抽到隐藏款的概率通常很低，越想集齐花得越多。",
+   "qEN": "Rare figures in blind boxes are usually very unlikely, and chasing a full set costs more and more.",
+   "answer": 0,
+   "why": "盲盒靠的是「下一个也许就是」的心理，和抽卡一样，很难控制花多少。",
+   "whyEN": "Blind boxes run on \"maybe the next one\", just like gacha, which makes spending hard to control."
+  },
+  {
+   "id": "t3",
+   "pack": "traps",
+   "type": "quiz",
+   "q": "会员「首月 1 元」，最该留意的是？",
+   "qEN": "A membership is ¥1 for the first month. What should you watch for?",
+   "options": [
+    "1 元的价格到底划不划算",
+    "会不会自动续费、下个月恢复原价",
+    "会员专属的图标和皮肤好不好看",
+    "能不能把账号分享给朋友一起用"
+   ],
+   "optionsEN": [
+    "Whether ¥1 is really a good deal",
+    "Whether it auto-renews at full price",
+    "Whether the member badge looks good",
+    "Whether you can share it with friends"
+   ],
+   "answer": 1,
+   "why": "很多低价首月会自动续费。开通时就设个提醒，或者及时关掉。",
+   "whyEN": "Many cheap first months auto-renew. Set a reminder when you sign up, or turn it off in time."
+  },
+  {
+   "id": "t4",
+   "pack": "traps",
+   "type": "slider",
+   "q": "满 300 减 50。你本来只想买 220 元的东西，为了凑单买到 300 元。你实际多花了多少元？",
+   "qEN": "\"¥50 off ¥300.\" You meant to spend ¥220 but padded the cart to ¥300. How much extra did you pay?",
+   "min": 0,
+   "max": 100,
+   "step": 1,
+   "value": 30,
+   "tol": 3,
+   "unit": "元",
+   "unitEN": "yuan",
+   "why": "不凑单付 220，凑单付 300 − 50 = 250，多花 30 元买了本来不需要的东西。",
+   "whyEN": "Without padding: ¥220. With it: 300 − 50 = 250. You paid ¥30 more for things you didn't need.",
+   "time": 25
+  },
+  {
+   "id": "t5",
+   "pack": "traps",
+   "type": "tf",
+   "q": "「原价 999，现价 199」说明一定很划算。",
+   "qEN": "\"Was ¥999, now ¥199\" means it's definitely a bargain.",
+   "answer": 1,
+   "why": "「原价」可能是虚标的。划不划算看你需不需要、和别家比价，而不是看划掉的数字。",
+   "whyEN": "The \"original\" price may be made up. Judge by need and comparison, not the crossed-out number."
+  },
+  {
+   "id": "t6",
+   "pack": "traps",
+   "type": "quiz",
+   "q": "以下哪个是「沉没成本」陷阱？",
+   "qEN": "Which one is the sunk-cost trap?",
+   "options": [
+    "票都买了，再难看也硬撑着看完",
+    "买东西之前先比较三家的价格",
+    "用优惠券买本来就要买的东西",
+    "把用不到的闲置物品挂出去卖掉"
+   ],
+   "optionsEN": [
+    "You paid, so you sit through a bad movie",
+    "Comparing three shops before buying",
+    "Using a coupon on something you'd buy anyway",
+    "Listing things you don't use for sale"
+   ],
+   "answer": 0,
+   "why": "已经花掉的钱收不回来，不该绑住接下来的选择。",
+   "whyEN": "Money already spent is gone. It shouldn't decide what you do next."
+  },
+  {
+   "id": "t7",
+   "pack": "traps",
+   "type": "tf",
+   "q": "未成年人没经家长同意的大额打赏，家长可以依法要求平台退还。",
+   "qEN": "If a minor tips a streamer a large sum without parental consent, parents can legally ask the platform for a refund.",
+   "answer": 0,
+   "why": "法律规定，这类和年龄不相适应、没经同意的支出可以要求返还。但最好的办法是一开始就不打赏。",
+   "whyEN": "By law, such unapproved spending beyond a minor's age can be reclaimed. Better still, don't tip in the first place."
+  },
+  {
+   "id": "t8",
+   "pack": "traps",
+   "type": "quiz",
+   "q": "「先用后付」「0 元下单」最容易让人怎样？",
+   "qEN": "\"Pay later\" and \"¥0 checkout\" most easily make people…",
+   "options": [
+    "让人花钱时更谨慎",
+    "忘了自己已经花了钱",
+    "帮人省下更多钱",
+    "让人更愿意记账"
+   ],
+   "optionsEN": [
+    "Spend more carefully",
+    "Forget they've already spent money",
+    "Save more money",
+    "Track spending more"
+   ],
+   "answer": 1,
+   "why": "付款的那一下被推迟了，花钱的感觉也就没了，账却还在。",
+   "whyEN": "The moment of paying is pushed back, so the spending doesn't feel real. The bill is still there."
+  }
+ ]
+}

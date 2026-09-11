@@ -51,6 +51,10 @@ struct StoryView: View {
             sectionLine("互 动 故 事".tr, trailing: "已通关".tr + " \(store.storiesCompleted) / \(StoryStore.all.count)")
             storyPath
             sectionLine("更 多".tr, trailing: nil)
+            NavigationLink { BlitzHubView() } label: {
+                moreRow("bolt.fill", "快答挑战".tr, BBLang.isEN ? "Timed quiz · \(BlitzStore.packs.count) packs, \(BlitzStore.bank.questions.count) questions"
+                                                              : "限时抢答 · \(BlitzStore.packs.count) 个题包、\(BlitzStore.bank.questions.count) 题")
+            }.buttonStyle(.plain).accessibilityIdentifier("blitz.hub")
             NavigationLink { CodexView() } label: {
                 moreRow("rectangle.stack", "认知图鉴".tr, BBLang.isEN ? "Spot common money traps · \(CodexStore.all.count) cards" : "识破常见财务套路 · 共 \(CodexStore.all.count) 张")
             }.buttonStyle(.plain)

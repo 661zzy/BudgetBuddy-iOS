@@ -22,6 +22,9 @@ struct HomeView: View {
     @Binding var tab: Int
     @State private var showAdd = false
     @State private var showAuthForAdd = false
+    @State private var blitz: BlitzLaunch?          // v1.6 财商快答
+    @State private var showBlitzHub = false
+    @State private var blitzRefresh = 0
 
     private var choicesThisWeek: Int {
         store.state.transactions.filter { isThisWeek($0.ts) }.count
@@ -36,6 +39,15 @@ struct HomeView: View {
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showAdd) { AddSheet().environmentObject(store) }
             .sheet(isPresented: $showAuthForAdd) { AuthView().environmentObject(store) }
+            .fullScreenCover(item: $blitz, onDismiss: { blitzRefresh += 1 }) { BlitzGameContainer(mode: $0.mode) }
+            .navigationDestination(isPresented: $showBlitzHub) { BlitzHubView() }
+        }
+    }
+
+    private var blitzSection: some View {
+        VStack(spacing: 0) {
+            sectionHeader("今 日 快 答".tr, trailing: "全部题包".tr) { showBlitzHub = true }
+            BlitzDailyCard { blitz = BlitzLaunch(mode: .daily) }.id(blitzRefresh).padding(.top, 14)
         }
     }
 
@@ -46,6 +58,7 @@ struct HomeView: View {
             sectionHeader("今 日 故 事".tr, trailing: "全部故事".tr) { tab = 2 }
             storyHero(imageHeight: 160).padding(.top, 14)
             quickAddCard.padding(.top, 14)
+            blitzSection.padding(.top, 26)
             sectionHeader("本 周 概 览".tr, trailing: nil) {}.padding(.top, 26)
             weekGrid.padding(.top, 2)
             sectionHeader("搭 子 说".tr, trailing: nil) {}.padding(.top, 26)
@@ -69,6 +82,7 @@ struct HomeView: View {
                 VStack(spacing: 0) {
                     sectionHeader("记 一 笔".tr, trailing: nil) {}
                     quickAddCard.padding(.top, 14)
+                    blitzSection.padding(.top, 28)
                     sectionHeader("本 周 概 览".tr, trailing: nil) {}.padding(.top, 28)
                     weekGrid.padding(.top, 2)
                     sectionHeader("搭 子 说".tr, trailing: nil) {}.padding(.top, 28)
