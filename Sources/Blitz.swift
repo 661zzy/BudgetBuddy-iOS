@@ -211,6 +211,25 @@ enum BlitzProgress {
     /// Today's five: up to two from the mistake bank (spaced repetition), the rest
     /// drawn across every pack with a date seed, so the set is stable all day.
     static func dailyQuestions(count: Int = 5, date: Date = Date()) -> [BlitzQuestion] {
+        // v1.6.1: once drawn, a day's set is frozen. Without this, answering a
+        // question wrong changed the mistake bank and 再玩一次 drew a different
+        // five the same day (Android 5.6 already caches; spec says same set all day).
+        let day = dayKey(date)
+        if d.string(forKey: dailySetDayKey) == day,
+           let ids = d.stringArray(forKey: dailySetIdsKey) {
+            let cached = ids.compactMap(BlitzStore.find)
+            if cached.count == min(count, BlitzStore.bank.questions.count) { return cached }
+        }
+        let fresh = drawDaily(count: count, date: date)
+        d.set(day, forKey: dailySetDayKey)
+        d.set(fresh.map(\.id), forKey: dailySetIdsKey)
+        return fresh
+    }
+
+    private static let dailySetDayKey = "bb.blitz.daily.set.day"
+    private static let dailySetIdsKey = "bb.blitz.daily.set.ids"
+
+    private static func drawDaily(count: Int, date: Date) -> [BlitzQuestion] {
         let all = BlitzStore.bank.questions
         var rng = SeededRNG("daily|\(dayKey(date))")
         var picked: [BlitzQuestion] = []

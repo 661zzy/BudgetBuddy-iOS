@@ -24,6 +24,11 @@ struct WatchAddView: View {
         // UI-test seam: "-bb.uitest.prefill 15" pre-fills the amount so tests can
         // exercise save→sync without fighting the sim's synthetic-tap offset bug.
         let args = ProcessInfo.processInfo.arguments
+        // UI-test seam: "-bb.uitest.customCats <json>" stands in for the phone's
+        // application-context push, which the simulator can't deliver on its own.
+        if let j = args.firstIndex(of: "-bb.uitest.customCats"), j + 1 < args.count {
+            UserDefaults.standard.set(args[j + 1], forKey: WatchSync.customCatsKey)
+        }
         if let i = args.firstIndex(of: "-bb.uitest.prefill"), i + 1 < args.count {
             _amount = State(initialValue: args[i + 1])
         } else {
@@ -147,6 +152,17 @@ private struct CategoryPickerView: View {
     let amount: Double
     let onSaved: () -> Void
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(WatchSync.customCatsKey) private var customCatsJSON = "[]"
+
+    // Custom categories from the phone; the name itself is what gets logged.
+    private var customCats: [(name: String, icon: String)] {
+        guard let data = customCatsJSON.data(using: .utf8),
+              let list = try? JSONSerialization.jsonObject(with: data) as? [[String: String]] else { return [] }
+        return list.compactMap { d in
+            guard let n = d["name"], !n.isEmpty else { return nil }
+            return (n, d["icon"] ?? "tag.fill")
+        }
+    }
 
     var body: some View {
         List {
@@ -159,6 +175,17 @@ private struct CategoryPickerView: View {
                     Label(c.zh, systemImage: c.icon)
                         .font(.system(size: 15, weight: .semibold))
                 }
+            }
+            ForEach(customCats, id: \.name) { c in
+                Button {
+                    WatchSync.shared.queueExpense(amount: amount, cat: c.name)
+                    onSaved()
+                    dismiss()
+                } label: {
+                    Label(c.name, systemImage: c.icon)
+                        .font(.system(size: 15, weight: .semibold))
+                }
+                .accessibilityIdentifier("watch.cat.\(c.name)")
             }
         }
         .navigationTitle("¥\(amount == amount.rounded() ? String(Int(amount)) : String(amount))")

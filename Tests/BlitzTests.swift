@@ -210,4 +210,19 @@ final class BlitzTests: XCTestCase {
             XCTAssertEqual(got.elapsed, elapsed, accuracy: 1e-5, "\(rid)|\(qid)|\(seed)")
         }
     }
+
+    /// v1.6.1: today's five stay the same even after the mistake bank changes.
+    func testDailySetIsFrozenForTheDay() {
+        let today = Date()
+        let first = BlitzProgress.dailyQuestions(date: today).map(\.id)
+        // Answer three questions wrong: the bank now leads with them.
+        let others = BlitzStore.bank.questions.map(\.id).filter { !first.contains($0) }
+        for id in others.prefix(3) { BlitzProgress.record(id, correct: false) }
+        XCTAssertEqual(BlitzProgress.dailyQuestions(date: today).map(\.id), first, "same five all day")
+        // A new day draws fresh, putting the mistakes first.
+        let tomorrow = today.addingTimeInterval(86_400)
+        let next = BlitzProgress.dailyQuestions(date: tomorrow).map(\.id)
+        // The bank is newest-first, so the two most recent misses lead tomorrow's set.
+        XCTAssertEqual(Array(next.prefix(2)), [others[2], others[1]], "tomorrow's set starts from the mistake bank")
+    }
 }

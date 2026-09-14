@@ -65,29 +65,33 @@ struct AppState: Codable {
     var gameProgress: [String]
     var lessonProgress: [String]
     var challenges: [ChallengeInstance]
+    var customCats: [CustomCategory]          // v1.6.1 自定义记账分类 (see CustomCategories.swift)
     var extras: [String: JSONValue]
 
     init(transactions: [Transaction] = [], gameProgress: [String] = [],
          lessonProgress: [String] = [], challenges: [ChallengeInstance] = [],
+         customCats: [CustomCategory] = [],
          extras: [String: JSONValue] = [:]) {
         self.transactions = transactions
         self.gameProgress = gameProgress
         self.lessonProgress = lessonProgress
         self.challenges = challenges
+        self.customCats = customCats
         self.extras = extras
     }
 
-    private static let knownKeys: Set<String> = ["transactions", "gameProgress", "lessonProgress", "challenges"]
+    private static let knownKeys: Set<String> = ["transactions", "gameProgress", "lessonProgress", "challenges", "customCats"]
 
     init(from decoder: Decoder) throws {
         guard let c = try? decoder.container(keyedBy: DynamicKey.self) else {
-            transactions = []; gameProgress = []; lessonProgress = []; challenges = []; extras = [:]
+            transactions = []; gameProgress = []; lessonProgress = []; challenges = []; customCats = []; extras = [:]
             return   // tolerate {} / non-object (brand-new user)
         }
         transactions   = (try? c.decode([Transaction].self, forKey: DynamicKey("transactions"))) ?? []
         gameProgress   = (try? c.decode([String].self, forKey: DynamicKey("gameProgress"))) ?? []
         lessonProgress = (try? c.decode([String].self, forKey: DynamicKey("lessonProgress"))) ?? []
         challenges     = (try? c.decode([ChallengeInstance].self, forKey: DynamicKey("challenges"))) ?? []
+        customCats     = BBCategory.decodeList((try? c.decode([JSONValue].self, forKey: DynamicKey("customCats"))) ?? [])
         var ex: [String: JSONValue] = [:]
         for key in c.allKeys where !AppState.knownKeys.contains(key.stringValue) {
             if let v = try? c.decode(JSONValue.self, forKey: key) { ex[key.stringValue] = v }
@@ -101,6 +105,7 @@ struct AppState: Codable {
         try c.encode(gameProgress, forKey: DynamicKey("gameProgress"))
         try c.encode(lessonProgress, forKey: DynamicKey("lessonProgress"))
         try c.encode(challenges, forKey: DynamicKey("challenges"))
+        try c.encode(customCats, forKey: DynamicKey("customCats"))
         for (k, v) in extras { try c.encode(v, forKey: DynamicKey(k)) }
     }
 }

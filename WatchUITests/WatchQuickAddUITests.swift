@@ -10,7 +10,12 @@ final class WatchQuickAddUITests: XCTestCase {
 
     func testSaveAndSyncFlow() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-bb.uitest.prefill", "15"]
+        // v1.6.1: stands in for the phone's custom-category push (application context
+        // can't be delivered in the simulator). Kept in this one test on purpose: the
+        // watch simulator fails to start the app a second time within the same run,
+        // so every check has to share a single launch.
+        app.launchArguments = ["-bb.uitest.prefill", "15",
+                               "-bb.uitest.customCats", #"[{"name":"水电","icon":"bolt.fill"},{"name":"房租","icon":"house.fill"}]"#]
         app.launch()
 
         // keypad + prefilled amount render
@@ -30,6 +35,14 @@ final class WatchQuickAddUITests: XCTestCase {
             XCTAssertTrue(app.buttons["餐饮"].waitForExistence(timeout: 5), "分类列表未出现")
         }
         save(app, "w2-category")
+
+        // Custom categories pushed from the phone are listed after the built-ins.
+        let water = app.buttons["watch.cat.水电"].firstMatch
+        for _ in 0..<6 where !water.exists { app.swipeUp() }
+        XCTAssertTrue(water.waitForExistence(timeout: 3), "自定义分类「水电」没有出现在手表分类列表里")
+        XCTAssertTrue(app.buttons["watch.cat.房租"].exists, "自定义分类「房租」缺失")
+        save(app, "w4-custom-categories")
+        for _ in 0..<6 where !app.buttons["餐饮"].firstMatch.isHittable { app.swipeDown() }
 
         // 餐饮 → queue + pop back to the confirmation
         app.buttons["餐饮"].firstMatch.tap()

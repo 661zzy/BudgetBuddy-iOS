@@ -85,6 +85,13 @@ final class AppStore: ObservableObject {
             try? await api.saveState(state)
         } else {
             state = server
+            // Categories a guest named before signing in shouldn't vanish just
+            // because the account already had data — keep both lists.
+            let cats = BBCategory.merged(server.customCats, guest.customCats)
+            if cats != server.customCats {
+                state.customCats = cats
+                try? await api.saveState(state)
+            }
         }
         clearGuestState()
     }
@@ -217,6 +224,31 @@ final class AppStore: ObservableObject {
         await save()
     }
 
+    // MARK: Custom categories (saved with the account)
+    var customCats: [CustomCategory] { state.customCats }
+    func catIcon(_ key: String) -> String { BBCategory.icon(key, custom: state.customCats) }
+
+    // The change lands in local state at once; the cloud save runs in the
+    // background (it's best-effort anyway), so the editor never waits on the network.
+    @discardableResult
+    func addCustomCategory(name: String, icon: String) throws -> String {
+        let n = try state.addCustomCategory(name: name, icon: icon)
+        Task { await save() }
+        return n
+    }
+
+    @discardableResult
+    func renameCustomCategory(_ old: String, to name: String, icon: String) throws -> String {
+        let n = try state.renameCustomCategory(old, to: name, icon: icon)
+        Task { await save() }
+        return n
+    }
+
+    func deleteCustomCategory(_ name: String) async {
+        state.deleteCustomCategory(name)
+        await save()
+    }
+
     // MARK: Progress (persisted into app_state, synced with the web app)
     func markGameComplete(_ id: String) {
         guard !state.gameProgress.contains(id) else { return }
@@ -329,6 +361,7 @@ final class AppStore: ObservableObject {
                 gameProgress: Array(Set(local.gameProgress).union(server.gameProgress)),
                 lessonProgress: Array(Set(local.lessonProgress).union(server.lessonProgress)),
                 challenges: mergedCh,
+                customCats: BBCategory.merged(local.customCats, server.customCats),
                 extras: local.extras.isEmpty ? server.extras : local.extras
             )
         }
@@ -363,6 +396,6 @@ extension AppState {
     /// Nothing the user actually made — used to decide whether guest data
     /// should be adopted into a freshly logged-in account.
     var bbIsEmptyContent: Bool {
-        transactions.isEmpty && gameProgress.isEmpty && lessonProgress.isEmpty && challenges.isEmpty
+        transactions.isEmpty && gameProgress.isEmpty && lessonProgress.isEmpty && challenges.isEmpty && customCats.isEmpty
     }
 }

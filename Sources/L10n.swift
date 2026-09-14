@@ -38,6 +38,23 @@ enum L10n {
     }()
 
     static let en: [String: String] = [
+        // v1.6.1 自定义记账分类
+        "分类": "Category",
+        "自定义": "Custom",
+        "新建分类": "New category",
+        "编辑分类": "Edit category",
+        "新分类": "New category",
+        "分类名称": "Category name",
+        "比如：水电、房租": "e.g. Utilities, Rent",
+        "选个图标": "Pick an icon",
+        "重命名": "Rename",
+        "长按自定义分类可以改名或删除": "Long-press a custom category to rename or delete it",
+        "已经记下的账会保留这个名字，只是以后不会出现在分类里。": "Entries you've already logged keep this name. It just won't show up as a choice anymore.",
+        "分类跟着账号保存，换手机或重装后登录也还在。": "Categories are saved to your account, so they come back when you sign in on a new phone.",
+        "给分类起个名字吧": "Give the category a name",
+        "这个名字和系统分类重复了": "That name is already a built-in category",
+        "已经有这个分类了": "You already have that category",
+        "保存失败，请重试": "Couldn't save. Try again.",
         // v1.6 财商快答 (Money Blitz)
         "5 道题 · 约 2 分钟": "5 questions · 2 min",
         "上次的你": "You, last time",

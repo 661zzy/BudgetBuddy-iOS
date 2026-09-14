@@ -134,7 +134,7 @@ struct TrackerView: View {
 
     private func row(_ t: Transaction) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: CATS[t.cat]?.icon ?? "circle.fill")
+            Image(systemName: store.catIcon(t.cat))
                 .foregroundColor(.bbGreen).frame(width: 26)
             VStack(alignment: .leading, spacing: 3) {
                 Text(t.note.isEmpty ? (CATS[t.cat]?.zh.tr ?? t.cat) : t.note).foregroundColor(.bbInk)
@@ -169,6 +169,8 @@ struct AddSheet: View {
     @State private var kind = "out"
     @State private var showReflect = false
     @State private var pendingId = ""
+    @State private var editor: CategoryEditorRoute?       // v1.6.1 新建 / 编辑自定义分类
+    @State private var pendingDelete: CustomCategory?
 
     private var canSave: Bool { (Double(amount) ?? 0) > 0 }
 
@@ -187,11 +189,56 @@ struct AddSheet: View {
                     .frame(maxWidth: .infinity).padding(.vertical, 16)
 
                 if kind == "out" {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(EXPENSE_CATS, id: \.self) { c in catChip(c) }
+                    VStack(alignment: .leading, spacing: 4) {
+                        // Always-visible entry: seven built-ins already fill the row, so
+                        // a chip at the far end alone would stay undiscovered.
+                        HStack {
+                            Text("分类".tr).font(.caption).foregroundColor(.bbInk2)
+                            Spacer()
+                            Button { editor = CategoryEditorRoute(editing: nil) } label: {
+                                Label("自定义".tr, systemImage: "plus.circle.fill")
+                                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                                    .foregroundColor(.bbGreen)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("cat.add.header")
                         }
-                        .padding(.horizontal, 16).padding(.bottom, 6)
+                        .padding(.horizontal, 16)
+                        ScrollViewReader { proxy in
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    // The user's own categories first: they made them because they use them.
+                                    ForEach(store.customCats) { c in customChip(c) }
+                                    ForEach(EXPENSE_CATS, id: \.self) { c in catChip(c) }
+                                    addCategoryChip
+                                }
+                                .padding(.horizontal, 16).padding(.bottom, 6)
+                            }
+                            .onChange(of: cat) { c in withAnimation { proxy.scrollTo(c, anchor: .center) } }
+                        }
+                        if !store.customCats.isEmpty {
+                            Text("长按自定义分类可以改名或删除".tr)
+                                .font(.caption2).foregroundColor(.bbInk2)
+                                .padding(.horizontal, 16)
+                        }
+                    }
+                    .sheet(item: $editor) { route in
+                        CategoryEditorSheet(editing: route.editing) { name in cat = name }
+                            .environmentObject(store)
+                    }
+                    .confirmationDialog(
+                        BBLang.isEN ? "Delete “\(pendingDelete?.name ?? "")”?" : "删除「\(pendingDelete?.name ?? "")」分类？",
+                        isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
+                        titleVisibility: .visible
+                    ) {
+                        Button("删除".tr, role: .destructive) {
+                            guard let d = pendingDelete else { return }
+                            if cat == d.name { cat = "food" }
+                            Task { await store.deleteCustomCategory(d.name) }
+                        }
+                        Button("取消".tr, role: .cancel) {}
+                    } message: {
+                        Text("已经记下的账会保留这个名字，只是以后不会出现在分类里。".tr)
                     }
                 }
 
@@ -241,17 +288,51 @@ struct AddSheet: View {
     }
 
     private func catChip(_ c: String) -> some View {
-        let on = cat == c
-        return Button { cat = c } label: {
-            VStack(spacing: 6) {
-                Image(systemName: CATS[c]?.icon ?? "circle.fill").font(.system(size: 22))
-                Text(CATS[c]?.zh.tr ?? c).font(.system(.subheadline, design: .rounded).weight(.semibold))
-            }
-            .foregroundColor(on ? .white : .bbInk)
-            .frame(width: 76, height: 72)
-            .duo(on ? Color.bbGreen : Color.bbSurface, on ? duoGreenEdge : duoEdge, radius: 16)
+        Button { cat = c } label: {
+            chipFace(icon: CATS[c]?.icon ?? BBCategory.defaultIcon, title: CATS[c]?.zh.tr ?? c, on: cat == c)
         }
         .buttonStyle(.plain)
+        .id(c)
+        .accessibilityIdentifier("cat.chip.\(c)")
+    }
+
+    private func customChip(_ c: CustomCategory) -> some View {
+        Button { cat = c.name } label: {
+            chipFace(icon: c.icon, title: c.name, on: cat == c.name)
+        }
+        .buttonStyle(.plain)
+        .id(c.name)
+        .contextMenu {
+            Button { editor = CategoryEditorRoute(editing: c) } label: { Label("重命名".tr, systemImage: "pencil") }
+            Button(role: .destructive) { pendingDelete = c } label: { Label("删除".tr, systemImage: "trash") }
+        }
+        .accessibilityIdentifier("cat.chip.\(c.name)")
+    }
+
+    private var addCategoryChip: some View {
+        Button { editor = CategoryEditorRoute(editing: nil) } label: {
+            VStack(spacing: 6) {
+                Image(systemName: "plus").font(.system(size: 22, weight: .semibold))
+                Text("自定义".tr).font(.system(.subheadline, design: .rounded).weight(.semibold))
+            }
+            .foregroundColor(.bbInk2)
+            .frame(width: 76, height: 72)
+            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.bbLine, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("cat.add")
+    }
+
+    private func chipFace(icon: String, title: String, on: Bool) -> some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon).font(.system(size: 22))
+            Text(title).font(.system(.subheadline, design: .rounded).weight(.semibold))
+                .lineLimit(1).minimumScaleFactor(0.6)
+        }
+        .foregroundColor(on ? .white : .bbInk)
+        .padding(.horizontal, 4)
+        .frame(width: 76, height: 72)
+        .duo(on ? Color.bbGreen : Color.bbSurface, on ? duoGreenEdge : duoEdge, radius: 16)
     }
 
     private var keypad: some View {
@@ -504,7 +585,7 @@ struct TrackerSummaryView: View {
     private func catBar(_ cat: String, _ amount: Double, top: Double) -> some View {
         let frac = top > 0 ? CGFloat(amount / top) : 0
         return HStack(spacing: 10) {
-            Image(systemName: CATS[cat]?.icon ?? "circle.fill").foregroundColor(.bbGreen).frame(width: 22)
+            Image(systemName: store.catIcon(cat)).foregroundColor(.bbGreen).frame(width: 22)
             Text(CATS[cat]?.zh.tr ?? cat).font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk)
                 .frame(width: 64, alignment: .leading)
             GeometryReader { g in
@@ -537,6 +618,136 @@ struct TrackerSummaryView: View {
                 advice[target] = "哎呀，刚才没连上 AI 😅 点下方「再分析一次」我再帮你看看。".tr
             }
             if target == scope { loadingAdvice = false }
+        }
+    }
+}
+
+
+// MARK: - 自定义分类：新建 / 编辑 (v1.6.1)
+
+struct CategoryEditorRoute: Identifiable {
+    let id = UUID()
+    let editing: CustomCategory?
+}
+
+struct CategoryEditorSheet: View {
+    @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
+    let editing: CustomCategory?
+    let onSaved: (String) -> Void
+    @State private var name: String
+    @State private var icon: String
+    @State private var errorText = ""
+    @FocusState private var nameFocused: Bool
+
+    init(editing: CustomCategory?, onSaved: @escaping (String) -> Void) {
+        self.editing = editing
+        self.onSaved = onSaved
+        _name = State(initialValue: editing?.name ?? "")
+        _icon = State(initialValue: editing?.icon ?? BBCategory.defaultIcon)
+    }
+
+    private var typedCount: Int { BBCategory.normalize(name).count }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 6) {
+                            Image(systemName: icon).font(.system(size: 26))
+                            Text(BBCategory.normalize(name).isEmpty ? "新分类".tr : BBCategory.normalize(name))
+                                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                                .lineLimit(1).minimumScaleFactor(0.6)
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .frame(width: 92, height: 84)
+                        .duo(Color.bbGreen, duoGreenEdge, radius: 18)
+                        Spacer()
+                    }
+                    .padding(.top, 4)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("分类名称".tr).font(.caption).foregroundColor(.bbInk2)
+                        HStack(spacing: 10) {
+                            TextField("比如：水电、房租".tr, text: $name)
+                                .font(.system(.body, design: .rounded))
+                                .focused($nameFocused)
+                                .submitLabel(.done)
+                                .onSubmit(save)
+                                .accessibilityIdentifier("cat.editor.name")
+                            Text("\(typedCount)/\(BBCategory.maxNameLength)")
+                                .font(.caption).monospacedDigit()
+                                .foregroundColor(typedCount > BBCategory.maxNameLength ? .bbRed : .bbInk2)
+                        }
+                        .padding(14)
+                        .background(RoundedRectangle(cornerRadius: 14).fill(Color.bbSurface))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.bbLine))
+                        if !errorText.isEmpty {
+                            Text(errorText).font(.footnote).foregroundColor(.bbRed)
+                                .accessibilityIdentifier("cat.editor.error")
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("选个图标".tr).font(.caption).foregroundColor(.bbInk2)
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4), spacing: 10) {
+                            ForEach(BBCategory.icons, id: \.self) { i in
+                                let on = icon == i
+                                Button { icon = i } label: {
+                                    Image(systemName: i).font(.title3)
+                                        .foregroundColor(on ? .white : .bbInk)
+                                        .frame(maxWidth: .infinity).frame(height: 52)
+                                        .duo(on ? Color.bbGreen : Color.bbSurface, on ? duoGreenEdge : duoEdge, radius: 14)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityIdentifier("cat.editor.icon.\(i)")
+                            }
+                        }
+                    }
+
+                    Text("分类跟着账号保存，换手机或重装后登录也还在。".tr)
+                        .font(.caption).foregroundColor(.bbInk2)
+                }
+                .padding(16)
+                .bbPageWidth()
+            }
+            .background(Color.bbBg)
+            .navigationTitle(editing == nil ? "新建分类".tr : "编辑分类".tr)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("取消".tr) { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("保存".tr, action: save)
+                        .fontWeight(.semibold)
+                        .disabled(BBCategory.normalize(name).isEmpty)
+                        .accessibilityIdentifier("cat.editor.save")
+                }
+            }
+            .onAppear { nameFocused = editing == nil }
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    private func save() {
+        errorText = ""
+        do {
+            let saved: String
+            if let old = editing {
+                saved = try store.renameCustomCategory(old.name, to: name, icon: icon)
+            } else {
+                saved = try store.addCustomCategory(name: name, icon: icon)
+            }
+            onSaved(saved)
+            dismiss()
+        } catch let e as BBCategory.NameError {
+            errorText = e.message
+        } catch {
+            errorText = "保存失败，请重试".tr
         }
     }
 }

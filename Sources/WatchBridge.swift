@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import WatchConnectivity
 
@@ -7,12 +8,31 @@ import WatchConnectivity
 final class WatchBridge: NSObject, WCSessionDelegate {
     static let shared = WatchBridge()
     private weak var store: AppStore?
+    private var catsSub: AnyCancellable?
+    private var pendingCats: [CustomCategory]?
 
+    @MainActor
     func activate(store: AppStore) {
         self.store = store
         guard WCSession.isSupported() else { return }
         WCSession.default.delegate = self
         WCSession.default.activate()
+        // v1.6.1: custom categories follow the account, and the wrist picker
+        // should offer the same list. Application context keeps only the
+        // latest value, so a burst of edits collapses into one delivery.
+        catsSub = store.$state
+            .map(\.customCats)
+            .removeDuplicates()
+            .sink { [weak self] cats in self?.pushCustomCats(cats) }
+    }
+
+    private func pushCustomCats(_ cats: [CustomCategory]) {
+        let s = WCSession.default
+        guard s.activationState == .activated else { pendingCats = cats; return }
+        guard s.isPaired, s.isWatchAppInstalled else { return }
+        pendingCats = nil
+        let payload: [[String: String]] = cats.map { ["name": $0.name, "icon": $0.icon] }
+        try? s.updateApplicationContext(["bb.customCats": payload])
     }
 
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
@@ -29,7 +49,10 @@ final class WatchBridge: NSObject, WCSessionDelegate {
     }
 
     // MARK: required WCSessionDelegate plumbing
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        guard activationState == .activated, let cats = pendingCats else { return }
+        DispatchQueue.main.async { self.pushCustomCats(cats) }
+    }
     func sessionDidBecomeInactive(_ session: WCSession) {}
     func sessionDidDeactivate(_ session: WCSession) { session.activate() }
 }
