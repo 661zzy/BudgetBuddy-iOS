@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var tab = 0
+    @ObservedObject private var inbox = FeedbackInbox.shared
     var body: some View {
         TabView(selection: $tab) {
             HomeView(tab: $tab).tabItem { Label("首页".tr, systemImage: "house.fill") }.tag(0)
@@ -9,6 +10,7 @@ struct MainTabView: View {
             StoryView().tabItem { Label("故事".tr, systemImage: "book.fill") }.tag(2)
             AIView().tabItem { Label("AI搭子".tr, systemImage: "bubble.left.fill") }.tag(3)
             ProfileView(tab: $tab).tabItem { Label("我的".tr, systemImage: "person.fill") }.tag(4)
+                .badge(inbox.unread)
         }
         .tint(.bbGreen)
     }
@@ -25,6 +27,7 @@ struct HomeView: View {
     @State private var blitz: BlitzLaunch?          // v1.6 财商快答
     @State private var showBlitzHub = false
     @State private var blitzRefresh = 0
+    @State private var replyThreadID: Int?          // v1.6.2 反馈回复
 
     private var choicesThisWeek: Int {
         store.state.transactions.filter { isThisWeek($0.ts) }.count
@@ -41,7 +44,15 @@ struct HomeView: View {
             .sheet(isPresented: $showAuthForAdd) { AuthView().environmentObject(store) }
             .fullScreenCover(item: $blitz, onDismiss: { blitzRefresh += 1 }) { BlitzGameContainer(mode: $0.mode) }
             .navigationDestination(isPresented: $showBlitzHub) { BlitzHubView() }
+            .navigationDestination(isPresented: Binding(get: { replyThreadID != nil },
+                                                        set: { if !$0 { replyThreadID = nil } })) {
+                if let id = replyThreadID { FeedbackThreadView(threadID: id) }
+            }
         }
+    }
+
+    private var replyBanner: some View {
+        FeedbackReplyBanner(bottomPadding: 14) { replyThreadID = $0.id }
     }
 
     private var blitzSection: some View {
@@ -55,6 +66,7 @@ struct HomeView: View {
     private var phoneLayout: some View {
         VStack(spacing: 0) {
             wordmark.padding(.top, 22).padding(.bottom, 20)
+            replyBanner
             sectionHeader("今 日 故 事".tr, trailing: "全部故事".tr) { tab = 2 }
             storyHero(imageHeight: 160).padding(.top, 14)
             quickAddCard.padding(.top, 14)
@@ -74,6 +86,7 @@ struct HomeView: View {
     private var padLayout: some View {
         VStack(spacing: 0) {
             wordmark.padding(.top, 30).padding(.bottom, 26)
+            replyBanner.frame(maxWidth: 640)
             HStack(alignment: .top, spacing: 28) {
                 VStack(spacing: 0) {
                     sectionHeader("今 日 故 事".tr, trailing: "全部故事".tr) { tab = 2 }
@@ -353,6 +366,7 @@ struct ProfileView: View {
     @State private var showResetConfirm = false
     @State private var showDeleteSheet = false
     @State private var showAuth = false
+    @ObservedObject private var inbox = FeedbackInbox.shared
 
     // iPhone — unchanged single column.
     private var phoneLayout: some View {
@@ -453,7 +467,13 @@ struct ProfileView: View {
             }
             Button { showEditNick = true } label: { rowLabel("pencil", "编辑昵称".tr) }.buttonStyle(.plain)
             ShareLink(item: exportJSON) { rowLabel("square.and.arrow.up", "导出数据".tr) }
-            NavigationLink { FeedbackView() } label: { rowLabel("ladybug", "问题反馈".tr) }.buttonStyle(.plain)
+            NavigationLink { FeedbackView() } label: {
+                rowLabel("ladybug", "问题反馈".tr,
+                         right: inbox.unread > 0 ? String(format: "%d 条新回复".tr, inbox.unread) : nil,
+                         rightTint: .bbRed)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("profile.feedback")
             Button { BBRating.openWriteReview() } label: { rowLabel("star", "去 App Store 评分".tr) }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("profile.rate.app")
@@ -552,12 +572,12 @@ struct ProfileView: View {
         VStack(spacing: 0) { content() }
     }
 
-    private func rowLabel(_ icon: String, _ title: String, right: String? = nil, tint: Color = .bbInk) -> some View {
+    private func rowLabel(_ icon: String, _ title: String, right: String? = nil, tint: Color = .bbInk, rightTint: Color = .bbInk2) -> some View {
         HStack(spacing: 13) {
             Image(systemName: icon).font(.system(size: 18)).foregroundColor(tint == .bbRed ? .bbRed : .bbInk2).frame(width: 24)
             Text(title).foregroundColor(tint)
             Spacer(minLength: 0)
-            if let right { Text(right).font(.caption).foregroundColor(.bbInk2) }
+            if let right { Text(right).font(.caption).foregroundColor(rightTint) }
             Image(systemName: "chevron.right").font(.caption).foregroundColor(.bbInk2.opacity(0.6))
         }
         .padding(.vertical, 15).padding(.horizontal, 2).contentShape(Rectangle())

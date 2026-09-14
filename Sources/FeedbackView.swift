@@ -4,6 +4,7 @@ import PhotosUI
 
 struct FeedbackView: View {
     @EnvironmentObject var store: AppStore
+    @ObservedObject private var inbox = FeedbackInbox.shared
     @State private var note = ""
     @State private var copied = false
     @State private var sending = false
@@ -26,6 +27,7 @@ struct FeedbackView: View {
             do {
                 try await APIClient.shared.sendFeedback(message: note, diagnostics: report, images: payload)
                 sent = true
+                await inbox.didSubmit(signedInAs: store.user?.id)
             } catch {
                 sendError = bbAPIMessage(error) ?? "没发出去，试试下面的分享或邮件方式".tr
             }
@@ -66,6 +68,8 @@ struct FeedbackView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                FeedbackThreadsSection()
+
                 Text("用着出问题了？在这里写一句话说明，然后把下面的诊断信息发给开发者，方便定位。".tr)
                     .font(.system(.subheadline, design: .rounded)).foregroundColor(.bbInk2)
 
@@ -156,6 +160,11 @@ struct FeedbackView: View {
                 .disabled(sending || sent)
                 .accessibilityIdentifier("feedback.submit")
 
+                if sent && !inbox.unavailable {
+                    Text("我们回复后，会显示在这一页上方的「我的反馈」里。".tr)
+                        .font(.footnote).foregroundColor(.bbInk2)
+                }
+
                 if !shots.isEmpty {
                     Text(String(format: "%d 张截图会跟着一起发出".tr, shots.count))
                         .font(.footnote).foregroundColor(.bbInk2)
@@ -196,6 +205,7 @@ struct FeedbackView: View {
         .background(Color.bbBg)
         .navigationTitle("问题反馈".tr)
         .navigationBarTitleDisplayMode(.inline)
+        .task { await inbox.refresh(signedInAs: store.user?.id, force: true) }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
