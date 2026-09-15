@@ -175,13 +175,15 @@ final class APIClient {
     // MARK: Feedback (guest-friendly one-tap submission; server rate-limits by IP)
     // images: up to 3 base64 JPEGs (no data: prefix). Older servers ignore the
     // field, so a client that sends screenshots still submits fine against them.
-    // v1.6.2: also sends this device's feedback key + platform so replies can find their
-    // way back (backend 4.9). Older servers ignore both fields.
-    func sendFeedback(message: String, diagnostics: String, images: [String] = []) async throws {
-        struct Req: Encodable { let message, diagnostics: String; let images: [String]; let clientKey, platform: String }
+    // v1.6.2: also sends the platform and, for guests only, this device's feedback key so
+    // replies can find their way back (backend 4.9). Feedback sent while signed in belongs to
+    // the account alone — tying it to the device would let the next person on this phone
+    // read it after sign-out. Older servers ignore both fields.
+    func sendFeedback(message: String, diagnostics: String, images: [String] = [], clientKey: String?) async throws {
+        struct Req: Encodable { let message, diagnostics: String; let images: [String]; let clientKey: String?; let platform: String }
         _ = try await request("POST", "/feedback",
                               body: Req(message: message, diagnostics: diagnostics, images: images,
-                                        clientKey: FeedbackKey.ensure(), platform: "ios"),
+                                        clientKey: clientKey, platform: "ios"),
                               decode: FeedbackSubmitResponse.self)
     }
 

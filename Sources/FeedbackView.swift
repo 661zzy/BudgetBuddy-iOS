@@ -25,7 +25,8 @@ struct FeedbackView: View {
         let payload = shots.compactMap { $0.bbFeedbackJPEGBase64() }
         Task {
             do {
-                try await APIClient.shared.sendFeedback(message: note, diagnostics: report, images: payload)
+                try await APIClient.shared.sendFeedback(message: note, diagnostics: report, images: payload,
+                                                        clientKey: store.isGuest ? FeedbackKey.ensure() : nil)
                 sent = true
                 await inbox.didSubmit(signedInAs: store.user?.id)
             } catch {
