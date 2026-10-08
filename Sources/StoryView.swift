@@ -437,12 +437,23 @@ struct LessonDetailView: View {
 
 // MARK: - GameDetail (the branching story player)
 
+/// Position, size and opacity of a scene while it swaps in or out.
+struct BBSceneCard: ViewModifier {
+    let y: CGFloat
+    let scale: CGFloat
+    let opacity: Double
+    func body(content: Content) -> some View {
+        content.scaleEffect(scale, anchor: .top).offset(y: y).opacity(opacity)
+    }
+}
+
 struct GameDetailView: View {
     let story: Story
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.horizontalSizeClass) private var hSize
     @Environment(\.requestReview) private var requestReview
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     enum Phase { case intro, play, done }
     @State private var phase: Phase = .intro
@@ -454,6 +465,10 @@ struct GameDetailView: View {
     @State private var ending: Ending?
     @State private var showReminderOffer = false      // v1.5.3: shown once, on the first ending screen
     @State private var reminderJustEnabled = false
+    @State private var wrongPick: StoryWrongPick?      // drives the big red "wrong move" alert
+    @State private var mistakes = 0                    // wrong picks this run, shown on the ending
+    @State private var judged = 0                      // picks in scenes that have a right answer
+    @State private var wrongNoticeOpen = false         // the 「这步有坑」 mark waits until the sheet has gone
 
     init(story: Story) {
         self.story = story
@@ -465,15 +480,34 @@ struct GameDetailView: View {
     private var sceneCount: Int { story.scenes.count }
 
     var body: some View {
+        ScrollViewReader { proxy in
         ScrollView {
+            Color.clear.frame(height: 0).id("story.top")
             Group {
                 switch phase {
                 case .intro: introView
-                case .play: if let scene { playView(scene) }
+                case .play:
+                    // Scenes hand over like the top card of a stack: the old one sinks
+                    // back and fades, the next rises in. ZStack so both overlap mid-swap.
+                    ZStack(alignment: .top) {
+                        if let scene {
+                            playView(scene)
+                                .id(sceneId)
+                                .transition(reduceMotion ? .opacity : .asymmetric(
+                                    insertion: .modifier(active: BBSceneCard(y: 44, scale: 1, opacity: 0),
+                                                         identity: BBSceneCard(y: 0, scale: 1, opacity: 1)),
+                                    removal: .modifier(active: BBSceneCard(y: -12, scale: 0.95, opacity: 0),
+                                                       identity: BBSceneCard(y: 0, scale: 1, opacity: 1))))
+                        }
+                    }
                 case .done: if let ending { doneView(ending) }
                 }
             }
             .bbPageWidth(hSize == .regular ? 760 : 640)
+        }
+        .task(id: step) {
+            withAnimation(reduceMotion ? nil : BBMotion.snappy) { proxy.scrollTo("story.top", anchor: .top) }
+        }
         }
         .background(Color.bbBg)
         .navigationTitle(story.title.tr)
@@ -484,6 +518,14 @@ struct GameDetailView: View {
                     Text(BBLang.isEN ? "Scene \(step) / \(sceneCount)" : "第 \(step) / \(sceneCount) 关").font(.caption).foregroundColor(.bbInk2)
                 }
             }
+        }
+        // Over everything, tab bar included, and without the usual slide-up: it pops.
+        .fullScreenCover(item: $wrongPick) { pick in
+            StoryWrongAlert(pick: pick) {
+                withoutAnimation { wrongPick = nil }
+                withAnimation(reduceMotion ? .easeOut(duration: 0.2) : BBMotion.snappy) { wrongNoticeOpen = false }
+            }
+            .bbTransparentCover()
         }
     }
 
@@ -534,6 +576,7 @@ struct GameDetailView: View {
                     Capsule().fill(Color.bbLine.opacity(0.5)).frame(height: 7)
                     Capsule().fill(Color.bbGreen)
                         .frame(width: geo.size.width * CGFloat(step) / CGFloat(max(sceneCount, 1)), height: 7)
+                        .animation(reduceMotion ? nil : BBMotion.snappy, value: step)
                 }
             }
             .frame(height: 7)
@@ -619,8 +662,13 @@ struct GameDetailView: View {
     private func choiceButton(_ c: Choice) -> some View {
         let isPicked = picked?.id == c.id
         let dim = picked != nil && !isPicked
+        let verdict = scene?.verdict(for: c) ?? .neutral
+        let wrong = isPicked && verdict == .wrong
         return Button { choose(c) } label: {
             VStack(alignment: .leading, spacing: 6) {
+                if isPicked && !(wrong && wrongNoticeOpen) {
+                    verdictRow(verdict).transition(.opacity.combined(with: .offset(y: -6)))
+                }
                 Text(c.label.tr).font(.body.weight(.medium)).foregroundColor(.bbInk)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if let hint = c.hint, !isPicked { Text(hint.tr).font(.caption).foregroundColor(.bbInk2) }
@@ -650,13 +698,41 @@ struct GameDetailView: View {
                 }
             }
             .padding(14).frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.bbSurface)
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(isPicked ? Color.bbInk : Color.bbLine, lineWidth: isPicked ? 1.5 : 1))
+            .background(wrong ? StoryWrongAlert.alarm.opacity(0.06) : Color.bbSurface)
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(
+                wrong ? StoryWrongAlert.alarm : (isPicked ? Color.bbInk : Color.bbLine),
+                lineWidth: wrong ? 2 : (isPicked ? 1.5 : 1)))
             .cornerRadius(10)
+            .shadow(color: .black.opacity(isPicked && !reduceMotion ? 0.08 : 0), radius: 12, y: 5)
+            .scaleEffect(dim && !reduceMotion ? 0.97 : 1)       // the others settle back a little
             .opacity(dim ? 0.5 : 1)
         }
         .buttonStyle(.plain)
         .disabled(picked != nil)
+    }
+
+    @ViewBuilder
+    private func verdictRow(_ v: ChoiceVerdict) -> some View {
+        switch v {
+        case .best:
+            verdictLabel("好选择".tr, "checkmark.circle.fill", .bbGreen, id: "story.verdict.best")
+        case .okay:
+            verdictLabel("还能更好".tr, "exclamationmark.circle.fill", Color(hex: 0x8A6A12), id: "story.verdict.okay")
+        case .wrong:
+            verdictLabel("这步有坑".tr, "exclamationmark.triangle.fill", StoryWrongAlert.alarm, id: "story.verdict.wrong")
+        case .neutral:
+            EmptyView()
+        }
+    }
+
+    private func verdictLabel(_ text: String, _ icon: String, _ color: Color, id: String) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: icon).modifier(BBBounceOnAppear())
+            Text(text)
+        }
+        .font(.caption.weight(.bold)).foregroundColor(color)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(id)
     }
 
     private func doneView(_ ending: Ending) -> some View {
@@ -665,6 +741,7 @@ struct GameDetailView: View {
                 Image(systemName: ending.tone == "good" ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
                     .font(.system(size: 46)).foregroundColor(ending.tone == "good" ? .bbGreen : Color(hex: 0xC9A227))
                 Text(ending.title.tr).font(.title2.bold()).foregroundColor(.bbInk)
+                mistakeSummary
             }
             .padding(.top, 24)
             resultCard("做得好".tr, ending.did_well?.tr, .bbGreen)
@@ -692,6 +769,29 @@ struct GameDetailView: View {
             if ending.tone == "good", BBRating.consumeStoryDonePrompt() {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { requestReview() }
             }
+        }
+    }
+
+    // Counts what went right ("dodged 4 of 5"), not what went wrong: the sheet has
+    // already explained each trap, the ending should leave the player encouraged.
+    @ViewBuilder private var mistakeSummary: some View {
+        if judged > 0 {
+            let dodged = max(judged - mistakes, 0)
+            let clean = mistakes == 0
+            let text = clean
+                ? (BBLang.isEN ? "Dodged all \(judged) traps" : "\(judged) 个坑全部避开")
+                : (BBLang.isEN ? "Dodged \(dodged) of \(judged) traps" : "避开了 \(dodged) / \(judged) 个坑")
+            let tint = clean ? Color.bbGreen : Color(hex: 0x8A6A12)
+            HStack(spacing: 5) {
+                Image(systemName: clean ? "checkmark.shield.fill" : "shield.lefthalf.filled").modifier(BBBounceOnAppear())
+                Text(text)
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundColor(tint)
+            .padding(.horizontal, 12).padding(.vertical, 6)
+            .background(Capsule().fill(tint.opacity(0.1)))
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("story.mistakes")
         }
     }
 
@@ -770,11 +870,11 @@ struct GameDetailView: View {
 
     private func start() {
         phase = .play; sceneId = story.start; step = 1; picked = nil
-        stats = story.stats; score = 0; ending = nil
+        stats = story.stats; score = 0; ending = nil; mistakes = 0; judged = 0; wrongPick = nil; wrongNoticeOpen = false
     }
     private func choose(_ c: Choice) {
         guard picked == nil else { return }
-        picked = c
+        withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : BBMotion.snappy) { picked = c }
         if let effs = c.effects {
             for (k, v) in effs {
                 var nv = (stats[k] ?? 0) + v
@@ -783,13 +883,39 @@ struct GameDetailView: View {
             }
         }
         score += c.score ?? 0
+
+        guard let scene else { return }
+        if scene.verdict(for: c) != .neutral { judged += 1 }
+        switch scene.verdict(for: c) {
+        case .wrong:
+            mistakes += 1
+            let pick = StoryWrongPick(
+                choice: c,
+                betterMoves: scene.bestChoices.map { $0.label.tr },
+                effectChips: (c.effects ?? [:]).sorted { $0.key < $1.key }.map { effLabel($0.key, $0.value) },
+                sceneImage: "scene_" + story.id.replacingOccurrences(of: "-", with: "_") + "_" + sceneId)
+            wrongNoticeOpen = true
+            withoutAnimation { wrongPick = pick }      // the sheet does its own entrance
+        case .best:
+            BBHaptics.result(true)
+        case .okay, .neutral:
+            BBHaptics.tap()
+        }
+    }
+
+    private func withoutAnimation(_ change: () -> Void) {
+        var t = SwiftUI.Transaction()
+        t.disablesAnimations = true
+        withTransaction(t, change)
     }
     private func proceed() {
         guard let c = picked else { return }
         picked = nil
         if let endId = c.end, let e = story.endings[endId] { finish(e); return }
         if scene?.isFinal == true { finish(pickByScore()); return }
-        if let nx = c.next { sceneId = nx; step += 1 }
+        if let nx = c.next {
+            withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : BBMotion.swap) { sceneId = nx; step += 1 }
+        }
     }
     private func pickByScore() -> Ending {
         var maxScore = 0
