@@ -307,6 +307,11 @@ enum L10n {
         "把娱乐花费记下来，到 ¥50 就停，剩下的留到下周。": "Track your fun spending, stop at ¥50, and roll the rest into next week.",
         "7 天不冲动消费": "7 days, no impulse buys", "想买非必需品先等一天再决定": "Want a non-essential? Sleep on it for a day first",
         "想买的非必需品先放购物车，等 24 小时再决定。": "Park non-essentials in the cart and decide after 24 hours.",
+        // ---- story verdicts + "that one's a trap" sheet (gentle wording, 2026-10-08) ----
+        "这一步有坑": "That one's a trap", "没关系，看清楚了下次就能躲开": "It happens — now you'll spot it next time",
+        "你选的是": "You picked", "接下来会发生什么": "What happens next", "为什么要小心": "Why it's risky",
+        "下次可以这样做": "Try this next time", "我记住了": "Got it",
+        "好选择": "Good call", "还能更好": "Could be better", "这步有坑": "Risky move",
         // ---- update sheet ----
         "重要": "Must-know", "预算管理": "Budgeting", "金融安全": "Money safety", "应急与借款": "Emergencies & borrowing", "隐藏规则": "Hidden rules", "人情与消费": "Social spending", "人情与信用": "Friends & credit", "借贷与利息": "Loans & interest", "收入与规划": "Income & planning", "消费决策": "Spending decisions", "自我投资": "Investing in yourself", "2分钟": "2 min", "4分钟": "4 min", "5分钟": "5 min", "已存": "Saved", "在手": "In hand", "饭卡": "Meal card", "需要更新": "Update required", "有新版本": "Update available", "去更新": "Update now", "稍后再说": "Later",
         "发现新版本，建议更新以获得更好体验。": "A new version is available — update for the best experience.",
