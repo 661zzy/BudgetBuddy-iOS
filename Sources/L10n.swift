@@ -311,6 +311,28 @@ enum L10n {
         "重要": "Must-know", "预算管理": "Budgeting", "金融安全": "Money safety", "应急与借款": "Emergencies & borrowing", "隐藏规则": "Hidden rules", "人情与消费": "Social spending", "人情与信用": "Friends & credit", "借贷与利息": "Loans & interest", "收入与规划": "Income & planning", "消费决策": "Spending decisions", "自我投资": "Investing in yourself", "2分钟": "2 min", "4分钟": "4 min", "5分钟": "5 min", "已存": "Saved", "在手": "In hand", "饭卡": "Meal card", "需要更新": "Update required", "有新版本": "Update available", "去更新": "Update now", "稍后再说": "Later",
         "发现新版本，建议更新以获得更好体验。": "A new version is available — update for the best experience.",
         "请更新到最新版本后继续使用。": "Please update to the latest version to continue.",
+        // v1.6.2 反馈回复
+        "（只发送了诊断信息）": "(Diagnostics only)",
+        "已处理": "Resolved",
+        "已回复": "Replied",
+        "等待回复": "Waiting for a reply",
+        "我的反馈": "My feedback",
+        "%d 条新回复": "%d new",
+        "全部 %d 条": "All %d",
+        "没登录时，回复只会显示在这台设备上。": "While you're not signed in, replies only show on this device.",
+        "省钱搭子：": "BudgetBuddy: ",
+        "我：": "Me: ",
+        "附 %d 张截图": "%d screenshot(s)",
+        "已经收到了，我们看过后会在这里回复你。": "Got it. We'll reply here once we've taken a look.",
+        "这条反馈已处理完。还有问题可以直接接着说。": "Marked as resolved. Still stuck? Just reply here.",
+        "找不到这条反馈": "This feedback isn't available",
+        "反馈对话": "Conversation",
+        "省钱搭子团队": "BudgetBuddy team",
+        "接着说点什么…": "Reply…",
+        "发送": "Send",
+        "没发出去，请检查网络后再试": "Couldn't send. Check your connection and try again.",
+        "你的反馈有新回复": "New reply to your feedback",
+        "我们回复后，会显示在这一页上方的「我的反馈」里。": "When we reply, you'll see it under My feedback at the top of this page.",
     ]
 
     /// Server errors arrive in Chinese; map the machine `code` to English when needed.
@@ -328,5 +350,7 @@ enum L10n {
         "AI_BUSY": "The AI is busy — try again in a moment",
         "AI_FALLBACK": "The AI is busy — try again in a moment",
         "INTERNAL_ERROR": "Server hiccup — try again later",
+        "THREAD_NOT_FOUND": "This feedback isn't available",
+        "THREAD_FULL": "This conversation is full — please send a new feedback",
     ]
 }

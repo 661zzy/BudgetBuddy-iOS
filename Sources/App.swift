@@ -40,12 +40,18 @@ struct RootView: View {
         .task {
             WatchBridge.shared.activate(store: store)
             if case .loading = store.phase { await store.boot() }
+            await FeedbackInbox.shared.refresh(signedInAs: store.user?.id)
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
                 BBReminder.resync()
                 Task { await store.foregroundUpdateCheck() }
+                Task { await FeedbackInbox.shared.refresh(signedInAs: store.user?.id) }
             }
+        }
+        .onChange(of: store.user?.id) { id in
+            // Signed in, out, or deleted: replies belong to whoever is using the app now.
+            Task { await FeedbackInbox.shared.refresh(signedInAs: id, force: true) }
         }
         .sheet(item: $store.update) { UpdateSheet(prompt: $0) }
         .id(bbLang)   // rebuild everything when the language changes

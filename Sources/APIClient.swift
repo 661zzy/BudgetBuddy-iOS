@@ -175,11 +175,34 @@ final class APIClient {
     // MARK: Feedback (guest-friendly one-tap submission; server rate-limits by IP)
     // images: up to 3 base64 JPEGs (no data: prefix). Older servers ignore the
     // field, so a client that sends screenshots still submits fine against them.
-    func sendFeedback(message: String, diagnostics: String, images: [String] = []) async throws {
-        struct Req: Encodable { let message: String; let diagnostics: String; let images: [String] }
+    // v1.6.2: also sends the platform and, for guests only, this device's feedback key so
+    // replies can find their way back (backend 4.9). Feedback sent while signed in belongs to
+    // the account alone — tying it to the device would let the next person on this phone
+    // read it after sign-out. Older servers ignore both fields.
+    func sendFeedback(message: String, diagnostics: String, images: [String] = [], clientKey: String?) async throws {
+        struct Req: Encodable { let message, diagnostics: String; let images: [String]; let clientKey: String?; let platform: String }
         _ = try await request("POST", "/feedback",
-                              body: Req(message: message, diagnostics: diagnostics, images: images),
-                              decode: OkResponse.self)
+                              body: Req(message: message, diagnostics: diagnostics, images: images,
+                                        clientKey: clientKey, platform: "ios"),
+                              decode: FeedbackSubmitResponse.self)
+    }
+
+    // Replies to feedback. POST so the device key stays out of URLs and logs.
+    func feedbackThreads(clientKey: String?) async throws -> FeedbackThreadsResponse {
+        struct Req: Encodable { let clientKey: String? }
+        return try await request("POST", "/feedback/threads", body: Req(clientKey: clientKey),
+                                 decode: FeedbackThreadsResponse.self)
+    }
+
+    func markFeedbackRead(id: Int, clientKey: String?) async throws {
+        struct Req: Encodable { let id: Int; let clientKey: String? }
+        _ = try await request("POST", "/feedback/read", body: Req(id: id, clientKey: clientKey), decode: OkResponse.self)
+    }
+
+    func sendFeedbackReply(id: Int, message: String, clientKey: String?) async throws -> FeedbackThread {
+        struct Req: Encodable { let id: Int; let message: String; let clientKey: String? }
+        return try await request("POST", "/feedback/reply", body: Req(id: id, message: message, clientKey: clientKey),
+                                 decode: FeedbackReplyResponse.self).thread
     }
 
     // MARK: State
